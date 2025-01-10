@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HDND STORE</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Unicons -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav">
+        <a href="#" class="nav_logo" style="font-weight: bold;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">HDND STORE</a>
+        <ul class="nav_items">
+          <li class="nav_item">
+            <a href="#" class="nav_link">GIÁ ƯU ĐÃI</a>
+            <a href="#" class="nav_link">GIÀY NỮ</a>
+            <a href="#" class="nav_link">GIÀY NAM</a>
+            <a href="#" class="nav_link">GIÀY CẶP</a>
+            <a href="#" class="nav_link">BALO - TÚI</a>
+            <a href="#" class="nav_link">SALE 50%</a>
+            <a href="#" class="nav_link">SẢN PHẨM BÁN CHẠY</a>
+            <a href="#" class="nav_link">PHỤ KIỆN</a>
+          </li>
+        </ul>
+
+        <!-- Thêm ô tìm kiếm và giỏ hàng -->
+        <div class="nav_right">
+          <div class="search_box">
+            <input type="text" placeholder="Tìm kiếm..." />
+            <i class="fas fa-search"></i>
+            <!-- Kính lúp -->
+          </div>
+          <!-- Button với biểu tượng người dùng -->
+          <button class="button" id="form-open">
+            <i class="fas fa-user"></i>
+          </button>
+
+          <div class="cart_box">
+            <i class="fas fa-shopping-cart"></i>
+            <!-- Biểu tượng giỏ hàng -->
+            <div class="cart_count">1</div>
+            <!-- Số sản phẩm -->
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Home -->
+    <section class="home">
+      <div class="overlay"></div>
+      <!-- Lớp phủ mờ -->
+      <div class="form_container">
+        <i class="uil uil-times form_close"></i>
+
+        <!-- Login Form -->
+        <div class="form login_form">
+          <form action="#">
+            <h2>ĐĂNG NHẬP</h2>
+
+            <div class="input_box">
+              <input type="text" placeholder="Nhập tên đăng nhập" required />
+              <i class="uil uil-user username"></i>
+            </div>
+            <div class="input_box">
+              <input
+                type="password"
+                placeholder="Nhập mật khẩu của bạn"
+                required
+              />
+              <i class="uil uil-lock password"></i>
+              <i class="uil uil-eye-slash pw_hide"></i>
+            </div>
+
+            <div class="option_field">
+              <span class="checkbox">
+                <input type="checkbox" id="check" />
+                <label for="check">Ghi nhớ mật khẩu</label>
+              </span>
+              <a href="#" class="forgot_pw" id="forgot-password"
+                >Quên mật khẩu?</a
+              >
+            </div>
+
+            <button class="button">Đăng nhập</button>
+
+            <div class="login_signup" style="color: black">
+              Bạn chưa có tài khoản? &#160;<a href="#" id="signup"
+                >Đăng ký ngay</a
+              >
+            </div>
+          </form>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="form signup_form">
+          <form action="#">
+            <h2>ĐĂNG KÝ</h2>
+
+            <div class="input_box">
+              <input type="text" placeholder="Tên đăng nhập" required />
+              <i class="uil uil-user username"></i>
+            </div>
+            <div class="input_box">
+              <input type="email" placeholder="Email" required />
+              <i class="uil uil-envelope-alt email"></i>
+            </div>
+            <div class="input_box">
+              <input type="password" placeholder="Mật khẩu" required />
+              <i class="uil uil-lock password"></i>
+              <i class="uil uil-eye-slash pw_hide"></i>
+            </div>
+            <div class="input_box">
+              <input type="password" placeholder="Nhắc lại mật khẩu" required />
+              <i class="uil uil-lock password"></i>
+              <i class="uil uil-eye-slash pw_hide"></i>
+            </div>
+
+            <button class="button">Đăng ký</button>
+
+            <div class="login_signup" style="color: black">
+              Bạn đã có tài khoản? &#160;<a href="#" id="login"
+                >Đăng nhập ngay</a
+              >
+            </div>
+          </form>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div class="form forgot_password_form">
+          <form action="#">
+            <h2>LẤY LẠI MẬT KHẨU</h2>
+
+            <div class="input_box">
+              <input
+                type="email"
+                placeholder="Nhập email đã đăng ký tài khoản"
+                required
+              />
+              <i class="uil uil-envelope-alt email"></i>
+            </div>
+
+            <button class="button">Lấy lại mật khẩu</button>
+
+            <div class="login_signup" style="color: black">
+              Ghi nhớ mật khẩu?&#160;
+              <a href="#" id="login-from-forgot">Đăng nhập</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
