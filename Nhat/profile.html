@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HDND STORE</title>
+    <link rel="stylesheet" href="profile-style.css" />
+    <!-- Unicons -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav">
+        <a
+          href="#"
+          class="nav_logo"
+          style="
+            font-weight: bold;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman',
+              serif;
+          "
+          >HDND STORE</a
+        >
+        <ul class="nav_items">
+          <li class="nav_item">
+            <a href="#" class="nav_link">GIÁ ƯU ĐÃI</a>
+            <a href="#" class="nav_link">GIÀY NỮ</a>
+            <a href="#" class="nav_link">GIÀY NAM</a>
+            <a href="#" class="nav_link">GIÀY CẶP</a>
+            <a href="#" class="nav_link">BALO - TÚI</a>
+            <a href="#" class="nav_link">SALE 50%</a>
+            <a href="#" class="nav_link">SẢN PHẨM BÁN CHẠY</a>
+            <a href="#" class="nav_link">PHỤ KIỆN</a>
+          </li>
+        </ul>
+
+        <!-- Thêm ô tìm kiếm và giỏ hàng -->
+        <div class="nav_right">
+          <div class="search_box">
+            <input type="text" placeholder="Tìm kiếm..." />
+            <i class="fas fa-search"></i>
+            <!-- Kính lúp -->
+          </div>
+          <!-- Button với biểu tượng người dùng -->
+          <button class="button" id="form-open">
+            <i class="fas fa-user"></i>
+          </button>
+
+          <div class="cart_box">
+            <i class="fas fa-shopping-cart"></i>
+            <!-- Biểu tượng giỏ hàng -->
+            <div class="cart_count">1</div>
+            <!-- Số sản phẩm -->
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- profile -->
+    <div class="profile">
+      <div class="sidebar">
+        <ul>
+          <li><a href="#" class="active">Hồ Sơ</a></li>
+          <li><a href="#">Đổi Mật Khẩu</a></li>
+          <li><a href="#">Đơn Mua</a></li>
+          <li><a href="#">Thông Báo</a></li>
+          <li><a href="#">Kho Voucher</a></li>
+          <li><a href="#">Sản Phẩm Yêu Thích</a></li>
+          <li><a href="#">Đăng Xuất</a></li>
+        </ul>
+      </div>
+      <div class="profile_main">
+        <h2>Hồ Sơ Của Tôi</h2>
+        <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+        <form class="profile_form">
+          <div class="form_group">
+            <label for="username">Tên Đăng Nhập</label>
+            <input type="text" id="username" placeholder="Tên đăng nhập" />
+          </div>
+          <div class="form_group">
+            <label for="name">Tên</label>
+            <input type="text" id="name" placeholder="Tên" />
+          </div>
+          <div class="form_group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Email" />
+          </div>
+          <div class="form_group">
+            <label for="phone">Số Điện Thoại</label>
+            <input type="text" id="phone" placeholder="Số điện thoại" />
+          </div>
+          <div class="form_group">
+            <label>Giới Tính</label>
+            <div class="gender">
+              <input type="radio" name="gender" id="male" />
+              <label for="male">Nam</label>
+              <input type="radio" name="gender" id="female" />
+              <label for="female">Nữ</label>
+              <input type="radio" name="gender" id="other" />
+              <label for="other">Khác</label>
+            </div>
+          </div>
+          <div class="form_group">
+            <label for="dob">Ngày Sinh</label>
+            <div class="birth_date">
+                <select id="day" name="day">
+                    <!-- Options for days -->
+                </select>
+                <select id="month" name="month">
+                    <!-- Options for months -->
+                </select>
+                <select id="year" name="year">
+                    <!-- Options for years -->
+                </select>
+            </div>
+        </div>
+        
+          <h3>Thông tin nhận hàng</h3>
+          <div class="form_group">
+            <label for="city">Tỉnh/Thành Phố</label>
+            <select id="city">
+              <option>-- Chọn tỉnh --</option>
+              <option>Bình Định</option>
+              <option>Phú Yên</option>
+              <option>Khánh Hòa</option>
+            </select>
+          </div>
+          <div class="form_group">
+            <label for="district">Quận/Huyện</label>
+            <select id="district">
+              <option>-- Chọn Quận/huyện --</option>
+            </select>
+          </div>
+          <div class="form_group">
+            <label for="ward">Phường/Xã</label>
+            <select id="ward">
+              <option>-- Chọn Xã/Phường --</option>
+            </select>
+          </div>
+          <div class="form_group">
+            <label for="address">Địa Chỉ</label>
+            <input type="text" id="address" placeholder="Địa chỉ" />
+          </div>
+          <button class="button" type="submit">Lưu</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="profile-script.js"></script>
+  </body>
+</html>
