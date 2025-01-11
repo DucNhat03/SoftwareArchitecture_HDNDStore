@@ -69,92 +69,116 @@
     <div class="profile">
       <div class="sidebar">
         <ul>
-          <li><a href="#" class="active">Hồ Sơ</a></li>
-          <li><a href="#">Đổi Mật Khẩu</a></li>
-          <li><a href="#">Đơn Mua</a></li>
-          <li><a href="#">Thông Báo</a></li>
-          <li><a href="#">Kho Voucher</a></li>
-          <li><a href="#">Sản Phẩm Yêu Thích</a></li>
-          <li><a href="#">Đăng Xuất</a></li>
+          <li><a href="#" class="menu_item active" data-target="profile">Hồ Sơ</a></li>
+          <li><a href="#" class="menu_item" data-target="change_password">Đổi Mật Khẩu</a></li>
+          <li><a href="#" class="menu_item" data-target="orders">Đơn Mua</a></li>
+          <li><a href="#" class="menu_item" data-target="notifications">Thông Báo</a></li>
+          <li><a href="#" class="menu_item" data-target="vouchers">Kho Voucher</a></li>
+          <li><a href="#" class="menu_item" data-target="wishlist">Sản Phẩm Yêu Thích</a></li>
+          <li><a href="#" class="menu_item" data-target="logout">Đăng Xuất</a></li>
         </ul>
       </div>
       <div class="profile_main">
-        <h2>Hồ Sơ Của Tôi</h2>
-        <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
-        <form class="profile_form">
-          <div class="form_group">
-            <label for="username">Tên Đăng Nhập</label>
-            <input type="text" id="username" placeholder="Tên đăng nhập" />
-          </div>
-          <div class="form_group">
-            <label for="name">Tên</label>
-            <input type="text" id="name" placeholder="Tên" />
-          </div>
-          <div class="form_group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Email" />
-          </div>
-          <div class="form_group">
-            <label for="phone">Số Điện Thoại</label>
-            <input type="text" id="phone" placeholder="Số điện thoại" />
-          </div>
-          <div class="form_group">
-            <label>Giới Tính</label>
-            <div class="gender">
-              <input type="radio" name="gender" id="male" />
-              <label for="male">Nam</label>
-              <input type="radio" name="gender" id="female" />
-              <label for="female">Nữ</label>
-              <input type="radio" name="gender" id="other" />
-              <label for="other">Khác</label>
+        <!-- Form: Hồ Sơ -->
+        <div class="form_section" id="profile_form">
+          <h2>Hồ Sơ Của Tôi</h2>
+          <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+          <form class="profile_form">
+            <div class="form_group">
+              <label for="username">Tên Đăng Nhập</label>
+              <input type="text" id="username" placeholder="Tên đăng nhập" />
             </div>
-          </div>
-          <div class="form_group">
-            <label for="dob">Ngày Sinh</label>
-            <div class="birth_date">
-                <select id="day" name="day">
-                    <!-- Options for days -->
-                </select>
-                <select id="month" name="month">
-                    <!-- Options for months -->
-                </select>
-                <select id="year" name="year">
-                    <!-- Options for years -->
-                </select>
+            <div class="form_group">
+              <label for="name">Tên</label>
+              <input type="text" id="name" placeholder="Tên" />
             </div>
+            <div class="form_group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="Email" />
+            </div>
+            <div class="form_group">
+              <label for="phone">Số Điện Thoại</label>
+              <input type="text" id="phone" placeholder="Số điện thoại" />
+            </div>
+            <button class="button" type="submit">Lưu</button>
+          </form>
         </div>
-        
-          <h3>Thông tin nhận hàng</h3>
-          <div class="form_group">
-            <label for="city">Tỉnh/Thành Phố</label>
-            <select id="city">
-              <option>-- Chọn tỉnh --</option>
-              <option>Bình Định</option>
-              <option>Phú Yên</option>
-              <option>Khánh Hòa</option>
-            </select>
-          </div>
-          <div class="form_group">
-            <label for="district">Quận/Huyện</label>
-            <select id="district">
-              <option>-- Chọn Quận/huyện --</option>
-            </select>
-          </div>
-          <div class="form_group">
-            <label for="ward">Phường/Xã</label>
-            <select id="ward">
-              <option>-- Chọn Xã/Phường --</option>
-            </select>
-          </div>
-          <div class="form_group">
-            <label for="address">Địa Chỉ</label>
-            <input type="text" id="address" placeholder="Địa chỉ" />
-          </div>
-          <button class="button" type="submit">Lưu</button>
-        </form>
+
+        <!-- Form: Đổi Mật Khẩu -->
+        <div class="form_section" id="change_password_form" style="display: none;">
+          <h2>Đổi Mật Khẩu</h2>
+          <form>
+            <div class="form_group">
+              <label for="current_password">Mật Khẩu Hiện Tại</label>
+              <input type="password" id="current_password" placeholder="Nhập mật khẩu hiện tại" />
+            </div>
+            <div class="form_group">
+              <label for="new_password">Mật Khẩu Mới</label>
+              <input type="password" id="new_password" placeholder="Nhập mật khẩu mới" />
+            </div>
+            <div class="form_group">
+              <label for="confirm_password">Xác Nhận Mật Khẩu</label>
+              <input type="password" id="confirm_password" placeholder="Xác nhận mật khẩu mới" />
+            </div>
+            <button class="button" type="submit">Cập Nhật</button>
+          </form>
+        </div>
+
+        <!-- Form: Đơn Mua -->
+        <div class="form_section" id="orders_form" style="display: none;">
+          <h2>Đơn Mua</h2>
+          <p>Danh sách các đơn hàng bạn đã đặt.</p>
+          <!-- Nội dung đơn hàng -->
+        </div>
+
+        <!-- Form: Thông Báo -->
+        <div class="form_section" id="notifications_form" style="display: none;">
+          <h2>Thông Báo</h2>
+          <p>Danh sách các thông báo của bạn.</p>
+        </div>
+
+        <!-- Form: Kho Voucher -->
+        <div class="form_section" id="vouchers_form" style="display: none;">
+          <h2>Kho Voucher</h2>
+          <p>Danh sách các voucher của bạn.</p>
+        </div>
+
+        <!-- Form: Sản Phẩm Yêu Thích -->
+        <div class="form_section" id="wishlist_form" style="display: none;">
+          <h2>Sản Phẩm Yêu Thích</h2>
+          <p>Danh sách sản phẩm bạn yêu thích.</p>
+        </div>
+
+        <!-- Form: Đăng Xuất -->
+        <div class="form_section" id="logout_form" style="display: none;">
+          <h2>Đăng Xuất</h2>
+          <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+          <button class="button">Đăng Xuất</button>
+        </div>
       </div>
     </div>
 
-    <script src="profile-script.js"></script>
+    <script>
+      // JavaScript to switch between sections
+      const menuItems = document.querySelectorAll('.menu_item');
+      const forms = document.querySelectorAll('.form_section');
+
+      menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          // Remove active class from all menu items
+          menuItems.forEach(menu => menu.classList.remove('active'));
+          item.classList.add('active');
+
+          // Hide all forms
+          forms.forEach(form => form.style.display = 'none');
+
+          // Show the target form
+          const targetId = item.getAttribute('data-target') + '_form';
+          document.getElementById(targetId).style.display = 'block';
+        });
+      });
+    </script>
   </body>
 </html>
