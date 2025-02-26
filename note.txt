@@ -1,0 +1,10 @@
+--- Nếu lỗi module not found
+	chỉnh sửa file ---> package.json:
+ 	"scripts": {
+ 	 "dev": "node node_modules/vite/bin/vite.js",
+ 	 "build": "node node_modules/vite/bin/vite.js build",
+ 	 "preview": "node node_modules/vite/bin/vite.js preview"
+	},
+--- init project: npm create vite@latest --> react --> JS
+
+--- run project: npm run dev
