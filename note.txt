@@ -1,3 +1,11 @@
+====== Backend ======
+--> npm init -y
+--> npm install express dotenv cors axios mongoose jsonwebtoken bcryptjs
+
+
+====== Front-end ======
+
+
 --- Nếu lỗi module not found
 	chỉnh sửa file ---> package.json:
  	"scripts": {
