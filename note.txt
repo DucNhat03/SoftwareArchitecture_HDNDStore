@@ -4,6 +4,7 @@
 
 
 ====== Front-end ======
+--> npm install react-router-dom axios react-query tailwindcss
 
 
 --- Nếu lỗi module not found
