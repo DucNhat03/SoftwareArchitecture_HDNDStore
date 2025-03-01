@@ -1,0 +1,146 @@
+/* Tổng thể form */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f8f9fa;
+  font-family: "Poppins", sans-serif;
+  /* Font chữ */
+}
+
+/* Thẻ Card chứa Form */
+.auth-card {
+  width: 420px;
+  border-radius: 12px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.col-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  max-width: '100%';
+  width: '100%';
+}
+
+.auth-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Nút toggle Login/Register */
+.toggle-btn {
+  width: 48.5%;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #007bff;
+}
+
+.toggle-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+/* Đăng nhập với mạng xã hội */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.social-icon {
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, color 0.3s;
+}
+
+.social-icon:hover {
+  transform: scale(1.2);
+  color: #007bff;
+}
+
+/* Căn chỉnh icon eye trong ô mật khẩu */
+.eye-icon {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 10px;
+  transition: color 0.3s ease-in-out;
+}
+
+.eye-icon:hover {
+  color: #007bff;
+}
+
+/* Điều chỉnh Input Fields */
+input.form-control {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease-in-out;
+}
+
+input.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.3);
+}
+
+
+
+/* Input Fields */
+input.form-control {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease-in-out;
+}
+
+input.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.3);
+}
+
+/* Button Đăng nhập / Đăng ký */
+.login-btn,
+.register-btn,
+.reset-btn {
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 18px;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-btn:hover,
+.register-btn:hover,
+.reset-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Forgot Password */
+.forgot-link {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+/* Responsive */
+@media screen and (max-width: 480px) {
+  .auth-card {
+    width: 95%;
+  }
+}

@@ -1,0 +1,30 @@
+/* Container chính */
+.logout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  /* Card đăng xuất */
+  .logout-card {
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    text-align: center;
+  }
+  
+  /* Hình ảnh minh họa */
+  .logout-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  
+  /* Biểu tượng đăng xuất */
+  .logout-icon {
+    font-size: 20px;
+  }
+  

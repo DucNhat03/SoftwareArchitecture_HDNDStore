@@ -1,0 +1,49 @@
+/* Container của thông báo */
+.notifications-container {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  
+  /* Danh sách thông báo */
+  .notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .notification-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Biểu tượng chuông */
+  .notification-icon {
+    font-size: 20px;
+    color: #007bff;
+    margin-right: 10px;
+  }
+  
+  /* Nội dung thông báo */
+  .notification-content {
+    flex-grow: 1;
+  }
+  
+  /* Đánh dấu thông báo chưa đọc */
+  .unread {
+    font-weight: bold;
+    background-color: #eaf4ff;
+  }
+  
+  /* Nút xóa thông báo */
+  .delete-btn {
+    color: #ff4d4d;
+    font-size: 16px;
+  }
+  
+  .delete-btn:hover {
+    color: #cc0000;
+  }
+  
