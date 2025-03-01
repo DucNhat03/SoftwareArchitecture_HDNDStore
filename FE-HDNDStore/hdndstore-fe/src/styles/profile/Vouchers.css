@@ -1,0 +1,49 @@
+/* Container chính */
+.vouchers-container {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-top: -20px;
+  }
+  
+  /* Danh sách voucher */
+  .voucher-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .voucher-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Biểu tượng voucher */
+  .voucher-icon {
+    font-size: 22px;
+    color: #ff9800;
+    margin-right: 10px;
+  }
+  
+  /* Nội dung voucher */
+  .voucher-content {
+    flex-grow: 1;
+  }
+  
+  /* Đánh dấu voucher đã sử dụng */
+  .used {
+    opacity: 0.6;
+    text-decoration: line-through;
+  }
+  
+  /* Nút sao chép mã */
+  .copy-btn {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+  }
+  

@@ -1,0 +1,34 @@
+/* Container chính của đơn mua */
+.orders-container {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-top: -10px;
+  }
+  
+  /* Tabs đơn hàng */
+  .orders-tabs .nav-link {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    border: none;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+  
+  .orders-tabs .nav-link.active {
+    color: #ff4d4d;
+    border-bottom: 2px solid #ff4d4d;
+    font-weight: bold;
+  }
+  
+  .orders-tabs .nav-link:hover {
+    color: #ff4d4d;
+  }
+  
+  /* Ảnh khi không có đơn hàng */
+  .empty-orders-img {
+    width: 120px;
+    opacity: 0.7;
+  }
+  

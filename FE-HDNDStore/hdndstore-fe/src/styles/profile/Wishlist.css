@@ -1,0 +1,74 @@
+/* Container của Wishlist */
+.wishlist-container {
+    margin-top: -10px;
+  }
+  
+  /* Card của Wishlist */
+  .wishlist-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: none;
+    transition: transform 0.3s ease;
+  }
+  
+  .wishlist-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* Ảnh sản phẩm */
+  .wishlist-image {
+    position: relative;
+  }
+  
+  .wishlist-image img {
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  /* Biểu tượng yêu thích (trái tim) */
+  .wishlist-heart {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .wishlist-heart.active {
+    color: red;
+  }
+  
+  /* Màu sắc sản phẩm */
+  .color-options {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+  }
+  
+  /* Tiêu đề sản phẩm */
+  .wishlist-title {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Giá sản phẩm */
+  .wishlist-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff4d4d;
+  }
+  
