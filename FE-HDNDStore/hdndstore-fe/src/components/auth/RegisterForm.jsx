@@ -1,26 +1,93 @@
 import { useState } from "react";
-import { Form, Button, InputGroup } from "react-bootstrap";
-import { FaUser, FaPhone, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { Form, Button, InputGroup, Alert } from "react-bootstrap";
+import { FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 const RegisterForm = ({ switchMode }) => {
-  const [password, setPassword] = useState(""); // Trạng thái mật khẩu
-  const [confirmPassword, setConfirmPassword] = useState(""); // Trạng thái xác nhận mật khẩu
-  const [showPassword, setShowPassword] = useState(false); // Hiển thị mật khẩu
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Hiển thị xác nhận mật khẩu
+  const [formData, setFormData] = useState({
+    username: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Mật khẩu nhập lại không khớp!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5001/auth/register", {
+        email: formData.email, // Email
+        password: formData.password,
+        fullName: formData.fullName || "",
+        phone: formData.phone,
+        gender: formData.gender || "other",
+        birthday: {
+          day: formData.birthdayDay || "",
+          month: formData.birthdayMonth || "",
+          year: formData.birthdayYear || "",
+        },
+        address: {
+          city: formData.city || "",
+          district: formData.district || "",
+          ward: formData.ward || "",
+          street: formData.street || "",
+        },
+        avatar: "", // Nếu có upload ảnh, cần bổ sung upload sau này
+      });
+
+      setSuccess(response.data.message || "Đăng ký thành công!");
+      setTimeout(() => switchMode("login"), 2000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Lỗi đăng ký, vui lòng thử lại!");
+    }
+  };
+
 
   return (
-    <Form className="text-center">
-      {/* Ô nhập tên đăng nhập */}
+    <Form className="text-center" onSubmit={handleSubmit}>
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
+
+      {/* Ô nhập Email */}
       <InputGroup className="mb-3">
-        <InputGroup.Text><FaUser /></InputGroup.Text>
-        <Form.Control type="text" placeholder="Tên đăng nhập" required />
+        <InputGroup.Text><FaEnvelope /></InputGroup.Text>
+        <Form.Control
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          onChange={handleChange}
+        />
       </InputGroup>
 
       {/* Ô nhập số điện thoại */}
       <InputGroup className="mb-3">
         <InputGroup.Text><FaPhone /></InputGroup.Text>
-        <Form.Control type="tel" placeholder="Số điện thoại" required />
+        <Form.Control
+          type="tel"
+          placeholder="Số điện thoại"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+        />
       </InputGroup>
 
       {/* Ô nhập mật khẩu có icon eye */}
@@ -29,19 +96,18 @@ const RegisterForm = ({ switchMode }) => {
         <Form.Control
           type={showPassword ? "text" : "password"}
           placeholder="Mật khẩu"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
           required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
         />
-        {password && (
-          <Button
-            variant="outline-secondary"
-            className="eye-btn"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </Button>
-        )}
+        <Button
+          variant="outline-secondary"
+          className="eye-btn"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </Button>
       </InputGroup>
 
       {/* Ô nhập lại mật khẩu có icon eye */}
@@ -50,19 +116,18 @@ const RegisterForm = ({ switchMode }) => {
         <Form.Control
           type={showConfirmPassword ? "text" : "password"}
           placeholder="Nhắc lại mật khẩu"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
           required
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        {confirmPassword && (
-          <Button
-            variant="outline-secondary"
-            className="eye-btn"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-          </Button>
-        )}
+        <Button
+          variant="outline-secondary"
+          className="eye-btn"
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+        >
+          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+        </Button>
       </InputGroup>
 
       {/* Nút đăng ký */}

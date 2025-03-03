@@ -1,12 +1,15 @@
 import { Container, Button, Card, Form } from "react-bootstrap";
 import { FaSignOutAlt } from "react-icons/fa";
 import "../../styles/profile/Logout.css";
+import { useNavigate } from "react-router-dom"; 
 
 const Logout = () => {
+  const navigate = useNavigate(); 
+
   // Xử lý đăng xuất (ví dụ: xóa token, điều hướng)
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Xóa token (nếu có)
-    window.location.href = "#"; // Chuyển về trang đăng nhập
+    localStorage.removeItem("token"); // ✅ Xóa token khỏi localStorage
+    navigate("/auth"); // ✅ Chuyển về trang đăng nhập
   };
 
   return (

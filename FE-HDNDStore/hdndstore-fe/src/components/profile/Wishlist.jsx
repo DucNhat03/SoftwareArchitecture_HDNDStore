@@ -62,7 +62,7 @@ const Wishlist = () => {
       <Row>
         {wishlist.length > 0 ? (
           wishlist.map((item) => (
-            <Col md={4} key={item.id} className="mb-4">
+            <Col md={4} key={item.id} className="mb-3">
               <Card className="wishlist-card">
                 <div className="wishlist-image">
                   <Image src={item.image} fluid />
