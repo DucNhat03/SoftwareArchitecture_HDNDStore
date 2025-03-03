@@ -1,0 +1,12 @@
+.categoryWrapper {
+    padding-top: 70px;
+    background-color: #fff;
+}
+
+.card-description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 340px;
+    font-size: 15px;
+}
