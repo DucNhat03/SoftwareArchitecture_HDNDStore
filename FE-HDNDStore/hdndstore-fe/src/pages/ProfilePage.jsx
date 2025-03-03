@@ -31,7 +31,7 @@ const ProfilePage = () => {
       <Container className="mt-6 profile-container">
         {/* Thanh điều hướng (Breadcrumb) */}
         <Breadcrumb className="breadcrumb-custom">
-          <Breadcrumb.Item href="/">Trang chủ</Breadcrumb.Item>
+          <Breadcrumb.Item href="/home">Trang chủ</Breadcrumb.Item>
           <Breadcrumb.Item active>{breadcrumbTitles[activeSection]}</Breadcrumb.Item>
         </Breadcrumb>
 
