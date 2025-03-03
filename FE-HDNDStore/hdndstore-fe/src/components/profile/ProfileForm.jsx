@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Image } from "react-bootstrap";
 import api from "../../services/api"; // API helper
 import "../../styles/profile/Profile.css";
+import toastService from "../../utils/toastService.js";
 
 const ProfileForm = () => {
   const [user, setUser] = useState({
@@ -28,11 +29,16 @@ const ProfileForm = () => {
         }
 
         const response = await api.get("/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Đảm bảo token được gửi
+          headers: { Authorization: `Bearer ${token}` }, //Đảm bảo token được gửi
         });
 
         setUser(response.data);
-        setImage(response.data.avatar || null);
+        setImage(
+          response.data.avatar
+            ? `http://localhost:5001${response.data.avatar}`
+            : null
+        );
+        console.log(response.data.avatar);
       } catch (error) {
         console.error(
           "Lỗi khi lấy thông tin user:",
@@ -44,23 +50,37 @@ const ProfileForm = () => {
     fetchUserData();
   }, []);
 
-  const handleImageUpload = (e) => {
+  // Xử lý tải ảnh lên
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
 
-    if (file) {
-      const fileType = file.type;
-      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    const fileType = file.type;
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validTypes.includes(fileType)) {
+      toastService.error("Chỉ chấp nhận file ảnh JPEG, PNG, JPG.");
+      return;
+    }
 
-      if (!validTypes.includes(fileType)) {
-        alert("Chỉ chấp nhận file ảnh JPEG, PNG, JPG.");
-        return;
-      }
+    const formData = new FormData();
+    formData.append("avatar", file);
 
-      const objectURL = URL.createObjectURL(file);
-      setImage(objectURL);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post("/auth/upload-avatar", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setImage(`http://localhost:5001${response.data.avatar}`);
+      toastService.success("Cập nhật avatar thành công!");
+    } catch (error) {
+      console.error("Lỗi khi tải ảnh lên:", error.response?.data || error);
+      toastService.error("Lỗi khi cập nhật avatar!");
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -102,9 +122,13 @@ const ProfileForm = () => {
       await api.put("/auth/profile", user, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert("Cập nhật hồ sơ thành công!");
+      {
+        /*alert("Cập nhật hồ sơ thành công!");*/
+      }
+      toastService.info("Cập nhật hồ sơ thành công");
     } catch (error) {
       console.error("Lỗi khi cập nhật hồ sơ:", error);
+      toastService.warning("Lỗi khi cập nhật hồ sơ");
     }
   };
 

@@ -23,9 +23,10 @@ const LoginForm = ({ switchMode }) => {
     try {
       const response = await api.post("/auth/login", formData);
       localStorage.setItem("token", response.data.token); // Lưu token vào localStorage
-      toastService.success("Đăng nhập thành công!"); 
+      toastService.success("Đăng nhập thành công!");
       setTimeout(() => navigate("/profile"), 2000); // Chuyển hướng sau khi hiển thị toast
     } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
       toastService.error(error.response?.data?.error || "Lỗi đăng nhập!");
     }
   };
@@ -33,10 +34,11 @@ const LoginForm = ({ switchMode }) => {
   return (
     <Form className="text-center" onSubmit={handleSubmit}>
       {error && <p className="text-danger">{error}</p>} {/* Hiển thị lỗi */}
-
       {/* Ô nhập email */}
       <InputGroup className="mb-3">
-        <InputGroup.Text><FaEnvelope /></InputGroup.Text>
+        <InputGroup.Text>
+          <FaEnvelope />
+        </InputGroup.Text>
         <Form.Control
           type="email"
           name="email"
@@ -45,10 +47,11 @@ const LoginForm = ({ switchMode }) => {
           onChange={handleChange}
         />
       </InputGroup>
-
       {/* Ô nhập mật khẩu có icon mắt */}
       <InputGroup className="mb-3">
-        <InputGroup.Text><FaLock /></InputGroup.Text>
+        <InputGroup.Text>
+          <FaLock />
+        </InputGroup.Text>
         <Form.Control
           type={showPassword ? "text" : "password"}
           name="password"
@@ -65,23 +68,27 @@ const LoginForm = ({ switchMode }) => {
           {showPassword ? <FaEyeSlash /> : <FaEye />}
         </Button>
       </InputGroup>
-
       {/* Ghi nhớ mật khẩu & quên mật khẩu */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <Form.Check type="checkbox" label="Ghi nhớ mật khẩu" />
-        <Button variant="link" className="forgot-link" onClick={() => switchMode("forgot")}>
+        <Button
+          variant="link"
+          className="forgot-link"
+          onClick={() => switchMode("forgot")}
+        >
           Quên mật khẩu?
         </Button>
       </div>
-
       {/* Nút đăng nhập */}
       <Button variant="primary" className="w-100 login-btn" type="submit">
         Đăng nhập
       </Button>
-
       {/* Chuyển sang đăng ký */}
       <p className="mt-3 d-flex justify-content-center align-items-center">
-        Chưa có tài khoản? <Button variant="link" onClick={() => switchMode("register")}>Đăng ký</Button>
+        Chưa có tài khoản?{" "}
+        <Button variant="link" onClick={() => switchMode("register")}>
+          Đăng ký
+        </Button>
       </p>
     </Form>
   );
