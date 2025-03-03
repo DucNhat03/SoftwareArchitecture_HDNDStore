@@ -1,6 +1,7 @@
 /* Container của Wishlist */
 .wishlist-container {
-    margin-top: -10px;
+    padding: 20px;
+    margin-top: 10px;
   }
   
   /* Card của Wishlist */
@@ -10,6 +11,9 @@
     overflow: hidden;
     border: none;
     transition: transform 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 35px;
   }
   
   .wishlist-card:hover {

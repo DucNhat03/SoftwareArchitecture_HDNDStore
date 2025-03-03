@@ -1,18 +1,48 @@
 import { useState } from "react";
 import { Form, Button, InputGroup } from "react-bootstrap";
-import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import PropTypes from "prop-types";
+import api from "../../services/api"; // Gọi API đăng nhập
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ switchMode }) => {
-  const [password, setPassword] = useState(""); // Lưu trạng thái mật khẩu
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
+  const [error, setError] = useState(""); // Lưu lỗi đăng nhập
+  const navigate = useNavigate();
+
+  // Xử lý thay đổi input
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Xử lý submit form đăng nhập
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post("/auth/login", formData);
+      localStorage.setItem("token", response.data.token); // Lưu token vào localStorage
+      alert("Đăng nhập thành công!");
+      navigate("/profile"); // Chuyển hướng sang trang hồ sơ
+    } catch (error) {
+      setError(error.response?.data?.error || "Lỗi đăng nhập!");
+    }
+  };
 
   return (
-    <Form className="text-center">
-      {/* Ô nhập tên đăng nhập */}
+    <Form className="text-center" onSubmit={handleSubmit}>
+      {error && <p className="text-danger">{error}</p>} {/* Hiển thị lỗi */}
+
+      {/* Ô nhập email */}
       <InputGroup className="mb-3">
-        <InputGroup.Text><FaUser /></InputGroup.Text>
-        <Form.Control type="email" placeholder="Tên đăng nhập" required />
+        <InputGroup.Text><FaEnvelope /></InputGroup.Text>
+        <Form.Control
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          onChange={handleChange}
+        />
       </InputGroup>
 
       {/* Ô nhập mật khẩu có icon mắt */}
@@ -20,21 +50,19 @@ const LoginForm = ({ switchMode }) => {
         <InputGroup.Text><FaLock /></InputGroup.Text>
         <Form.Control
           type={showPassword ? "text" : "password"}
+          name="password"
           placeholder="Mật khẩu"
           required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
         />
-        {/* Hiển thị icon eye nếu có nhập mật khẩu */}
-        {password && (
-          <Button
-            variant="outline-secondary"
-            className="eye-btn"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </Button>
-        )}
+        <Button
+          variant="outline-secondary"
+          className="eye-btn"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </Button>
       </InputGroup>
 
       {/* Ghi nhớ mật khẩu & quên mật khẩu */}

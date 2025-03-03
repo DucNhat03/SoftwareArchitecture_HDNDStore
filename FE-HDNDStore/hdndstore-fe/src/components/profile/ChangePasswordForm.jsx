@@ -20,7 +20,14 @@ const ChangePasswordForm = () => {
       [field]: !prevState[field],
     }));
   };
-
+    //   
+  const handleForgotPassword = () => {
+    alert("Quên mật khẩu");
+  }
+    //   
+  const handleResetPassword = () => {
+    alert("OK, Đổi mật khẩu!")
+  }
   return (
     <div className="card p-5">
       <h4 className="mb-3">Đổi Mật Khẩu</h4>
@@ -35,7 +42,7 @@ const ChangePasswordForm = () => {
           <Form.Label column sm={4}>
             Mật Khẩu Hiện Tại
           </Form.Label>
-          <Col sm={6}>
+          <Col sm={5}>
             <InputGroup>
               <InputGroup.Text>
                 <FaLock />
@@ -54,8 +61,8 @@ const ChangePasswordForm = () => {
               </Button>
             </InputGroup>
           </Col>
-          <Col sm={2} className="text-end">
-            <Button variant="link" className="forgot-link">
+          <Col sm={3} className="text-end">
+            <Button variant="link" className="forgot-link" onClick={() => {handleForgotPassword()}}>
               Quên mật khẩu?
             </Button>
           </Col>
@@ -66,7 +73,7 @@ const ChangePasswordForm = () => {
           <Form.Label column sm={4}>
             Mật Khẩu Mới
           </Form.Label>
-          <Col sm={6}>
+          <Col sm={5}>
             <InputGroup>
               <InputGroup.Text>
                 <FaLock />
@@ -92,7 +99,7 @@ const ChangePasswordForm = () => {
           <Form.Label column sm={4}>
             Xác Nhận Mật Khẩu
           </Form.Label>
-          <Col sm={6}>
+          <Col sm={5}>
             <InputGroup>
               <InputGroup.Text>
                 <FaLock />
@@ -117,8 +124,8 @@ const ChangePasswordForm = () => {
           as={Row}
           className="mb-4 d-flex justify-content-center align-items-center"
         >
-          <Col sm={8} className="text-end">
-            <Button variant="danger" className="mt-2">
+          <Col sm={6} className="text-end">
+            <Button variant="danger" className="mt-4" onClick={() => {handleResetPassword()}}>
               Xác Nhận
             </Button>
           </Col>

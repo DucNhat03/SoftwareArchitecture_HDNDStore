@@ -7,6 +7,9 @@ const vouchers = [
   { id: 1, code: "SALE10", discount: "Giảm 10%", expiry: "31/03/2025", used: false },
   { id: 2, code: "FREESHIP", discount: "Miễn phí vận chuyển", expiry: "15/04/2025", used: false },
   { id: 3, code: "VIP20", discount: "Giảm 20% cho khách VIP", expiry: "30/06/2025", used: true },
+  { id: 4, code: "SALE10", discount: "Giảm 10%", expiry: "31/03/2025", used: true },
+  { id: 5, code: "FREESHIP", discount: "Miễn phí vận chuyển", expiry: "15/04/2025", used: false },
+  { id: 6, code: "VIP20", discount: "Giảm 20% cho khách VIP", expiry: "30/06/2025", used: false },
 ];
 
 const Vouchers = () => {
@@ -16,7 +19,7 @@ const Vouchers = () => {
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedVoucher(code);
-    setTimeout(() => setCopiedVoucher(null), 2000);
+    setTimeout(() => setCopiedVoucher(null), 2500);
   };
 
   return (
