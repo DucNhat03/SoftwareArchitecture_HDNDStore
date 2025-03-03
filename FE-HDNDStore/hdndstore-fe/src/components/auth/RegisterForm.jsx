@@ -3,10 +3,12 @@ import { Form, Button, InputGroup, Alert } from "react-bootstrap";
 import { FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import PropTypes from "prop-types";
 import axios from "axios";
+import toastService from "../../utils/toastService";
+
 
 const RegisterForm = ({ switchMode }) => {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -49,13 +51,15 @@ const RegisterForm = ({ switchMode }) => {
           ward: formData.ward || "",
           street: formData.street || "",
         },
-        avatar: "", // Nếu có upload ảnh, cần bổ sung upload sau này
+        avatar: "", // upload ảnh
       });
 
-      setSuccess(response.data.message || "Đăng ký thành công!");
+      {/*setSuccess(response.data.message || "Đăng ký thành công!"); */}
+      toastService.success(response.data.message || "Đăng ký thành công!");
       setTimeout(() => switchMode("login"), 2000);
     } catch (err) {
-      setError(err.response?.data?.error || "Lỗi đăng ký, vui lòng thử lại!");
+      {/*setError(err.response?.data?.error || "Lỗi đăng ký, vui lòng thử lại!");*/}
+      toastService.error(err.response?.data?.error || "Lỗi đăng ký, vui lòng thử lại!");
     }
   };
 

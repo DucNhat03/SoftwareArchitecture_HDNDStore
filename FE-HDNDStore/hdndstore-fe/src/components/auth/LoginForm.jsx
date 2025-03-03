@@ -4,6 +4,7 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import PropTypes from "prop-types";
 import api from "../../services/api"; // Gọi API đăng nhập
 import { useNavigate } from "react-router-dom";
+import toastService from "../../utils/toastService";
 
 const LoginForm = ({ switchMode }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -22,10 +23,10 @@ const LoginForm = ({ switchMode }) => {
     try {
       const response = await api.post("/auth/login", formData);
       localStorage.setItem("token", response.data.token); // Lưu token vào localStorage
-      alert("Đăng nhập thành công!");
-      navigate("/profile"); // Chuyển hướng sang trang hồ sơ
+      toastService.success("Đăng nhập thành công!"); 
+      setTimeout(() => navigate("/profile"), 2000); // Chuyển hướng sau khi hiển thị toast
     } catch (error) {
-      setError(error.response?.data?.error || "Lỗi đăng nhập!");
+      toastService.error(error.response?.data?.error || "Lỗi đăng nhập!");
     }
   };
 
