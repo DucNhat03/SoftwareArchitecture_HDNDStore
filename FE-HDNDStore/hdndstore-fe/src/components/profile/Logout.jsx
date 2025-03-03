@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 const Logout = () => {
   const navigate = useNavigate(); 
 
-  // Xử lý đăng xuất (ví dụ: xóa token, điều hướng)
+  // Xử lý đăng xuất (xóa token, điều hướng)
   const handleLogout = () => {
-    localStorage.removeItem("token"); // ✅ Xóa token khỏi localStorage
-    navigate("/auth"); // ✅ Chuyển về trang đăng nhập
+    localStorage.removeItem("token"); // Xóa token khỏi localStorage
+    navigate("/auth"); 
   };
 
   return (
