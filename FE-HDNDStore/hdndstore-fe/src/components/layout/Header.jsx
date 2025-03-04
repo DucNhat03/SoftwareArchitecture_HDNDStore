@@ -11,6 +11,8 @@ const Header = () => {
   const navigate = useNavigate();
 
 
+
+
   // Cập nhật trạng thái khi resize màn hình
   useEffect(() => {
     const handleResize = () => {
@@ -82,7 +84,7 @@ const Header = () => {
             <FaUser />
           </button>
 
-          <div className="cart_box">
+          <div className="cart_box" onClick={() => navigate("/cart")} style={{ cursor: "pointer" }}>
             <FaShoppingCart />
             <div className="cart_count">1</div>
           </div>

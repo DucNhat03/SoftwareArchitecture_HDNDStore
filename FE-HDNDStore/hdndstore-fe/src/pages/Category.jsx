@@ -52,7 +52,7 @@ const ProductCard = ({ product }) => {
     return (
         <div className="col-sm-3 sale-product">
             <div className="product-card card">
-                <a href="#">
+                <a href="/chi-tiet-san-pham">
                     <img className="product-img card-img-top" src={product.image} alt={product.name} />
                     <div className="card-body">
                         <p className="card-title my-1 p-0 card-description">{product.name} - {product.description}</p>

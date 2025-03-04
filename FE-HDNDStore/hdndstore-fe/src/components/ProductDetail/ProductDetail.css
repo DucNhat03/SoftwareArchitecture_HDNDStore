@@ -1,0 +1,1115 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.container{
+   
+    width: 100%;
+    margin: 0 auto;
+    min-height: 100vh;
+
+  
+}
+
+.breadcum a{
+    text-decoration: none;
+    color: #000;
+}
+.breadcum a:hover{
+    color: #f00;
+}
+
+
+
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2rem;
+}
+.container-san-pham{
+  
+    min-height: 200vh;
+}
+.slide-container-chi-tiet{
+    align-items: center;
+    padding: 30px 150px;
+}
+.container-hinh-san-pham{
+    display: flex;
+    justify-content: center;
+    
+}
+.hinh-san-pham{
+    flex-basis: 40%;
+   
+    
+}
+.thong-tin-san-pham{
+    flex-basis: 60%;
+    background-color: #ffff
+    
+}
+.thum-san-pham {
+    /* position: relative; */
+    width: 650px;
+
+}
+.hinh-main{
+    padding: 0 20px;
+}
+.hinh-main img{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+.swiper-wrapper-chi-tiet{
+    max-width: 1200px;
+    max-height: 150px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+}
+.swiper-wrapper-chi-tiet img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-left: 5px;
+    
+}
+.slide-container-chi-tiet{
+
+   align-items: center;
+   padding: 15px 10px;
+   
+
+}
+.slick-slide {
+    margin: 0 5px !important;
+    padding: 0 !important;
+}
+.slick-track {
+    padding: 0 !important; /* Reset padding of the carousel track */
+}
+
+.image-box-small img {
+    width: 84px;
+    height: 84px;
+    border: 1px solid #928787;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.main-name {
+    font-weight: 600;
+    
+    font-size: 20px; /* Kích thước chữ nhỏ hơn trong span */
+    font-family: Arial, sans-serif; /* Font chữ */
+    
+}
+.review-sanpham{
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+
+}
+
+.review-sanpham span{
+    margin-left: 15px;
+}
+.so-luong-rate span{
+    margin-left: 10px;
+}
+.gia-san-pham{
+    padding: 15px 15px;
+}
+.gia-san-pham p{
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.so-kich-thuoc{
+   margin-left: 20px;
+   
+}
+.so-kich-thuoc span {
+   
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: 2px solid transparent; /* Đặt border mặc định là trong suốt */
+    border-radius: 5px; /* Làm cho border có góc bo tròn */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+    transition: border-color 0.3s; /* Thêm hiệu ứng chuyển màu border khi chọn */
+    
+}
+.so-kich-thuoc span:hover,
+.so-kich-thuoc span.selected {
+    border-color: red; /* Màu border khi hover hoặc chọn */
+    background-color: rgba(0, 123, 255, 0.1); /* Màu nền nhạt hơn để làm nổi bật */
+}
+.kich-thuoc{
+  font-size: 14px;
+   white-space: nowrap
+   
+}
+.mau-sac{
+   font-size: 14px;
+  
+}
+.mau-sac-san-pham{
+   
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+
+.so-mau-sac {
+    display: flex;
+    margin-left: 40px;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các màu */
+}
+
+.mau-sac-item {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Tạo hình tròn cho các màu */
+    border: 2px solid transparent; /* Đặt border mặc định là trong suốt */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+    transition: border-color 0.3s, transform 0.3s; /* Thêm hiệu ứng chuyển màu border và hiệu ứng phóng to khi chọn */
+    display: inline-block;
+}
+
+.mau-sac-item:hover {
+    border-color: red; /* Màu border khi hover */
+    transform: scale(1.1); /* Phóng to nhẹ khi hover */
+}
+
+.mau-sac-item.selected {
+    border-color: red; /* Màu border khi chọn */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Đổ bóng để làm nổi bật phần tử được chọn */
+}
+.title-short{
+    display: flex;
+    padding: 10px 20px;
+    align-items: center;
+}
+.title-short p{
+    margin-left: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+.short-des{
+    padding: 10px 10px;
+    min-height: auto;
+    border: 2px solid #EBEBEB;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    margin-left: 30px;
+    
+}
+
+.thoi-gian-km a{
+    text-decoration: none;
+    font-weight: 600;
+    color: #000;
+}
+.thoi-gian-km span{
+    padding: 10px 30px;
+   font-size: 12px;
+}
+.list-uu-dai p{
+    padding: 10px 10px;
+    font-weight: 600;
+    color: red;
+    
+}
+.giam-gia{
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    
+}
+.giam-gia p{
+    color: #000;
+    font-size: 14px;
+    font-weight: normal;
+}
+.giam-gia img{
+    width: 17px;
+    height: 17px;
+}
+
+.btn-mua-ngay a{
+     display: inline-block; /* Đảm bảo nút không bị lỗi kích thước */
+    text-decoration: none;
+    border: 2px solid #f00; /* Viền màu đỏ */
+    padding: 10px 15px !important; /* Điều chỉnh padding hợp lý */
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    background-color: #f00; /* Nền màu đỏ */
+    border-radius: 5px; /* Bo góc đẹp hơn */
+    transition: all 0.3s ease-in-out;
+    margin-left: 20px;
+    white-space: nowrap;
+  
+}
+.btn-mua-ngay a:hover{
+    background-color: rgb(83, 0, 0);
+   
+   
+}
+
+/* Định dạng chung cho nút Previous và Next */
+.slick-prev, .slick-next {
+    position: absolute; /* Đặt vị trí tuyệt đối để điều chỉnh */
+    top: 50%; /* Canh giữa chiều dọc */
+    transform: translateY(-50%); /* Giúp nút luôn ở chính giữa */
+    background-color: #fff; /* Màu nền */
+    border: 2px solid #ddd; /* Viền */
+    border-radius: 50%; /* Biến thành hình tròn */
+    width: 40px; /* Kích thước nút */
+    height: 40px; /* Kích thước nút */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333; /* Màu icon */
+    font-size: 20px; /* Kích thước icon */
+    z-index: 1000; /* Đảm bảo nút nằm trên slider */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Nút Previous (bên trái) */
+.slick-prev {
+    left: -50px; /* Điều chỉnh khoảng cách bên trái slider */
+}
+
+/* Nút Next (bên phải) */
+.slick-next {
+    right: -50px; /* Điều chỉnh khoảng cách bên phải slider */
+}
+
+/* Hiệu ứng khi hover */
+.slick-prev:hover, .slick-next:hover {
+    background-color: #007bff; /* Đổi màu nền khi hover */
+    color: #fff; /* Đổi màu icon khi hover */
+    border-color: #007bff; /* Đổi màu viền khi hover */
+}
+.huong-dan-chon-size {
+    display: flex;
+  
+    align-items: center;
+    margin-top: 20px;
+}
+
+.chon-size {
+    padding: 12px 24px;
+    background-color: #ff0000; /* Màu cam nổi bật */
+    color: #fff; /* Chữ màu trắng */
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase; /* Viết hoa chữ */
+    border: none;
+    border-radius: 8px; /* Bo góc */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hiệu ứng hover */
+.chon-size:hover {
+    background-color: #e03e00; /* Màu đậm hơn khi hover */
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Hiệu ứng khi bấm vào */
+.chon-size:active {
+    transform: scale(0.95); /* Nhấn vào thì thu nhỏ nhẹ */
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Ẩn modal mặc định */
+.modal {
+    display: block !important; /* Chắc chắn modal hiển thị */
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+/* Nội dung modal */
+.modal-content {
+    background-color: #fff !important;
+    margin: 10% auto !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    width: 60% !important;
+    text-align: center !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+    position: relative !important;
+    top: -80px !important;
+}
+
+/* Nút đóng */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+}
+.dong-modal {
+    background-color: #b6bbc2 !important;
+    color: white !important;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    position: absolute !important;
+    bottom: 15px !important;
+    right: 15px !important;
+    padding: 5px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dong-modal:hover
+{
+    background-color: red !important;
+}
+
+/* Nội dung modal showroom*/
+/* Ẩn modal mặc định */
+.modal1 {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content1 {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 60%;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    top: -80px;
+  
+}
+
+/* Nút đóng */
+.close1 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close1:hover,
+.close1:focus {
+    color: red;
+}
+/* end modal showroom  */
+.huong-dan{
+   
+    padding: 10px 20px;
+    border: 2px solid #EBEBEB;
+    border-radius: 10px;
+    margin-left: 10px;
+}
+/* Định dạng bảng */
+.size-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.size-table th, .size-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.size-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.size-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.size-table tr:hover {
+    background-color: #f1f1f1;
+}
+.btn-tim-san-pham{
+    
+   
+    text-decoration: none ;
+    border: 1px solid #f00;
+    padding: 10px 55px;
+    color: #f00;
+}
+.btn-tim-san-pham:hover{
+    background-color: #f00;
+    color: #fff;
+}
+.mua{
+    display: flex;
+    flex-direction: row;
+    margin-top: 30px;
+    margin-left: -20px;
+}
+.btn-them-vao-gio-hang{
+    margin-left: 20px;
+    margin-top: 10px;
+}
+.btn-them-vao-gio-hang a{
+    white-space: nowrap;
+    
+    border: 1px solid #f00;
+    padding: 10px 25px;
+    color: #f00;
+    text-decoration: none;
+}
+.btn-them-vao-gio-hang a:hover{
+    background-color: #f00;
+    color: #fff;
+}
+.loi-ich-mua-hang{
+   
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+     align-items: center;
+}
+.loi-ich-mua-hang img{
+    width: 30px;
+    height: 30px;
+    margin-left: 25px;
+    margin-bottom: 10px;
+    
+}
+.loi-ich-mua-hang span{
+    font-size: 12px;
+    
+}
+.loi-ich-1{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   
+    
+    
+}
+.loi-ich-1 span{
+     margin-left: 20px;
+}
+.loi-ich-1 img{
+    margin-top: 20px;
+    margin-left: 20px;
+}
+.hinh-san-pham-da-chon img{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+.thong-tin-san-pham-da-chon{
+    display: flex;
+
+}
+.thong-tin-san-pham-chi-tiet{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+.gia-san-pham-da-chon{
+    
+    margin-left: -155px;
+}
+.kich-thuoc-san-pham {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+}
+.kich-thuoc-san-pham-chi-tiet{
+    margin-left: -250px;
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    margin-bottom: 20px; /* Khoảng cách bên dưới */
+    margin-top: 30px;
+    
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap; /* Đảm bảo nhãn không bị xuống dòng */
+}
+
+select {
+    padding: 5px 60px; /* Tăng khoảng cách bên trong */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* Bo góc */
+    outline: none;
+    min-width: 200px; /* Đặt chiều rộng tối thiểu */
+}
+
+select:disabled {
+    background-color: #f2f2f2;
+    cursor: not-allowed;
+}
+.thoi-gian-hoat-dong{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    align-items: flex-start;
+}
+.thoi-gian-hoat-dong span{
+    font-size: 14px;
+}
+.dia-chi-cua-hang{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    align-items: flex-start;
+}
+.dia-chi{
+    font-weight: bold;
+    font-size: 14px;
+}
+.tinh-trang-cua-hang{
+    margin-top: 5px;
+    display: flex;
+    align-items: flex-start;
+}
+.ket-qua-tinh-trang-con-hang{
+    
+    color: green;
+     margin-left: 5px;
+}
+.ket-qua-tinh-trang-het-hang {
+    margin-left: 5px;
+     color: red;
+}
+.mau-sac-san-pham-chi-tiet{
+    margin-left: -50px;
+}
+
+/* Căn chỉnh và ẩn modal ban đầu */
+.cart-modal {
+    display: none; /* Ẩn modal */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+
+
+
+
+
+/* Modal cho giỏ hàng */
+.product-info {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+.product-info .details span{
+    font-size: 14px;
+}
+
+.product-info img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.product-info .details {
+    flex-grow: 1;
+}
+
+
+
+.product-info .details p {
+    font-weight: bold;
+    margin: 5px 0;
+    font-size: 14px;
+   
+}
+
+.product-info .details label {
+    margin-right: 10px;
+}
+
+.product-info .details input {
+    width: 60px;
+    padding: 5px;
+}
+
+/* Tổng giá */
+.total {
+    margin-top: 30px;
+    font-size: 16px;
+    color: green;
+    margin-bottom: 30px;
+}
+
+/* Nút xác nhận thêm vào giỏ hàng */
+.btn-add-to-cart {
+    
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    text-decoration: none;
+     border-radius: 5px;
+
+}
+
+
+/* Hiệu ứng khi rê chuột qua nút */
+.btn-add-to-cart:hover {
+    background-color: #218838;
+    
+}
+.so-luong-sp-gio-hang{
+    display: flex;
+   align-items: flex-start;
+    margin-top: 10px;
+    
+}
+.so-luong-sp-gio-hang{
+
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+
+
+.modal-contentgiohang {
+    right: 0;
+    top: -145px;
+    position: fixed;
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 350px;
+    height: 100%;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%); /* Ban đầu modal nằm ngoài màn hình */
+    animation: slideIn 0.4s ease forwards; /* Hiệu ứng trượt vào */
+}
+
+.modal-overlaygiohang {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  display: flex;
+  justify-content: flex-end; /* Modal xuất hiện từ bên phải */
+  align-items: center;
+  z-index: 1000;
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+/* Nút đóng */
+.close2 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close2:hover,
+.close2:focus {
+    color: red;
+}
+
+/* Định dạng bảng chi tiết sản phẩm*/
+.size-table-chi-tiet {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.size-table-chi-tiet th, .size-table-chi-tiet td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    
+}
+
+.size-table-chi-tiet th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: left;
+}
+
+.size-table-chi-tiet tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.size-table-chi-tiet tr:hover {
+    background-color: #f1f1f1;
+}
+.chi-tiet-san-pham {
+    display: flex;
+    justify-content: center; /* Căn giữa bảng nếu cần */
+}
+
+.size-table-chi-tiet {
+    width: 100%;
+    border-collapse: collapse; /* Giúp các ô bảng không bị giãn cách */
+}
+
+.size-table-chi-tiet th,
+.size-table-chi-tiet td {
+    text-align: left; /* Căn trái nội dung */
+    padding: 10px; /* Thêm khoảng cách để dễ đọc */
+}
+
+.mo-ta {
+    text-align: left; /* Căn trái toàn bộ mô tả */
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.mo-ta ul {
+    padding-left: 20px; /* Giữ lại khoảng cách danh sách để dễ đọc */
+    list-style-position: inside; /* Giúp bullet của danh sách gần với text hơn */
+}
+
+.mo-ta h4 {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.co-the-ban-cung-thich-item .image-box img{
+    width: 100%;
+    height: 280px; /* Đặt chiều cao cố định */
+    overflow: hidden;
+}
+.co-the-ban-cung-thich-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 20px !important;
+}
+.thong-tin-san-pham-xem-them{
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.gia-san-pham{
+    font-weight: bold;
+    color: red;
+    font-size: 20px;
+    margin-left: -15px;
+
+}
+.gia-san-pham span{
+    font-size: 30px;
+}
+.ten-san-pham{
+    white-space: nowrap;
+}
+.card {
+    margin-left: 15px;
+    width: 280px; /* Đảm bảo kích thước cố định */
+    overflow: hidden; /* Ngăn ảnh bị tràn ra ngoài */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+.co-the-ban-cung-thich-item .card:first-child {
+    margin-left: 0; /* Loại bỏ margin-left cho thẻ card đầu tiên */
+}
+.co-the-ban-cung-thich-item .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng mượt khi hover */
+    border: 2px solid transparent; /* Viền mặc định trong suốt */
+}
+
+.co-the-ban-cung-thich-item .card:hover {
+    transform: scale(1.05); /* Tăng kích thước thẻ */
+    border: 2px solid red; /* Viền màu vàng sẫm */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Hiệu ứng sáng */
+}
+.thong-tin-lien-he{
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    
+}
+.thong-tin-lien-he-item p{
+    margin-top: 10px;
+    
+}
+.thong-tin-lien-he-item-1{
+    margin-top: 20px;
+    font-size: 15px;
+}
+.thong-tin-lien-he-item-2{
+    font-size: 20px;
+    font-weight: bold;
+}
+.thong-tin-lien-he-item-3{
+    font-size: 12px;
+
+}
+.thong-tin-lien-he-item-tt ul li {
+    
+    margin-top: 20px;
+    font-size: 14px;
+}
+.thong-tin-lien-he-item-tt ul li a {
+    
+    color: #000;
+    text-decoration: none;
+} 
+
+.thong-tin-lien-he-item-faq ul li a {
+    color: #000;
+    text-decoration: none;
+} 
+.thong-tin-lien-he-item-faq ul li {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.thong-tin-lien-he-item-tt ul li a:hover {
+   
+    color: red;
+}
+.thong-tin-lien-he-item-faq ul li a:hover {
+    color: red;
+}
+
+.footer img, .header img {
+    width: 100%;
+}
+.location{
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.ten-giatien{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    margin-left: -80px;
+    margin-bottom: 10px;
+}
+
+/* Slick slide  */
+.slick-prev,
+.slick-next {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(152, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    top: 25% !important;
+}
+
+.slick-prev::before,
+.slick-next::before {
+    font-size: 24px;
+    color: white;
+}
+
+.slick-prev {
+    left: -50px;
+}
+
+.slick-next {
+    right: -50px;
+}
+
+/* Mobile: màn hình nhỏ hơn 768px */
+/* Mặc định cho tất cả điện thoại */
+@media (max-width: 767px) {
+    .container {
+        padding: 0 10px;
+        max-width: 100%;
+    }
+
+    .slide-container-chi-tiet {
+        padding: 10px;
+    }
+
+    .container-hinh-san-pham {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hinh-san-pham,
+    .thong-tin-san-pham {
+        width: 100%;
+        text-align: center;
+    }
+
+    .thum-san-pham {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .hinh-main img {
+        max-width: 100%;
+        height: auto;
+        max-height: 280px;
+    }
+
+    .swiper-wrapper-chi-tiet {
+        max-width: 100%;
+        overflow-x: auto;
+        display: flex;
+        justify-content: flex-start;
+        gap: 5px;
+    }
+
+    .image-box-small img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .so-kich-thuoc span {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .mau-sac-item {
+        width: 26px;
+        height: 26px;
+    }
+
+ 
+
+    .slick-prev, .slick-next {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .slick-prev {
+        left: -20px;
+    }
+
+    .slick-next {
+        right: -20px;
+    }
+}
+
+/* Tối ưu cho iPhone 14 Pro Max (màn hình lớn hơn) */
+@media (max-width: 430px) {
+    .hinh-main img {
+        max-height: 320px;
+    }
+
+    .image-box-small img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .swiper-wrapper-chi-tiet {
+        justify-content: center;
+    }
+
+    .so-kich-thuoc span {
+        font-size: 16px;
+        padding: 8px 12px;
+    }
+
+ 
+
+    .mau-sac-item {
+        width: 30px;
+        height: 30px;
+    }
+
+    .slick-prev, .slick-next {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+}
+
+

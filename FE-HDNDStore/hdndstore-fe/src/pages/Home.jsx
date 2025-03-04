@@ -6,6 +6,9 @@ import "../styles/profile/Home.css";
 import "../script.js";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 const products = [
     {
@@ -35,8 +38,9 @@ const products = [
 ];
 
 const ProductCard = ({ img, title, price }) => {
+    const navigate = useNavigate();
     return (
-        <div className="product-card m-0 card p-0">
+        <div className="product-card m-0 card p-0" onClick={() => navigate(`/chi-tiet-san-pham`)} style={{ cursor: "pointer" }}>
             <a href="#">
                 <img className="product-img card-img-top" src={img} alt={title} />
                 <div className="card-body">
