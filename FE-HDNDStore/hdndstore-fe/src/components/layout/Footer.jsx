@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="footer bg-dark text-light text-center py-3">
         <p>© 2021 React-Bootstrap E-commerce</p>
-        <p>Thank for watching!!</p>
+      <p>Thank for watching!!</p>
     </footer>
   );
 };

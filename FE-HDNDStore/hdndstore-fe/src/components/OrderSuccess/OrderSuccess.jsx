@@ -1,18 +1,17 @@
-import "../ProductDetail/ProductDetail.css";
-import "./OrderSuccess.css";
+import "../../styles/cart/ProductDetail.css";
+import "../../styles/cart/OrderSuccess.css";
 import { FaCheckCircle } from "react-icons/fa"; // Icon cho dấu tích thành công
 import { useNavigate } from "react-router-dom"; // Dùng để chuyển trang
+import Header from "../layout/Header";
+import Footer from "../layout/Footer";
 
-const Header = () => (
-    <div className="header">
-        <img src="/src/images/header.png" alt="Header" />
-    </div>
-);
+
 
 const OrderSuccess = () => {
     const navigate = useNavigate(); // Hook chuyển trang
 
     return (
+        // Đặt hàng thành công
         <div className="dat-hang-thanh-cong">
             <FaCheckCircle className="success-icon" />
             <h2>ĐẶT HÀNG THÀNH CÔNG!</h2>
@@ -24,14 +23,11 @@ const OrderSuccess = () => {
     );
 };
 
-const Footer = () => (
-    <div className="footer">
-        <img src="/src/images/footer.png" alt="Footer" />
-    </div>
-);
+
 
 const Order = () => {
     return (
+        // Trang kết quả đặt hàng thành công
         <div>
             <Header />
             <div className="container">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import "./ProductDetail.css";
+import "../../styles/cart/ProductDetail.css";
 import { FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import Slider from "react-slick";
 import Header from "../layout/Header";
@@ -509,7 +509,7 @@ const ChiTietSanPham = () => {
                         <br /><br />
                         <div className="co-the-ban-cung-thich-item">
                             {products.map((product) => (
-                                <div key={product.id} className="card">
+                                <div key={product.id} className="card-sp">
                                     <div className="image-box">
                                         <img src={product.image} alt={product.name} />
                                     </div>

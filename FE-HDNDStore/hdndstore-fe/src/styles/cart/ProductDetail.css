@@ -887,23 +887,23 @@ select:disabled {
 .ten-san-pham{
     white-space: nowrap;
 }
-.card {
+.card-sp{
     margin-left: 15px;
-    width: 280px; /* Đảm bảo kích thước cố định */
+    width: 280px ; /* Đảm bảo kích thước cố định */
     overflow: hidden; /* Ngăn ảnh bị tràn ra ngoài */
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
 }
-.co-the-ban-cung-thich-item .card:first-child {
+.co-the-ban-cung-thich-item .card-sp:first-child {
     margin-left: 0; /* Loại bỏ margin-left cho thẻ card đầu tiên */
 }
-.co-the-ban-cung-thich-item .card {
+.co-the-ban-cung-thich-item .card-sp {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng mượt khi hover */
     border: 2px solid transparent; /* Viền mặc định trong suốt */
 }
 
-.co-the-ban-cung-thich-item .card:hover {
+.co-the-ban-cung-thich-item .card-sp:hover {
     transform: scale(1.05); /* Tăng kích thước thẻ */
     border: 2px solid red; /* Viền màu vàng sẫm */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Hiệu ứng sáng */
