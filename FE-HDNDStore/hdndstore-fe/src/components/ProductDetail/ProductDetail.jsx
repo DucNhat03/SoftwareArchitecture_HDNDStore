@@ -509,7 +509,7 @@ const ChiTietSanPham = () => {
                         <br /><br />
                         <div className="co-the-ban-cung-thich-item">
                             {products.map((product) => (
-                                <div key={product.id} className="card">
+                                <div key={product.id} className="card-sp">
                                     <div className="image-box">
                                         <img src={product.image} alt={product.name} />
                                     </div>
