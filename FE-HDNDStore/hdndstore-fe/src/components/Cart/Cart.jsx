@@ -14,7 +14,7 @@ const CartTable = () => {
     const handleQuantityChange = (type) => {
         setQuantity((prev) => (type === "increase" ? prev + 1 : prev > 1 ? prev - 1 : prev));
     };
-
+// Cart
     return (
         <table className="size-table-chi-tiet">
             <thead>
