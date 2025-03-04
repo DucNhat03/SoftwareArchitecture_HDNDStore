@@ -27,6 +27,7 @@ const OrderSuccess = () => {
 
 const Order = () => {
     return (
+        // Trang kết quả đặt hàng thành công
         <div>
             <Header />
             <div className="container">
