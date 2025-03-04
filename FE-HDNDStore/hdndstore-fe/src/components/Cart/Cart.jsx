@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "../ProductDetail/ProductDetail.css";
-import "./Cart.css";
+import "../../styles/cart/ProductDetail.css";
+import "../../styles/cart/Cart.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 
@@ -49,7 +49,7 @@ const CartTable = () => {
                         </div>
                     </td>
                     <td className="so-tien-cart">{(price * quantity).toLocaleString()} đ</td>
-                    <td><button className="button-edit">Xóa</button></td>
+                    <td><span className="button-edit">Xóa</span></td>
                 </tr>
             </tbody>
         </table>

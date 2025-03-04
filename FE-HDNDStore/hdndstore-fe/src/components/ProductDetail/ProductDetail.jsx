@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import "./ProductDetail.css";
+import "../../styles/cart/ProductDetail.css";
 import { FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import Slider from "react-slick";
 import Header from "../layout/Header";
