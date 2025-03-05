@@ -13,11 +13,11 @@ app.use(express.json());
 // Kết nối MongoDB
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ Kết nối MongoDB thành công!"))
-  .catch((error) => console.error("❌ Lỗi kết nối MongoDB:", error));
+  .then(() => console.log("Kết nối MongoDB thành công!"))
+  .catch((error) => console.error("Lỗi kết nối MongoDB:", error));
 
 // Sử dụng route
 app.use("/products", productRoutes);
 
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`🚀 Server chạy trên cổng ${PORT}`));
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log(`Server chạy trên cổng ${PORT}`));
