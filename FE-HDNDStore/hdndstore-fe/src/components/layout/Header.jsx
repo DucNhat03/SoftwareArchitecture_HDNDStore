@@ -1,11 +1,17 @@
 import { FaSearch, FaShoppingCart, FaUser, FaList, FaAngleDown } from "react-icons/fa";
 import "../../styles/Header.css"; 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showSubmenu, setShowSubmenu] = useState(null); // Điều khiển submenu trên mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024); // Xác định thiết bị
+  const navigate = useNavigate();
+
+
+
 
   // Cập nhật trạng thái khi resize màn hình
   useEffect(() => {
@@ -15,6 +21,10 @@ const Header = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleAuth = () => {
+    navigate("/auth");
+  };
 
   const menuItems = [
     { name: "GIÁ ƯU ĐÃI", link: "/category", submenu: ["79K", "99K - 199K", "149K - 159K", "GIÁ ĐẶT BIỆT"] },
@@ -70,11 +80,11 @@ const Header = () => {
             <input type="text" placeholder="Tìm kiếm..." />
             <FaSearch className="search_icon" />
           </div> 
-          <button className="button" onClick={() => alert('Ẩn hiện form!!!')}>
+          <button className="button" onClick={() => handleAuth()}>
             <FaUser />
           </button>
 
-          <div className="cart_box">
+          <div className="cart_box" onClick={() => navigate("/cart")} style={{ cursor: "pointer" }}>
             <FaShoppingCart />
             <div className="cart_count">1</div>
           </div>
@@ -84,7 +94,7 @@ const Header = () => {
           <button className="btn btn-link">
             <FaSearch size={24}/>
           </button>
-          <button className="btn btn-link" onClick={() => alert('Ẩn hiện form!!!')}>
+          <button className="btn btn-link" onClick={() => handleAuth()}>
             <FaUser size={24}/>
           </button>
           <button className="btn btn-link">

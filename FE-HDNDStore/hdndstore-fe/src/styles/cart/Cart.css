@@ -1,0 +1,431 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{ 
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+
+}
+.container{
+    margin-top: 70px !important;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 120px;
+    min-height: 100vh;
+    
+}
+
+.breadcum {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #000;
+}
+.breadcum a{
+    text-decoration: none;
+    color: #000;
+   
+}
+.breadcum a:hover{
+    color: #f00;
+}
+/* Định dạng bảng chi tiết sản phẩm*/
+.size-table-chi-tiet {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.size-table-chi-tiet th, .size-table-chi-tiet td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    
+    
+}
+ .size-table-chi-tiet td{
+    text-align: center;
+   
+ }
+
+.size-table-chi-tiet th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: center;
+}
+
+.size-table-chi-tiet tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.size-table-chi-tiet tr:hover {
+    background-color: #f1f1f1;
+}
+.san-pham img{
+    width: 100px;
+    height: 100px;
+}
+.mau-sac-kich-thuoc span{
+    font-size: 14px;
+    margin-top: 10px;
+    color: #818181;
+    
+}
+.thong-tin-san-pham{
+    margin-left: 40px;
+    align-items: center;
+}
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 150px;
+}
+
+.quantity-btn {
+    height: 30px;
+    width: 30px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantity-btn:hover {
+    background-color: #ddd;
+}
+
+.quantity-btn:active {
+    background-color: #ccc;
+}
+
+input[type="number"] {
+    height: 30px;
+    width: 50px;
+    text-align: center;
+    border: 1px solid #ccc;
+    margin: 0 5px; /* Khoảng cách giữa nút và ô nhập */
+}
+.so-tien-cart{
+    font-size: 16px;
+    font-weight: bold;
+    color: #f00;
+}
+.btn-xoa{
+    text-decoration: none;
+    color: black;
+}
+.btn-xoa:hover{
+    color: red;
+}
+.tong-tien-container{
+    font-size: 15px;
+   justify-content: space-between;
+   align-items: center;
+    
+   
+}
+.giam-gia-san-pham{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+   
+}
+
+ .giam-gia-coupon {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+ .tong-tien-hang {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+ .phi-van-chuyen {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+ .tong-total {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+ .tong-total p{
+    color: #f00;
+ }
+#ho-ten::placeholder {
+    text-indent: 10px;  /* Điều chỉnh khoảng cách lùi qua phải */
+}
+#sdt::placeholder {
+    text-indent: 10px;  /* Điều chỉnh khoảng cách lùi qua phải */
+}
+#dia-chi-nhan-hang::placeholder {
+    text-indent: 10px;  /* Điều chỉnh khoảng cách lùi qua phải */
+    font-size: 14px;
+    padding: 5px;
+}
+.btn-dat-hang{
+    background-color: rgb(255, 102, 0);
+    width: 200px;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 20px;
+    border-radius: 5px;
+    align-items: center;
+    margin-left: auto;
+}
+.btn-dat-hang a{
+    text-decoration: none;
+    color: #fff;
+    margin-left: 50px;
+}
+.btn-dat-hang:hover{
+    background-color: rgb(230, 92, 0);
+}
+.header img,
+.footer img{
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+.coupon{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+.coupon-item{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.coupon-item img {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+.select-coupon{
+    margin-left: 200px;
+    height: 35px;
+}
+.input-diem{
+    width: 240px;
+    height: 35px;
+    border-radius: 5px;
+    margin-left: 60px;
+    padding-left: 10px;
+    border-color: #0c0202;
+}
+.coupon-item p{
+    font-size: 14px;
+    color: #818181;
+}
+.uu-dai{
+    display: flex;
+    justify-content: space-between;
+}
+.title-van-chuyen{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.thay-doi{
+    font-size: 14px;
+    color: blue;
+    margin-bottom: 20px;
+    margin-left: 25px;
+}
+.thay-doi:hover{
+   color: red;
+   text-decoration: underline; /* Gạch chân khi hover */
+}
+.form-group-item {
+    display: flex;
+    justify-content: space-between; /* Đưa tiêu đề và giá trị về hai đầu */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    width: 100%;
+    max-width: 500px; /* Giới hạn chiều rộng */
+    margin: 10px 0; /* Tạo khoảng cách giữa các nhóm */
+}
+.form-group-title{
+    font-size: 14px;
+    font-weight: bold;
+}
+.form-group-value{
+    text-align: right; /* Căn phải giá trị */
+    flex-grow: 1; /* Đảm bảo giá trị mở rộng về bên phải */
+
+}
+
+.button-edit {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button-edit:hover {
+    background: #0056b3;
+}
+
+.thong-tin-van-chuyen {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+.title-van-chuyen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+
+
+.thay-doi {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.thay-doi:hover {
+    text-decoration: underline;
+}
+
+p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+
+
+/* Responsive cho màn hình nhỏ hơn 768px (điện thoại) */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 20px; /* Giảm padding để vừa màn hình */
+    }
+
+    .breadcum {
+        font-size: 12px; /* Giảm font chữ để phù hợp với màn nhỏ */
+    }
+
+    .size-table-chi-tiet {
+        font-size: 12px; /* Giảm font chữ bảng */
+    }
+
+    .size-table-chi-tiet th, .size-table-chi-tiet td {
+        padding: 5px;
+    }
+
+    .san-pham img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .quantity-wrapper {
+        margin-left: 0; /* Canh giữa số lượng */
+        justify-content: center;
+    }
+
+    .coupon-item {
+        flex-direction: column; /* Sắp xếp theo cột trên điện thoại */
+        align-items: flex-start;
+    }
+
+    .select-coupon {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .input-diem {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .btn-dat-hang {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .btn-dat-hang a {
+        margin-left: 0;
+    }
+
+    .uu-dai {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-group-value {
+        text-align: left;
+    }
+
+    .giam-gia-san-pham,
+    .giam-gia-coupon,
+    .tong-tien-hang,
+    .phi-van-chuyen,
+    .tong-total {
+        justify-content: flex-start;
+    }
+}
+
+
+
+
+

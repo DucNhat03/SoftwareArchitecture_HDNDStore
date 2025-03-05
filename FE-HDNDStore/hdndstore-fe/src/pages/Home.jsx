@@ -5,9 +5,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/profile/Home.css";
 import "../script.js";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const products = [
+const productx = [
     {
         img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
         title:
@@ -35,8 +37,9 @@ const products = [
 ];
 
 const ProductCard = ({ img, title, price }) => {
+    const navigate = useNavigate();
     return (
-        <div className="product-card m-0 card p-0">
+        <div className="product-card m-0 card p-0" onClick={() => navigate(`/chi-tiet-san-pham`)} style={{ cursor: "pointer" }}>
             <a href="#">
                 <img className="product-img card-img-top" src={img} alt={title} />
                 <div className="card-body">
@@ -231,14 +234,14 @@ const thoiTrang = [
     }
 ];
   
-const ListItem = ({ name, price, image }) => {
+const ListItem = ({ name, price, image, description }) => {
     return (
         <div className="col-sm-3 sale-product">
             <div className="card product-card">
-                <a href="#">
+                <a href="/chi-tiet-san-pham">
                     <img className="card-img-top product-img" src={image} alt={name} />
                     <div className="card-body">
-                        <p className="card-title my-1 p-0">{name}</p>
+                        <p className="card-title my-1 p-0">{name} - {description}</p>
                         <p className="card-price text-center m-0 p-0 fw-bold">{price}</p>
                         <div className="choose-color d-flex justify-content-center mt-2">
                             <div className="card-product_color bg-dark"></div>
@@ -251,7 +254,6 @@ const ListItem = ({ name, price, image }) => {
     );
 };
 
-// Component ItemList dùng để hiển thị danh sách sản phẩm
 const ItemList = ({ title, items }) => {
     return (
         <div className="container-fluid">
@@ -261,7 +263,7 @@ const ItemList = ({ title, items }) => {
                     <ListItem key={item.id} {...item} />
                 ))}
             </div>
-            <a href="#">
+            <a href="/category">
                 <p className="my-4 p-0 text-center" style={{ fontSize: "18px", textDecoration: "underline" }}>
                     XEM TẤT CẢ
                 </p>
@@ -271,9 +273,21 @@ const ItemList = ({ title, items }) => {
     );
 };
 
-
-
 const Home = () => {
+    const [products, setProducts] = useState([]);
+
+  // Gọi API để lấy danh sách sản phẩm
+  useEffect(() => {
+    axios
+      .get("http://localhost:5002/products")
+      .then((response) => {
+        setProducts(response.data);
+        console.log("Danh sách sản phẩm:", products);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      });
+  }, []);
 
     useEffect(() => {
         const nextBtn = document.getElementById("next");
@@ -331,7 +345,7 @@ const Home = () => {
                     <div className="row">
                         {/* Ảnh lớn */}
                         <div className="col-sm-12 col-md-6">
-                            <a href="#">
+                            <a href="/category">
                                 <img
                                     className="sale-img"
                                     src="https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=1550&FileInput=/Resources/Silde/2024/12/25/IMG_5218.JPG"
@@ -342,16 +356,16 @@ const Home = () => {
 
                         {/* Các sản phẩm nhỏ */}
                         <div className="col-sm-6 col-md-3">
-                            <ProductCard {...products[0]} />
+                            <ProductCard {...productx[0]} />
                             <div className="mt-4">
-                                <ProductCard {...products[1]} />
+                                <ProductCard {...productx[1]} />
                             </div>
                         </div>
 
                         <div className="col-sm-6 col-md-3">
-                            <ProductCard {...products[2]} />
+                            <ProductCard {...productx[2]} />
                             <div className="mt-4">
-                                <ProductCard {...products[3]} />
+                                <ProductCard {...productx[3]} />
                             </div>
                         </div>
                     </div>
@@ -367,8 +381,8 @@ const Home = () => {
                     <hr className="hr" />
                 </div>
 
-                <ItemList title="Giày cao gót nữ" items={giayCaoGotNu} />
-                <ItemList title="Dép và Sandal nữnữ" items={sandal} />
+                <ItemList title="Giày cao gót nữ" items={products} />
+                <ItemList title="Dép và Sandal nữ" items={sandal} />
                 <ItemList title="Balo Thời TRang" items={balo} />
                 <ItemList title="Sandal Nam" items={sandalNam} />
                 <ItemList title="giày nam" items={giayNam} />
