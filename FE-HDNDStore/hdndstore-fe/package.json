@@ -9,6 +9,11 @@
     "preview": "node node_modules/vite/bin/vite.js preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.7",
+    "@mui/material": "^6.4.7",
+    "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.6.0",
     "axios": "^1.8.1",
     "bootstrap": "^5.3.3",

@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { OAuth2Client } from "google-auth-library";
+
+// Khởi tạo client Google OAuth
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 {
   /* Register */
@@ -157,5 +161,48 @@ export const updateAvatar = async (req, res) => {
   } catch (error) {
     console.error("Lỗi cập nhật avatar:", error);
     return res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+
+{
+  /* Login with google */
+}
+export const googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: "Token không hợp lệ!" });
+
+    console.log("Received Token from FE:", token); // ✅ Kiểm tra token
+
+    // 🛑 Verify ID Token với Google
+    const ticket = await client.verifyIdToken({
+      idToken: token, // ✅ Xác thực ID Token từ Google
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    console.log("Decoded Google Payload:", payload); // ✅ Kiểm tra dữ liệu trả về từ Google
+
+    const { email, name, picture } = payload;
+
+    // Kiểm tra user đã tồn tại chưa
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        email,
+        fullName: name,
+        avatar: picture,
+        password: "", // Không cần mật khẩu
+      });
+      await user.save();
+    }
+
+    // Tạo JWT token
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ token: accessToken, user });
+  } catch (error) {
+    console.error("Lỗi đăng nhập Google:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
   }
 };

@@ -9,7 +9,10 @@ const productSchema = new mongoose.Schema(
     category: { type: String, required: true },
     size: { type: [String], default: [] },
     color: { type: [String], default: [] },
-    image: { type: String },
+    image: { type: [String], default: [] },
+    rating: { type: Number, default: 0 },
+    
+
   },
   { timestamps: true, collection: "Product" } // Tự động thêm createdAt & updatedAt
 );
