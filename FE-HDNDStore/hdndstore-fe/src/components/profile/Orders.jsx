@@ -16,7 +16,7 @@ const Orders = () => {
   ];
 
   return (
-    <Container className="orders-container card p-4">
+    <Container className="orders-container card p-2">
       <Tabs
         activeKey={activeTab}
         onSelect={(k) => setActiveTab(k)}

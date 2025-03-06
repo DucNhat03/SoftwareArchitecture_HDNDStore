@@ -2,7 +2,7 @@ import { FaFacebook, FaInstagramSquare, FaYoutube, FaTiktok } from "react-icons/
 
 const Hotline = () => {
   return (
-    <div className="hotline px-2 py-4 container">
+    <div className="hotline px-5 py-4">
       <hr />
       <div className="row px-4">
         {/* Hotline mua hàng và khiếu nại */}

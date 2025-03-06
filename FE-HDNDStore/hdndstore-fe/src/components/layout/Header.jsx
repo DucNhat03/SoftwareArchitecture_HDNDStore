@@ -45,7 +45,7 @@ const Header = () => {
         </button>
 
         <a href="/home" className="nav_logo">
-          HDND STORE
+          HDND
         </a>
 
         <ul className="nav_items m-0 p-0">
