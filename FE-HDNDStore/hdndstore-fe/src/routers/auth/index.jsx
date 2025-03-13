@@ -11,10 +11,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 {/* Admin */}
-import Account from "../../pages/admin/screens/account.jsx";
-import Customer from "../../pages/admin/screens/customer.jsx";
-import Order from "../../pages/admin/screens/orders.jsx";
-import Product from "../../pages/admin/screens/product.jsx";
+// import Account from "../../pages/admin/screens/account.jsx";
+import User from "../../pages/admin/screens/user.jsx";
+// import Order from "../../pages/admin/screens/orders.jsx";
+import ProductMen from "../../pages/admin/screens/productmen.jsx";
+import ProductWomen from "../../pages/admin/screens/productwomen.jsx";
 
 
 
@@ -33,10 +34,11 @@ const AppRoutes = () => {
         <Route path="/dat-hang-thanh-cong" element={<OrderSuccess />} /> { }
 
         {/* Admin */}
-        <Route path="/admin/account" element={<Account />} />
-        <Route path="/admin/customer" element={<Customer />} />
-        <Route path="/admin/order" element={<Order />} />
-        <Route path="/admin/product" element={<Product />} />
+        {/* <Route path="/admin/account" element={<Account />} /> */}
+        <Route path="/admin/users" element={<User />} />
+        {/* <Route path="/admin/order" element={<Order />} /> */}
+        <Route path="/admin/products/men" element={<ProductMen/>} />
+        <Route path="/admin/products/women" element={<ProductWomen/>} />
 
 
         {/* 404 - Không tìm thấy trang */}
