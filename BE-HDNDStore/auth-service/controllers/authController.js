@@ -11,7 +11,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 }
 export const register = async (req, res) => {
   try {
-    const { email, phone, password } = req.body;
+    const { email, phone, password, role } = req.body;
 
     // Kiểm tra nếu user đã tồn tại
     const existingUser = await User.findOne({ phone });
@@ -32,6 +32,7 @@ export const register = async (req, res) => {
       birthday: { day: "", month: "", year: "" },
       address: { city: "", district: "", ward: "", street: "" },
       avatar: "",
+      role,
     });
 
     await newUser.save();
@@ -57,9 +58,11 @@ export const login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ error: "Mật khẩu không đúng!" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, // 🛑 Lưu role vào token
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     res.json({ token, user });
   } catch (error) {
@@ -172,16 +175,25 @@ export const googleLogin = async (req, res) => {
     const { token } = req.body;
     if (!token) return res.status(400).json({ error: "Token không hợp lệ!" });
 
-    console.log("Received Token from FE:", token); // ✅ Kiểm tra token
+    {
+      /* token */
+    }
 
-    // 🛑 Verify ID Token với Google
+    console.log("Received Token from FE:", token);
+
+    {
+      /*Verify ID Token với Google*/
+    }
     const ticket = await client.verifyIdToken({
-      idToken: token, // ✅ Xác thực ID Token từ Google
+      idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
-    console.log("Decoded Google Payload:", payload); // ✅ Kiểm tra dữ liệu trả về từ Google
+    {
+      /*Kiểm tra dữ liệu trả về từ Google*/
+    }
+    console.log("Decoded Google Payload:", payload);
 
     const { email, name, picture } = payload;
 
@@ -192,13 +204,16 @@ export const googleLogin = async (req, res) => {
         email,
         fullName: name,
         avatar: picture,
-        password: "", // Không cần mật khẩu
+        password: "",
+        role: "user",
       });
       await user.save();
     }
 
     // Tạo JWT token
-    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     res.json({ token: accessToken, user });
   } catch (error) {
