@@ -1,8 +1,13 @@
-import { FaSearch, FaShoppingCart, FaUser, FaList, FaAngleDown } from "react-icons/fa";
-import "../../styles/Header.css"; 
+import {
+  FaSearch,
+  FaShoppingCart,
+  FaUser,
+  FaList,
+  FaAngleDown,
+} from "react-icons/fa";
+import "../../styles/Header.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -10,8 +15,14 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024); // Xác định thiết bị
   const navigate = useNavigate();
 
-
-
+  const isAuthenticated = !!localStorage.getItem("token");
+  const handleAuth = () => {
+    if (isAuthenticated) {
+      navigate("/profile");
+    } else {
+      navigate("/auth");
+    }
+  };
 
   // Cập nhật trạng thái khi resize màn hình
   useEffect(() => {
@@ -22,26 +33,59 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleAuth = () => {
-    navigate("/auth");
-  };
-
   const menuItems = [
-    { name: "GIÁ ƯU ĐÃI", link: "/category", submenu: ["79K", "99K - 199K", "149K - 159K", "GIÁ ĐẶT BIỆT"] },
-    { name: "GIÀY NỮ", link: "/category", submenu: ["GIÀY CAO GÓT", "GIÀY THỂ THAO", "SANDAL NỮ", "DÉP SỤC", "GIÀY BÚP BÊ & MỌI", "OXFORD & BOOT", "DÉP NỮ"] },
-    { name: "GIÀY NAM", link: "/category", submenu: ["GIÀY THỂ THAO NAM", "SANDAL NAM", "DÉP NAM", "GIÀY TÂY & SLIP ON", "BOOT NAM & OXFORD"] },
+    {
+      name: "GIÁ ƯU ĐÃI",
+      link: "/category",
+      submenu: ["79K", "99K - 199K", "149K - 159K", "GIÁ ĐẶT BIỆT"],
+    },
+    {
+      name: "GIÀY NỮ",
+      link: "/category",
+      submenu: [
+        "GIÀY CAO GÓT",
+        "GIÀY THỂ THAO",
+        "SANDAL NỮ",
+        "DÉP SỤC",
+        "GIÀY BÚP BÊ & MỌI",
+        "OXFORD & BOOT",
+        "DÉP NỮ",
+      ],
+    },
+    {
+      name: "GIÀY NAM",
+      link: "/category",
+      submenu: [
+        "GIÀY THỂ THAO NAM",
+        "SANDAL NAM",
+        "DÉP NAM",
+        "GIÀY TÂY & SLIP ON",
+        "BOOT NAM & OXFORD",
+      ],
+    },
     { name: "GIÀY CẶP", link: "/category" },
-    { name: "BALO - TÚI", link: "/category", submenu: ["Balo laptop, du lịch, thời trang", "Túi đeo chéo"] },
+    {
+      name: "BALO - TÚI",
+      link: "/category",
+      submenu: ["Balo laptop, du lịch, thời trang", "Túi đeo chéo"],
+    },
     { name: "SALE 50%", link: "/category" },
     { name: "SẢN PHẨM BÁN CHẠY", link: "/category" },
-    { name: "PHỤ KIỆN", link: "/category", submenu: ["Vớ", "Dây giày", "Chai vệ sinh giày", "Đế lót"]  },
+    {
+      name: "PHỤ KIỆN",
+      link: "/category",
+      submenu: ["Vớ", "Dây giày", "Chai vệ sinh giày", "Đế lót"],
+    },
   ];
 
   return (
     <header className="header">
       <nav className="nav">
-        <button className="menu_button btn btn-link" onClick={() => setShowMenu(!showMenu)}>
-          <FaList size={24}/>
+        <button
+          className="menu_button btn btn-link"
+          onClick={() => setShowMenu(!showMenu)}
+        >
+          <FaList size={24} />
         </button>
 
         <a href="/home" className="nav_logo">
@@ -55,9 +99,11 @@ const Header = () => {
                 {item.name}
               </a>
               {isMobile && item.submenu && (
-                <button 
-                  className="submenu_toggle" 
-                  onBlur={() => setShowSubmenu(showSubmenu === index ? null : index)}
+                <button
+                  className="submenu_toggle"
+                  onBlur={() =>
+                    setShowSubmenu(showSubmenu === index ? null : index)
+                  }
                 >
                   {/* <FaAngleDown /> */}
                 </button>
@@ -79,12 +125,16 @@ const Header = () => {
           <div className="search_box">
             <input type="text" placeholder="Tìm kiếm..." />
             <FaSearch className="search_icon" />
-          </div> 
+          </div>
           <button className="button" onClick={() => handleAuth()}>
             <FaUser />
           </button>
 
-          <div className="cart_box" onClick={() => navigate("/cart")} style={{ cursor: "pointer" }}>
+          <div
+            className="cart_box"
+            onClick={() => navigate("/cart")}
+            style={{ cursor: "pointer" }}
+          >
             <FaShoppingCart />
             <div className="cart_count">1</div>
           </div>
@@ -92,19 +142,19 @@ const Header = () => {
 
         <div className="nav_right-reponsive">
           <button className="btn btn-link">
-            <FaSearch size={24}/>
+            <FaSearch size={24} />
           </button>
           <button className="btn btn-link" onClick={() => handleAuth()}>
-            <FaUser size={24}/>
+            <FaUser size={24} />
           </button>
           <button className="btn btn-link">
-            <FaShoppingCart size={24}/>
+            <FaShoppingCart size={24} />
           </button>
         </div>
       </nav>
 
       {/* Mobile Menu */}
-      <div className="menu" style={{display: showMenu ? "block" : "none"}}>
+      <div className="menu" style={{ display: showMenu ? "block" : "none" }}>
         <ul className="menu_items">
           {menuItems.map((item, index) => (
             <li className="menu_item" key={index}>
@@ -112,9 +162,11 @@ const Header = () => {
                 {item.name}
               </a>
               {isMobile && item.submenu && (
-                <button 
-                  className="submenu_toggle" 
-                  onClick={() => setShowSubmenu(showSubmenu === index ? null : index)}
+                <button
+                  className="submenu_toggle"
+                  onClick={() =>
+                    setShowSubmenu(showSubmenu === index ? null : index)
+                  }
                 >
                   <FaAngleDown />
                 </button>

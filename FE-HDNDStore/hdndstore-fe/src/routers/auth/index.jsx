@@ -33,6 +33,9 @@ const AppRoutes = () => {
         <Route path="/chi-tiet-san-pham" element={<ProductDetail />} /> { }
         <Route path="/dat-hang-thanh-cong" element={<OrderSuccess />} /> { }
 
+        {/* Profile với Nested Routes */}
+        <Route path="/profile/*" element={<ProfilePage />} />
+
         {/* Admin */}
         {/* <Route path="/admin/account" element={<Account />} /> */}
         <Route path="/admin/users" element={<User />} />

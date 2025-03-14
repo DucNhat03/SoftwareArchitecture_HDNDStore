@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Form, Button, InputGroup } from "react-bootstrap";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import PropTypes from "prop-types";
-import api from "../../services/api"; // Gọi API đăng nhập
+import api from "../../services/api"; 
 import { useNavigate } from "react-router-dom";
 import toastService from "../../utils/toastService";
 
 const LoginForm = ({ switchMode }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
-  const [error, setError] = useState(""); // Lưu lỗi đăng nhập
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   // Xử lý thay đổi input
@@ -22,9 +22,21 @@ const LoginForm = ({ switchMode }) => {
     e.preventDefault();
     try {
       const response = await api.post("/auth/login", formData);
-      localStorage.setItem("token", response.data.token); // Lưu token vào localStorage
+      const { token, user } = response.data;
+
+      localStorage.setItem("token", token); // Lưu token
+      localStorage.setItem("role", user.role); // Lưu role để phân quyền
+
       toastService.success("Đăng nhập thành công!");
-      setTimeout(() => navigate("/profile"), 2000); // Chuyển hướng sau khi hiển thị toast
+
+      // ✅ Điều hướng dựa trên vai trò
+      setTimeout(() => {
+        if (user.role === "admin") {
+          navigate("/admin/users");
+        } else {
+          navigate("/profile");
+        }
+      }, 1500);
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
       toastService.error(error.response?.data?.error || "Lỗi đăng nhập!");
@@ -33,7 +45,8 @@ const LoginForm = ({ switchMode }) => {
 
   return (
     <Form className="text-center" onSubmit={handleSubmit}>
-      {error && <p className="text-danger">{error}</p>} {/* Hiển thị lỗi */}
+      {error && <p className="text-danger">{error}</p>} 
+
       {/* Ô nhập email */}
       <InputGroup className="mb-3">
         <InputGroup.Text>
@@ -47,6 +60,7 @@ const LoginForm = ({ switchMode }) => {
           onChange={handleChange}
         />
       </InputGroup>
+
       {/* Ô nhập mật khẩu có icon mắt */}
       <InputGroup className="mb-3">
         <InputGroup.Text>
@@ -68,6 +82,7 @@ const LoginForm = ({ switchMode }) => {
           {showPassword ? <FaEyeSlash /> : <FaEye />}
         </Button>
       </InputGroup>
+
       {/* Ghi nhớ mật khẩu & quên mật khẩu */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <Form.Check type="checkbox" label="Ghi nhớ mật khẩu" />
@@ -79,10 +94,12 @@ const LoginForm = ({ switchMode }) => {
           Quên mật khẩu?
         </Button>
       </div>
+
       {/* Nút đăng nhập */}
       <Button variant="primary" className="w-100 login-btn" type="submit">
         Đăng nhập
       </Button>
+
       {/* Chuyển sang đăng ký */}
       <p className="mt-3 d-flex justify-content-center align-items-center">
         Chưa có tài khoản?{" "}

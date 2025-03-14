@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { Breadcrumb, Container, Row, Col } from "react-bootstrap";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import ProfileForm from "../components/profile/ProfileForm";
@@ -12,18 +12,10 @@ import "../styles/profile/Profile.css";
 import Header from "../components/layout/Header";
 
 const ProfilePage = () => {
-  const [activeSection, setActiveSection] = useState("profile");
+  const location = useLocation();
 
-  // Danh sách tiêu đề Breadcrumb dựa trên activeSection
-  const breadcrumbTitles = {
-    profile: "Hồ sơ",
-    change_password: "Đổi mật khẩu",
-    orders: "Đơn mua",
-    notifications: "Thông báo",
-    vouchers: "Kho voucher",
-    wishlist: "Sản phẩm yêu thích",
-    logout: "Đăng xuất",
-  };
+  // Lấy section từ URL, nếu không có thì mặc định là "profile"
+  const section = location.pathname.replace("/profile/", "") || "profile";
 
   return (
     <>
@@ -32,21 +24,39 @@ const ProfilePage = () => {
         {/* Thanh điều hướng (Breadcrumb) */}
         <Breadcrumb className="breadcrumb-custom">
           <Breadcrumb.Item href="/home">Trang chủ</Breadcrumb.Item>
-          <Breadcrumb.Item active>{breadcrumbTitles[activeSection]}</Breadcrumb.Item>
+          <Breadcrumb.Item active>
+            {section === "profile"
+              ? "Hồ sơ"
+              : section === "change_password"
+              ? "Đổi mật khẩu"
+              : section === "orders"
+              ? "Đơn mua"
+              : section === "notifications"
+              ? "Thông báo"
+              : section === "vouchers"
+              ? "Kho voucher"
+              : section === "wishlist"
+              ? "Sản phẩm yêu thích"
+              : section === "logout"
+              ? "Đăng xuất"
+              : "Hồ sơ"}
+          </Breadcrumb.Item>
         </Breadcrumb>
 
         <Row>
           <Col md={3}>
-            <ProfileSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+            <ProfileSidebar activeSection={section} />
           </Col>
           <Col md={9}>
-            {activeSection === "profile" && <ProfileForm />}
-            {activeSection === "change_password" && <ChangePasswordForm />}
-            {activeSection === "orders" && <Orders />}
-            {activeSection === "notifications" && <Notifications />}
-            {activeSection === "vouchers" && <Vouchers />}
-            {activeSection === "wishlist" && <Wishlist />}
-            {activeSection === "logout" && <Logout />}
+            <Routes>
+              <Route path="/" element={<ProfileForm />} />
+              <Route path="change_password" element={<ChangePasswordForm />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="vouchers" element={<Vouchers />} />
+              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="logout" element={<Logout />} />
+            </Routes>
           </Col>
         </Row>
       </Container>
