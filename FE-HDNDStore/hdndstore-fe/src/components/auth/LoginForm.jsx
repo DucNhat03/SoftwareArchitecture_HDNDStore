@@ -23,8 +23,9 @@ const LoginForm = ({ switchMode }) => {
     try {
       const response = await api.post("/auth/login", formData);
       localStorage.setItem("token", response.data.token); // Lưu token vào localStorage
+      localStorage.setItem("userId", JSON.stringify(response.data.user._id)); // Lưu thông tin user vào localStorage
       toastService.success("Đăng nhập thành công!");
-      setTimeout(() => navigate("/profile"), 2000); // Chuyển hướng sau khi hiển thị toast
+      setTimeout(() => navigate("/home"), 2000); // Chuyển hướng sau khi hiển thị toast
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
       toastService.error(error.response?.data?.error || "Lỗi đăng nhập!");

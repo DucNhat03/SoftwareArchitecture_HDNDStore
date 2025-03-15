@@ -9,6 +9,7 @@ const Logout = () => {
   // Xử lý đăng xuất (xóa token, điều hướng)
   const handleLogout = () => {
     localStorage.removeItem("token"); // Xóa token khỏi localStorage
+    localStorage.removeItem("userId"); // Xóa User khỏi localStorage
     navigate("/auth"); 
   };
 

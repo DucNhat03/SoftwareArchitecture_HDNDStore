@@ -2,6 +2,8 @@ import { FaSearch, FaShoppingCart, FaUser, FaList, FaAngleDown } from "react-ico
 import "../../styles/Header.css"; 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const Header = () => {
@@ -22,8 +24,28 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isAuthenticated = !!localStorage.getItem("token");
   const handleAuth = () => {
-    navigate("/auth");
+    if (isAuthenticated) {
+      navigate("/profile");
+    } else {
+      navigate("/auth");
+    }
+  };
+
+  const handleCartClick = () => {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      toast.error("Vui lòng đăng nhập để xem giỏ hàng !", { position: "top-center" });
+      // Đợi 2 giây (2000ms) trước khi chuyển hướng
+      setTimeout(() => {
+        navigate("/auth");
+      }, 3000);
+      return;
+    }
+
+    navigate("/cart");
   };
 
   const menuItems = [
@@ -84,7 +106,7 @@ const Header = () => {
             <FaUser />
           </button>
 
-          <div className="cart_box" onClick={() => navigate("/cart")} style={{ cursor: "pointer" }}>
+          <div className="cart_box" onClick={handleCartClick} style={{ cursor: "pointer" }}>
             <FaShoppingCart />
             <div className="cart_count">1</div>
           </div>

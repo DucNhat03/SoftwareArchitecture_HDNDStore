@@ -2,7 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const productRoutes = require("./routers/ProductRouters.js");
+const productRoutes = require("./routers/ProductRouters");
+const orderRoutes = require("./routers/orderRouters");
 
 dotenv.config();
 const app = express();
@@ -18,6 +19,7 @@ mongoose
 
 // Sử dụng route
 app.use("/products", productRoutes);
+app.use("/api", orderRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server chạy trên cổng ${PORT}`));

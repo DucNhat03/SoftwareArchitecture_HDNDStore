@@ -558,7 +558,10 @@ h1 {
 }
 .gia-san-pham-da-chon{
     
-    margin-left: -155px;
+    margin-left: -175px;
+}
+.main-name-da-chon{
+    margin-left: -40px;
 }
 .kich-thuoc-san-pham {
     display: flex;
@@ -649,10 +652,6 @@ select:disabled {
 }
 
 
-
-
-
-
 /* Modal cho giỏ hàng */
 .product-info {
     display: flex;
@@ -660,6 +659,7 @@ select:disabled {
     align-items: flex-start;
 }
 .product-info .details span{
+    white-space: nowrap;
     font-size: 14px;
 }
 
@@ -673,7 +673,6 @@ select:disabled {
 .product-info .details {
     flex-grow: 1;
 }
-
 
 
 .product-info .details p {
@@ -722,6 +721,31 @@ select:disabled {
     background-color: #218838;
     
 }
+/* Scoll sản phẩm giỏ hàng */
+.cart-scroll-container {
+    max-height: 400px; /* Giới hạn chiều cao */
+    overflow-y: auto;  /* Bật cuộn dọc khi danh sách dài */
+    padding: 10px; 
+    border: 1px solid #ddd; /* Viền nhẹ để phân biệt */
+    border-radius: 8px; /* Bo góc */
+    background: #fff; /* Màu nền */
+}
+
+/* Tùy chỉnh thanh cuộn */
+.cart-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cart-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Màu thanh cuộn */
+    border-radius: 4px;
+}
+
+.cart-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+
 .so-luong-sp-gio-hang{
     display: flex;
    align-items: flex-start;
@@ -969,10 +993,17 @@ select:disabled {
 .ten-giatien{
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
     flex-direction: column;
     margin-left: -80px;
     margin-bottom: 10px;
+}
+.ten-giatien span{
+    font-size: 18px;
+    color: red;
+    font-weight: bold;
+    align-items: center;
+    margin-left: 80px;
 }
 
 /* Slick slide  */
@@ -1001,6 +1032,22 @@ select:disabled {
 
 .slick-next {
     right: -50px;
+}
+.so-luong-da-chon {
+    font-size: 18px; /* Tăng kích thước chữ */
+    font-weight: bold; /* Đậm chữ */
+    color: #ff4500; /* Màu cam đỏ nổi bật */
+    background-color: #ffe4b5; /* Màu nền nhạt */
+    padding: 5px 10px; /* Khoảng cách bên trong */
+    border-radius: 8px; /* Bo góc mềm mại */
+    display: inline-block; /* Giữ hình dạng khi có padding */
+    min-width: 30px; /* Đảm bảo kích thước đủ hiển thị số */
+    text-align: center; /* Căn giữa nội dung */
+}
+.so-luong-da-chon:hover {
+    background-color: #ff4500;
+    color: white;
+    transition: 0.3s ease-in-out;
 }
 
 /* Mobile: màn hình nhỏ hơn 768px */
