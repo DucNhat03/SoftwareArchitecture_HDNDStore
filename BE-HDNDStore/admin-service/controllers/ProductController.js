@@ -22,7 +22,6 @@ const createProduct = async (req, res) => {
     }
     const lastProduct = await Product.findOne().sort({ id: -1 });
     const newId = lastProduct ? lastProduct.id + 1 : 1; // Không cần `Number()`
-
     // Tạo sản phẩm mớistock, size, color, image, rating
     const newProduct = new Product({
       id: newId.toString(),

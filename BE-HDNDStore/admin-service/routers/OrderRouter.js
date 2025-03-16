@@ -1,0 +1,14 @@
+const express = require('express');
+const router = express.Router();
+const OrderController = require('../controllers/OrderController');
+
+// Route update Order
+router.put('/update/:idHoaDon', OrderController.updateOrder);
+
+// Route lấy danh sách Order
+router.get('/all', OrderController.getAllOrders);
+
+// Route lấy danh sách Order theo status
+router.get('/status/:status', OrderController.getOrdersOfStatus);
+
+module.exports = router;
