@@ -44,6 +44,7 @@ import {
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
@@ -51,7 +52,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import axios from "axios";
-
+import sideBar from '../../../components/layout/admin-sideBar';
 const drawerWidth = 260;
 
 const theme = createTheme({
@@ -222,8 +223,13 @@ export default function User() {
                 path: "/products",
                 isParent: true,
               },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/orders" },
+              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
               <div key={index}>

@@ -2,6 +2,7 @@ import { useState, useEffect} from "react";
 import {
   Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, AppBar, Toolbar, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Select, FormControl, InputLabel
 } from "@mui/material";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { Dashboard, People, AccountCircle, ShoppingCart, Receipt, BarChart, Settings, Edit, Delete, Logout, AddCircle } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -112,10 +113,23 @@ const handleDeleteOrder = () => {
         
         <CssBaseline />
 
-        <Drawer variant="permanent" sx={{ width: drawerWidth, flexShrink: 0, "& .MuiDrawer-paper": { width: drawerWidth, backgroundColor: "#a7adad", color: "#fff" } }}>
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              backgroundColor: "#a7adad",
+              color: "#fff",
+            },
+          }}
+        >
           <Toolbar>
             <Box sx={{ width: "100%", textAlign: "center" }}>
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>DuyNgayXua</Typography>
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                DuyNgayXua
+              </Typography>
               <IconButton color="error" sx={{ mt: 1 }}>
                 <Logout />
               </IconButton>
@@ -124,19 +138,70 @@ const handleDeleteOrder = () => {
           <List>
             {[
               { text: "Bảng điều khiển", icon: <Dashboard />, path: "/" },
-              { text: "Quản lý khách hàng", icon: <People />, path: "/customers" },
-              { text: "Quản lý tài khoản", icon: <AccountCircle />, path: "/accounts" },
-              { text: "Quản lý sản phẩm", icon: <ShoppingCart />, path: "/products" },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/orders" },
+              {
+                text: "Quản lý khách hàng",
+                icon: <People />,
+                path: "/admin/users",
+              },
+              {
+                text: "Quản lý sản phẩm",
+                icon: <ShoppingCart />,
+                path: "/products",
+                isParent: true,
+              },
+              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
-              <ListItem key={index} disablePadding>
-                <ListItemButton onClick={() => navigate(item.path)}>
-                  <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
+              <div key={index}>
+                {item.isParent ? (
+                  <>
+                    <ListItem disablePadding>
+                      <ListItemButton onClick={handleProductsClick}>
+                        <ListItemIcon sx={{ color: "#fff" }}>
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText primary={item.text} />
+                        {openProducts ? <ExpandLess /> : <ExpandMore />}
+                      </ListItemButton>
+                    </ListItem>
+                    <Collapse in={openProducts} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            sx={{ pl: 4 }}
+                            onClick={() => navigate("/admin/products/men")}
+                          >
+                            <ListItemText primary="Giày nam" />
+                          </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            sx={{ pl: 4 }}
+                            onClick={() => navigate("/admin/products/women")}
+                          >
+                            <ListItemText primary="Giày nữ" />
+                          </ListItemButton>
+                        </ListItem>
+                      </List>
+                    </Collapse>
+                  </>
+                ) : (
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate(item.path)}>
+                      <ListItemIcon sx={{ color: "#fff" }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText primary={item.text} />
+                    </ListItemButton>
+                  </ListItem>
+                )}
+              </div>
             ))}
           </List>
         </Drawer>

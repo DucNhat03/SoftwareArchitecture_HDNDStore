@@ -46,6 +46,7 @@ import {
   Add,
   Close as CloseIcon,
 } from "@mui/icons-material";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
@@ -396,8 +397,13 @@ export default function ProductMen() {
                 path: "/products",
                 isParent: true,
               },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/orders" },
+              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
               <div key={index}>

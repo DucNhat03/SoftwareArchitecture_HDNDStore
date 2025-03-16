@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routers/UserRouter");
 const productRoutes = require("./routers/ProductRouter");
 const uploadRoutes = require("./routers/UploadImage");
-
+const voucherRouters = require("./routers/VoucherRouter");
 dotenv.config();
 
 const app = express();
@@ -16,6 +16,7 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/api", uploadRoutes);
+app.use("/api", voucherRouters);
 
 // Kết nối MongoDB
 const connectDB = async () => {
