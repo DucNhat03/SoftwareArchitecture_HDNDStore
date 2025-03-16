@@ -1,9 +1,7 @@
 /* Container chính */
 .logout-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+    margin: 0 auto;
   }
   
   /* Card đăng xuất */
@@ -14,6 +12,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: none;
     text-align: center;
+    margin: -10vh auto;
   }
   
   /* Hình ảnh minh họa */
@@ -27,4 +26,3 @@
   .logout-icon {
     font-size: 20px;
   }
-  

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { OAuth2Client } from "google-auth-library";
+import mongoose from "mongoose";
 
 // Khởi tạo client Google OAuth
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -221,3 +222,85 @@ export const googleLogin = async (req, res) => {
     res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
   }
 };
+
+// Get access tu product
+// Hàm tìm user theo ID
+const findUserById = async (userId) => {
+  return await User.findById(new mongoose.Types.ObjectId(userId));
+};
+
+// API lấy thông tin user theo ID
+export const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Kiểm tra userId có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "User ID không hợp lệ!" });
+    }
+
+    // Chuyển thành ObjectId
+    const user = await findUserById(new mongoose.Types.ObjectId(userId));
+
+    if (!user) {
+      return res.status(404).json({ error: "User không tồn tại!" });
+    }
+
+    // Trả về thông tin user (ẩn mật khẩu)
+    res.status(200).json({
+      userId: user._id,
+      email: user.email,
+      phone: user.phone,
+      fullName: user.fullName,
+      gender: user.gender,
+      birthday: user.birthday,
+      address: user.address,
+      avatar: user.avatar,
+    });
+  } catch (error) {
+    console.error("Lỗi lấy user:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+
+// API cập nhật thông tin user theo ID
+export const updateUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { fullName, phone, address, avatar } = req.body;
+
+    // Kiểm tra userId có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "User ID không hợp lệ!" });
+    }
+
+    // Tìm và cập nhật user
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { fullName, phone, address, avatar },
+      { new: true } // Trả về dữ liệu sau khi cập nhật
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User không tồn tại!" });
+    }
+
+    res.status(200).json({
+      message: "Cập nhật thành công!",
+      user: {
+        userId: updatedUser._id,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        fullName: updatedUser.fullName,
+        gender: updatedUser.gender,
+        birthday: updatedUser.birthday,
+        address: updatedUser.address,
+        avatar: updatedUser.avatar,
+      },
+    });
+  } catch (error) {
+    console.error("Lỗi cập nhật user:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+

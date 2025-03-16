@@ -27,6 +27,8 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+          {/* Profile với Nested Routes */}
+        <Route path="/profile/*" element={<ProfilePage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/category" element={<Category />} />
         <Route path="/cart" element={<Cart />} /> {/* Thêm route cho Cart */}

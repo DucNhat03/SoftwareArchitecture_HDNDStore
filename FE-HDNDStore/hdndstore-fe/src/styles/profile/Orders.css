@@ -3,7 +3,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: none;
-    margin-top: -10px;
+    position: relative;
+    top: -10vh;
   }
   
   /* Tabs đơn hàng */
@@ -32,3 +33,219 @@
     opacity: 0.7;
   }
   
+  /* Container chính */
+.orders-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabs */
+.orders-tabs .nav-tabs {
+  border-bottom: 2px solid #ddd;
+}
+
+.orders-tabs .nav-link {
+  color: #333;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 0;
+  border: none;
+}
+
+.orders-tabs .nav-link.active {
+  color: #ff4747 !important;
+  border-bottom: 3px solid #ff4747;
+  font-weight: bold;
+}
+
+/* Card đơn hàng */
+.order-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 5px;
+}
+
+.order-card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.order-card {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.order-card-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.order-info {
+  font-size: 16px;
+  color: #333;
+}
+
+.order-info strong {
+  color: #d0021b;
+}
+
+.product-list {
+  margin-top: 15px;
+  padding: 0;
+  list-style-type: none;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+.product-item:hover {
+  background: #f1f1f1;
+}
+
+.product-item img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 15px;
+  border: 2px solid #ddd;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #666;
+}
+
+.product-quantity {
+  font-size: 14px;
+  color: #555;
+}
+
+.product-variant {
+  font-size: 14px;
+  color: #777;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: red;
+  margin-top: 5px;
+}
+
+.total-products {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: right;
+  margin-top: 10px;
+  color: #007bff;
+}
+
+
+/* Tổng tiền */
+.order-total {
+  text-align: right;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff4747;
+  margin-top: 10px;
+}
+.order-card img {
+  width: 80px;
+  height: 80px;
+  margin-right: 30px;
+  border-radius: 10px;
+}
+.order-card ul li {
+list-style-type: none;
+display: flex;
+align-items: center;
+justify-content: space-around;
+}
+.product-info{
+  display: flex;
+  align-items: center;
+}
+.text-danger{
+  color: red;
+}
+
+.phan-loai{
+  font-weight: bold;
+}
+.total-amount{
+  display: flex;
+  justify-content: flex-end;
+  font-weight: bold;
+  font-size: 20px;
+}
+.total-vnd{
+  color: red;
+  margin-left: 10px;
+}
+.trang-thai-don-hang{
+  font-weight: bold;
+  color: green;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+}
+.trang-thai-don-hang-2{
+margin-left: 5px;
+
+}
+.don-hang{
+  color: royalblue;
+  align-items: center;
+  font-weight: bold;
+
+ 
+}
+.total-sp{
+  font-weight: bold;
+  color: red;
+
+}
+.ngay-dat{
+  font-weight: bold;
+  color: red;
+  align-items: center;
+}
+/* Khi hover vào, màu nền sẫm hơn một chút */
+.order-card:hover {
+  background-color: #f0f0f0; /* Màu xám nhạt hơn */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Tăng độ nổi */
+}

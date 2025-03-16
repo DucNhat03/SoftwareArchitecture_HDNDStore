@@ -1,6 +1,6 @@
 import "../../styles/cart/ProductDetail.css";
 import "../../styles/cart/OrderSuccess.css";
-import { FaCheckCircle } from "react-icons/fa"; // Icon cho dấu tích thành công
+import { FaCheckCircle, FaShoppingCart, FaShoppingBag } from "react-icons/fa"; // Icon cho dấu tích thành công
 import { useNavigate } from "react-router-dom"; // Dùng để chuyển trang
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
@@ -15,9 +15,14 @@ const OrderSuccess = () => {
         <div className="dat-hang-thanh-cong">
             <FaCheckCircle className="success-icon" />
             <h2>ĐẶT HÀNG THÀNH CÔNG!</h2>
-            <p>Cảm ơn bạn đã mua sắm tại MWC. Đơn hàng của bạn đang được xử lý.</p>
+            <p>Cảm ơn bạn đã mua sắm tại HDND. Đơn hàng của bạn đang được xử lý.</p>
             <button onClick={() => navigate("/home")} className="btn-back-home">
-                Quay về trang chủ
+                <FaShoppingCart style={{ marginRight: "5px" }} />
+                Tiếp tục mua hàng
+            </button>
+            <button onClick={() => navigate("/profile/orders")} className="btn-xem-don-hang">
+                <FaShoppingBag style={{ marginRight: "5px" }} />
+                Xem đơn hàng đã đặt
             </button>
         </div>
     );

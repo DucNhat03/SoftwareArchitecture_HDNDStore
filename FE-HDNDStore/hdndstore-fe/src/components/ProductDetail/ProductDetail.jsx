@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import PropTypes from "prop-types";
 import "../../styles/cart/ProductDetail.css";
 import { FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
@@ -10,16 +12,181 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 
-const ChiTietSanPham = () => {
-    const [mainImage, setMainImage] = useState("/src/images/giaynam/MWC 5705_3.jpg");
+const ChiTietSanPham = ({ product }) => {
+    const [mainImage, setMainImage] = useState(product?.image || "/src/images/giaynam/MWC 5705_3.jpg");
+
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedColor, setSelectedColor] = useState("#F5F5DC");
-    const [selectedSize, setSelectedSize] = useState("37");
+    const [selectedColor, setSelectedColor] = useState("");
+    const [selectedSize, setSelectedSize] = useState("");
     const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
     const [isShowroomOpen, setIsShowroomOpen] = useState(false);
     const [selectedProvince, setSelectedProvince] = useState("");
     const [districts, setDistricts] = useState([]);
     const [isModalOpenGioHang, setIsModalOpenGioHang] = useState(false);
+
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [cart, setCart] = useState([]); // Giỏ hàng
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Lấy sản phẩm đã chọn từ localStorage
+        const storedProduct = localStorage.getItem("selectedProduct");
+        if (storedProduct) {
+            const parsedProduct = JSON.parse(storedProduct);
+            setSelectedProduct(parsedProduct);
+            setMainImage(parsedProduct.image || "/src/images/giaynam/MWC 5705_3.jpg");
+        }
+
+        // Lấy userId từ localStorage hoặc context
+        const userId = localStorage.getItem("userId"); // Giả sử userId được lưu khi đăng nhập
+        if (userId) {
+            const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
+            setCart(storedCarts[userId] || []); // Cập nhật giỏ hàng của user hiện tại
+        }
+    }, []); // Chạy một lần khi trang load
+
+
+
+    if (!selectedProduct) {
+        return <p className="text-center">Không tìm thấy sản phẩm!</p>;
+    }
+
+    // Danh sách ánh xạ từ tên màu sang mã màu HEX
+    const colorMap = {
+        "bạc": "#C0C0C0",
+        "nâu": "#8B4513",
+        "trắng": "#e8e8e8",
+        "đen": "#000000",
+        "đỏ": "#FF0000",
+        "xanh": "#0000FF",
+        "kem": "#F5F5DC",
+        "vàng": "#FFFF00",
+        "hồng": "#FFC0CB",
+        "xám": "#808080",
+    };
+
+
+    const handleViewCart = () => {
+        const userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            alert("Vui lòng đăng nhập để xem giỏ hàng!");
+            navigate("/auth"); // Chuyển hướng sang trang cart
+            return;
+        }
+        else {
+
+            // Lưu giỏ hàng của user vào localStorage trước khi chuyển trang
+            const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
+            localStorage.setItem("carts", JSON.stringify(storedCarts));
+
+            navigate("/cart"); // Chuyển hướng sang trang cart
+        }
+
+    };
+
+
+    const addToCart = () => {
+        if (!selectedColor || !selectedSize) {
+            alert("Vui lòng chọn màu sắc và kích cỡ!");
+            return;
+        }
+
+        // Lấy userId từ localStorage
+        const userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            alert("Vui lòng đăng nhập để thêm vào giỏ hàng!");
+            return;
+        }
+
+        // Lấy giỏ hàng theo userId từ localStorage
+        const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
+        const userCart = storedCarts[userId] || [];
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        const existingItem = userCart.find(
+            (cartItem) => cartItem.id === selectedProduct.id && cartItem.color === selectedColor && cartItem.size === selectedSize
+        );
+
+        let updatedCart;
+        if (existingItem) {
+            // Nếu sản phẩm đã tồn tại, tăng số lượng
+            updatedCart = userCart.map((cartItem) =>
+                cartItem.id === selectedProduct.id && cartItem.color === selectedColor && cartItem.size === selectedSize
+                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                    : cartItem
+            );
+        } else {
+            // Nếu chưa có, thêm sản phẩm mới với số lượng là 1
+            updatedCart = [...userCart, { ...selectedProduct, color: selectedColor, size: selectedSize, quantity: 1 }];
+        }
+
+        // Cập nhật giỏ hàng vào object `carts`
+        storedCarts[userId] = updatedCart;
+        localStorage.setItem("carts", JSON.stringify(storedCarts));
+
+        // Cập nhật state giỏ hàng
+        setCart(updatedCart);
+
+        // Mở modal giỏ hàng
+        setIsModalOpenGioHang(true);
+    };
+
+    const addToCart2 = () => {
+        if (!selectedColor || !selectedSize) {
+            alert("Vui lòng chọn màu sắc và kích cỡ!");
+            return;
+        }
+
+        // Lấy userId từ localStorage
+        const userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            alert("Vui lòng đăng nhập để thêm vào giỏ hàng!");
+            return;
+        }
+
+        // Lấy danh sách giỏ hàng của tất cả user từ localStorage
+        const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
+
+        // Lấy giỏ hàng của user hiện tại
+        const currentCart = storedCarts[userId] || [];
+
+        // Tìm sản phẩm đã tồn tại trong giỏ hàng
+        const existingItemIndex = currentCart.findIndex(
+            (cartItem) =>
+                cartItem.id === selectedProduct.id &&
+                cartItem.color === selectedColor &&
+                cartItem.size === selectedSize
+        );
+
+        if (existingItemIndex !== -1) {
+            // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1
+            currentCart[existingItemIndex].quantity += 1;
+        } else {
+            // Nếu chưa có, thêm sản phẩm mới với số lượng là 1
+            currentCart.push({
+                ...selectedProduct,
+                color: selectedColor,
+                size: selectedSize,
+                quantity: 1,
+            });
+        }
+
+        // Cập nhật giỏ hàng của user vào object `carts`
+        storedCarts[userId] = currentCart;
+
+        // Lưu lại toàn bộ danh sách giỏ hàng vào localStorage
+        localStorage.setItem("carts", JSON.stringify(storedCarts));
+
+        // Cập nhật state giỏ hàng của user hiện tại
+        setCart(currentCart);
+
+        // Chuyển hướng sang trang giỏ hàng
+        navigate("/cart");
+    };
+
 
 
 
@@ -119,20 +286,20 @@ const ChiTietSanPham = () => {
                     <div className="breadcum">
                         <a href="/home">Trang chủ</a> <span className="delimiter"></span>
                         <span> | </span>
-                        <a href="/chi-tiet-san-pham">Dép Nam</a> <span className="delimiter"></span>
+                        <a href="/category">{selectedProduct.category}</a> <span className="delimiter"></span>
                         <span> | </span>
-                        <span className="present">Giày Nam MWC 5705</span>
+                        <span className="present">{selectedProduct.name}</span>
                     </div>
 
                     <div className="container-hinh-san-pham">
                         <div className="hinh-san-pham">
                             <div className="hinh-main">
-                                <img className="main-image" src={mainImage} alt="Giày Nam" />
+                                <img className="main-image" src={mainImage} alt={selectedProduct.name} />
                             </div>
                             <div className="thum-san-pham">
                                 <div className="slide-container-chi-tiet">
                                     <Slider {...settings}>
-                                        {images.map((img, index) => (
+                                        {selectedProduct.imagethum?.map((img, index) => (
                                             <div key={index} className="card-small" onClick={() => setMainImage(img)}>
                                                 <div className="image-box-small">
                                                     <img src={img} alt="Giày Nam" />
@@ -142,44 +309,50 @@ const ChiTietSanPham = () => {
                                     </Slider>
                                 </div>
                             </div>
+
                         </div>
 
                         <div className="thong-tin-san-pham">
-                            <h2 className="main-name">Giày Thể Thao Nam MWC 5705 - Giày Sneaker Cổ Thấp</h2>
+                            <h2 className="main-name">{selectedProduct.name}</h2>
                             <div className="review-sanpham">
                                 <img src="/src/images/danh-gia-sp.png" alt="Đánh giá" />
                                 <span>12 đánh giá - 987 lượt thích</span>
                             </div>
                             <div className="gia-san-pham">
-                                <span className="gia-cu">295,000₫</span>
+                                <span className="gia-cu"> {selectedProduct.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
                                 <p className="phi-vat">(Đã bao gồm phí VAT)</p>
                             </div>
 
                             <div className="mau-sac-san-pham">
                                 <span className="mau-sac">Màu sắc</span>
                                 <div className="so-mau-sac">
-                                    <span
-                                        style={{ backgroundColor: "#F5F5DC" }}
-                                        className={`mau-sac-item ${selectedColor === "#F5F5DC" ? "selected" : ""}`}
-                                        title="Màu Be"
-                                        onClick={() => setSelectedColor("#F5F5DC")}
-                                    ></span>
-                                    <span
-                                        style={{ backgroundColor: "black" }}
-                                        className={`mau-sac-item ${selectedColor === "black" ? "selected" : ""}`}
-                                        title="Màu đen"
-                                        onClick={() => setSelectedColor("black")}
-                                    ></span>
+                                    {[
+                                        ...new Set(selectedProduct.variants?.map(variant => variant.color)) // Lấy danh sách màu không trùng lặp
+                                    ].map((color, index) => {
+                                        const backgroundColor = colorMap[color.toLowerCase()] || color; // Chuyển tên màu thành mã HEX nếu có
+                                        return (
+                                            <span
+                                                key={index}
+                                                style={{ backgroundColor }}
+                                                className={`mau-sac-item ${selectedColor === color ? "selected" : ""}`}
+                                                title={`Màu ${color}`}
+                                                onClick={() => setSelectedColor(color)}
+                                            ></span>
+                                        );
+                                    })}
                                 </div>
+
                             </div>
 
                             {/* Kích thước sản phẩm */}
                             <div className="kich-thuoc-san-pham">
                                 <span className="kich-thuoc">Kích thước</span>
                                 <div className="so-kich-thuoc">
-                                    {[37, 38, 39, 40, 41, 42, 43].map((size) => (
+                                    {[
+                                        ...new Set(selectedProduct.variants?.map(variant => variant.size)) // Lấy danh sách size không trùng lặp
+                                    ].map((size, index) => (
                                         <span
-                                            key={size}
+                                            key={index}
                                             className={selectedSize === size.toString() ? "selected" : ""}
                                             onClick={() => setSelectedSize(size.toString())}
                                         >
@@ -188,6 +361,8 @@ const ChiTietSanPham = () => {
                                     ))}
                                 </div>
                             </div>
+
+
 
                             {/* Hướng dẫn chọn size */}
                             <div className="huong-dan-chon-size">
@@ -283,39 +458,49 @@ const ChiTietSanPham = () => {
                                         <h2>TÌM SẢN PHẨM TẠI SHOWROOM</h2>
                                         <div className="thong-tin-san-pham-da-chon">
                                             <div className="hinh-san-pham-da-chon">
-                                                <img src="/src/images/giaynam/MWC 5705_4.jpg" alt="Sản phẩm" />
+                                                <img src={selectedProduct.image} alt={selectedProduct.name} />
                                             </div>
                                             <div className="thong-tin-san-pham-chi-tiet">
                                                 <div className="ten-giatien">
-                                                    <span className="main-name-da-chon">Giày Thể Thao Nam MWC 5705</span>
-                                                    <span className="gia-san-pham-da-chon">295,000₫</span>
+                                                    <span className="main-name-da-chon">{selectedProduct.name}</span>
+                                                    <span className="gia-san-pham-da-chon">
+                                                        {selectedProduct.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                    </span>
                                                 </div>
 
                                                 <div className="mau-sac-san-pham">
-
+                                                    <span className="mau-sac">Màu sắc</span>
                                                     <div className="so-mau-sac">
-                                                        <span
-                                                            style={{ backgroundColor: "#F5F5DC" }}
-                                                            className={`mau-sac-item ${selectedColor === "#F5F5DC" ? "selected" : ""}`}
-                                                            title="Màu Be"
-                                                            onClick={() => setSelectedColor("#F5F5DC")}
-                                                        ></span>
-                                                        <span
-                                                            style={{ backgroundColor: "black" }}
-                                                            className={`mau-sac-item ${selectedColor === "black" ? "selected" : ""}`}
-                                                            title="Màu đen"
-                                                            onClick={() => setSelectedColor("black")}
-                                                        ></span>
+                                                        {[
+                                                            ...new Set(selectedProduct.variants?.map(variant => variant.color)) // Lấy danh sách màu không trùng lặp
+                                                        ].map((color, index) => {
+                                                            const backgroundColor = colorMap[color.toLowerCase()] || color; // Chuyển tên màu thành mã HEX nếu có
+                                                            return (
+                                                                <span
+                                                                    key={index}
+                                                                    style={{ backgroundColor }}
+                                                                    className={`mau-sac-item ${selectedColor === color ? "selected" : ""}`}
+                                                                    title={`Màu ${color}`}
+                                                                    onClick={() => setSelectedColor(color)}
+                                                                ></span>
+                                                            );
+                                                        })}
                                                     </div>
+
                                                 </div>
 
+
+
+                                                {/* Kích thước sản phẩm */}
                                                 {/* Kích thước sản phẩm */}
                                                 <div className="kich-thuoc-san-pham">
-
+                                                    <span className="kich-thuoc">Kích thước</span>
                                                     <div className="so-kich-thuoc">
-                                                        {[37, 38, 39, 40, 41, 42, 43].map((size) => (
+                                                        {[
+                                                            ...new Set(selectedProduct.variants?.map(variant => variant.size)) // Lấy danh sách size không trùng lặp
+                                                        ].map((size, index) => (
                                                             <span
-                                                                key={size}
+                                                                key={index}
                                                                 className={selectedSize === size.toString() ? "selected" : ""}
                                                                 onClick={() => setSelectedSize(size.toString())}
                                                             >
@@ -324,6 +509,7 @@ const ChiTietSanPham = () => {
                                                         ))}
                                                     </div>
                                                 </div>
+
                                             </div>
 
 
@@ -374,10 +560,16 @@ const ChiTietSanPham = () => {
                             )}
                             <div className="mua">
                                 <div className="btn-mua-ngay">
-                                    <a href="./cart">MUA NGAY</a>
+                                    <a href="#" onClick={() => {
+                                        addToCart2();
+
+                                    }} >MUA NGAY</a>
                                 </div>
                                 <div className="btn-them-vao-gio-hang">
-                                    <a href="#" id="addToCartBtn" onClick={() => setIsModalOpenGioHang(true)}>
+                                    <a href="#" id="addToCartBtn" onClick={() => {
+                                        addToCart();
+
+                                    }}>
                                         <FaShoppingCart style={{ marginRight: "5px" }} />
                                         THÊM VÀO GIỎ HÀNG
                                     </a>
@@ -390,34 +582,36 @@ const ChiTietSanPham = () => {
                                                 &times;
                                             </span>
                                             <h2>Giỏ hàng</h2>
-                                            <div className="product-info">
-                                                <div className="img-chi-tiet">
-                                                    <img src="/src/images/giaynam/MWC 5705_3.jpg" alt="Product Image" />
-                                                </div>
-                                                <div className="details">
-                                                    <span>Giày Thể Thao Nam MWC 5705 - Giày Thể Thao Nam Dáng Sneaker Cổ Thấp</span>
-                                                    <p>Kích cỡ: 38</p>
-                                                    <p>Màu sắc: Be</p>
-                                                    <p>Giá: 500,000 VNĐ</p>
-                                                </div>
-                                            </div>
-                                            <div className="so-luong-sp-gio-hang">
-                                                <label>Số lượng:</label>
-                                                <input type="number" min="1" defaultValue="1" />
+                                            <div className="cart-scroll-container">
+                                                {cart.length > 0 ? (
+                                                    cart.map((item, index) => (
+                                                        <div key={index} className="product-info">
+                                                            <div className="img-chi-tiet">
+                                                                <img src={item.image} alt={item.name} />
+                                                            </div>
+                                                            <div className="details">
+                                                                <span>{item.name}</span>
+                                                                <p>Kích cỡ: {item.size}</p>
+                                                                <p>Màu sắc: {item.color}</p>
+                                                                <p>
+                                                                    <span className="so-luong-da-chon">{item.quantity} </span>  X {item.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                                </p>
+                                                            </div>
+
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>Giỏ hàng của bạn đang trống!</p>
+                                                )}
                                             </div>
                                             <div className="total">
                                                 <hr />
-                                                <p><strong>Tổng cộng: 500,000 VNĐ</strong></p>
+                                                <p><strong>Tổng cộng: {cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</strong></p>
                                             </div>
-                                            <a href="./cart" className="btn-add-to-cart">Xem giỏ hàng</a>
+                                            <a onClick={handleViewCart} className="btn-add-to-cart">Xem giỏ hàng</a>
                                         </div>
                                     </div>
                                 )}
-
-
-                                
-                            
-
 
                             </div>
                             <br /><br /><br />
@@ -438,11 +632,11 @@ const ChiTietSanPham = () => {
                             <br />
                             <hr />
 
-                        
+
 
                         </div>
 
-                        
+
                     </div>
                     <div className="chi-tiet-san-pham">
                         <table className="size-table-chi-tiet">
@@ -504,18 +698,24 @@ const ChiTietSanPham = () => {
                     </div>
 
                     <div className="co-the-ban-cung-thich">
-                    
+
                         <span>CÓ THỂ BẠN CŨNG THÍCH</span>
                         <br /><br />
                         <div className="co-the-ban-cung-thich-item">
-                            {products.map((product) => (
-                                <div key={product.id} className="card-sp">
+                            {products.map((selectedProduct) => (
+
+                                <div key={selectedProduct.id} className="card-sp">
                                     <div className="image-box">
-                                        <img src={product.image} alt={product.name} />
+                                        <img src={selectedProduct.image} alt={selectedProduct.name} />
                                     </div>
                                     <div className="thong-tin-san-pham-xem-them">
-                                        <span className="ten-san-pham">{product.name}</span>
-                                        <span className="gia-san-pham">{product.price}</span>
+                                        <span className="ten-san-pham">{selectedProduct.name}</span>
+                                        <span className="gia-san-pham">
+                                            295.000 đ
+                                        </span>
+
+
+
                                     </div>
                                 </div>
                             ))}
@@ -570,7 +770,7 @@ const ChiTietSanPham = () => {
                             </div>
                         </div>
                     </div>
-               
+
 
 
                 </div>
