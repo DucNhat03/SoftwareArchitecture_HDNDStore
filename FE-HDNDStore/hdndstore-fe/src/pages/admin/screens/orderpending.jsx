@@ -58,6 +58,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { generateInvoicePDF } from "../../../utils/generateInvoice";
 
 const drawerWidth = 260;
 const ITEMS_PER_PAGE = 6;
@@ -118,9 +119,15 @@ export default function OrderPending() {
   const [currentPage, setCurrentPage] = useState(0);
   const ordersWithUsers = Orders.map((order) => {
     const user = Users.find((user) => user._id === order.receiver);
+    const customerAddress = user && user.address
+      ? `${user.address.street}, ${user.address.ward}, ${user.address.district}, ${user.address.city}`
+      : "Không có địa chỉ";
     return {
       ...order,
       customerName: user ? user.fullName : "Không có thông tin",
+      customerPhone : user ? user.phone : "Không có thông tin",
+      customerEmail : user ? user.email : "Không có thông tin",
+      customerAddress,
     };
   });
   // Lọc đơn hàng theo từ khóa tìm kiếm
@@ -665,6 +672,16 @@ export default function OrderPending() {
           <Button onClick={() => setViewOpen(false)} color="primary">
             Đóng
           </Button>
+          <Button
+  onClick={async () => {
+    await generateInvoicePDF(selectedOrderDetails);
+    toast.success("Xuất hóa đơn thành công!");
+    setViewOpen(false);
+  }}
+  color="primary"
+>
+  Xuất Hóa Đơn PDF
+</Button>
         </DialogActions>
       </Dialog>
 
