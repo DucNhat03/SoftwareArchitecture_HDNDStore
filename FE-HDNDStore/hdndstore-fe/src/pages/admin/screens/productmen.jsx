@@ -30,6 +30,8 @@ import {
   FormControl,
   InputLabel,
   Collapse,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import {
   Dashboard,
@@ -45,6 +47,8 @@ import {
   ExpandMore,
   Add,
   Close as CloseIcon,
+  ArrowBack,
+  ArrowForward,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -55,6 +59,7 @@ import { ToastContainer } from "react-toastify";
 import axios from "axios";
 
 const drawerWidth = 260;
+const ITEMS_PER_PAGE = 6;
 
 const theme = createTheme({
   palette: {
@@ -110,13 +115,43 @@ export default function ProductMen() {
     return () => clearInterval(timer);
   }, []);
 
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // Reset currentPage về 0 khi searchTerm thay đổi
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm]);
+
+  // Lọc đơn hàng theo từ khóa tìm kiếm
+  const filteredProduct = Products.slice()
+    .reverse()
+    .filter(
+      (Product) =>
+        (!isNaN(searchTerm) && Product.id.toString().includes(searchTerm)) ||
+        Product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        Product.subcategories
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (!isNaN(searchTerm) && Product.price.toString().includes(searchTerm)) ||
+        Product.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+  // Xác định danh sách hóa đơn cần hiển thị
+  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const paginatedProducts = filteredProduct.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
   const handleVariantChange = (event) => {
     setSelectedVariantIndex(event.target.value);
     setSelectedStock(""); // Reset số lượng khi chọn biến thể mới
   };
 
   const handleStockChange = (event) => {
-    setSelectedStock(event.target.value);
+    let value = event.target.value.replace(/\D/g, ""); // Chỉ giữ số
+    value = Math.min(999, Math.max(0, Number(value)));
+    setSelectedStock(value);
   };
 
   const handleConfirm = () => {
@@ -195,6 +230,10 @@ export default function ProductMen() {
   const handleProductsClick = () => {
     setOpenProducts(!openProducts);
   };
+  const [openOrders, setOpenOrders] = useState(false);
+  const handleOrdersClick = () => {
+    setOpenOrders(!openOrders);
+  };
 
   const handleViewProduct = (Product) => {
     setSelectedProductDetails(Product);
@@ -242,67 +281,68 @@ export default function ProductMen() {
       setNewProduct((prev) => ({ ...prev, status: "Hết hàng" }));
     }
   }, [selectedProduct, newProduct]);
-
+  const [loading, setLoading] = useState(false);
   const handleSaveProduct = async () => {
     try {
+      setLoading(true); // Bật hiệu ứng xoay vòng + làm mờ
+  
+      // ✅ Kiểm tra dữ liệu đầu vào
       if (!selectedProduct?.name && !newProduct.name) {
         toast.error("Vui lòng nhập tên sản phẩm!");
+        setLoading(false);
         return;
       }
+  
       if (!selectedProduct?.subcategories && !newProduct.subcategories) {
         toast.error("Vui lòng chọn danh mục phụ!");
+        setLoading(false);
         return;
       }
+  
       if (!selectedProduct?.price && !newProduct.price) {
         toast.error("Vui lòng nhập giá sản phẩm!");
+        setLoading(false);
         return;
       }
+  
       if (
         selectedProduct?.image?.length + selectedFiles.length > 5 ||
         selectedThumbnails.length > 5
       ) {
         toast.error("Số lượng ảnh tối đa là 5!");
+        setLoading(false);
         return;
       }
-
-      console.log("newProduct:", newProduct);
-      console.log("selectedProduct:", selectedProduct);
-
+  
       let imageUrls = [];
       let imagethumUrls = [];
-
+  
       // ✅ Upload ảnh sản phẩm lên Cloudinary nếu có
       if (selectedFiles.length > 0) {
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("image", file));
-
+  
         const response = await axios.post(
           "http://localhost:5000/api/upload",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          formData
         );
         imageUrls = response.data.imageUrls || [];
       }
-
+  
       // ✅ Upload ảnh Thumbnail lên Cloudinary nếu có
       if (selectedThumbnails.length > 0) {
         const formData = new FormData();
         selectedThumbnails.forEach((file) =>
           formData.append("imagethum", file)
         );
-
+  
         const response = await axios.post(
           "http://localhost:5000/api/upload",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          formData
         );
         imagethumUrls = response.data.imagethumUrls || [];
       }
-
+  
       // ✅ Gộp URL ảnh vào sản phẩm trước khi lưu
       if (!selectedProduct || !selectedProduct.id) {
         // Kiểm tra trùng lặp trước khi thêm mới
@@ -312,12 +352,13 @@ export default function ProductMen() {
             params: { name: newProduct.name },
           }
         );
-
+  
         if (checkDuplicate.data.duplicate) {
           toast.error("Sản phẩm đã tồn tại!");
+          setLoading(false);
           return;
         }
-
+  
         // ✅ Thêm mới sản phẩm với ảnh đã upload
         await axios.post("http://localhost:5000/products/create", {
           ...newProduct,
@@ -325,7 +366,6 @@ export default function ProductMen() {
           imagethum: [...(newProduct.imagethum || []), ...imagethumUrls],
         });
         toast.success("Thêm sản phẩm thành công!");
-        handleClose();
       } else {
         // ✅ Cập nhật sản phẩm với ảnh đã upload
         await axios.put(
@@ -337,10 +377,9 @@ export default function ProductMen() {
           }
         );
         toast.success("Cập nhật sản phẩm thành công!");
-        handleClose();
       }
-
-      // Lấy danh sách sản phẩm mới sau khi thêm/cập nhật
+  
+      // ✅ Lấy danh sách sản phẩm mới sau khi thêm/cập nhật
       const response = await axios.get(
         "http://localhost:5000/products/all/men"
       );
@@ -349,11 +388,17 @@ export default function ProductMen() {
     } catch (error) {
       console.error("Lỗi khi lưu sản phẩm:", error);
       toast.error("Lỗi khi lưu sản phẩm!");
+    } finally {
+      setLoading(false); // Tắt loading khi xong
     }
   };
+  
 
   return (
     <ThemeProvider theme={theme}>
+    <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
+  <CircularProgress color="inherit" />
+</Backdrop>
       <ToastContainer position="top-right" autoClose={3000} />
       <Box
         sx={{ display: "flex", backgroundColor: "#e9ecec", minHeight: "100vh" }}
@@ -393,10 +438,13 @@ export default function ProductMen() {
               {
                 text: "Quản lý sản phẩm",
                 icon: <ShoppingCart />,
-                path: "/products",
                 isParent: true,
               },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/orders" },
+              {
+                text: "Quản lý đơn hàng",
+                icon: <Receipt />,
+                isParent: true,
+              },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
@@ -404,32 +452,105 @@ export default function ProductMen() {
                 {item.isParent ? (
                   <>
                     <ListItem disablePadding>
-                      <ListItemButton onClick={handleProductsClick}>
+                      <ListItemButton
+                        onClick={
+                          item.text === "Quản lý sản phẩm"
+                            ? handleProductsClick
+                            : handleOrdersClick
+                        }
+                      >
                         <ListItemIcon sx={{ color: "#fff" }}>
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.text} />
-                        {openProducts ? <ExpandLess /> : <ExpandMore />}
+                        {item.text === "Quản lý sản phẩm" ? (
+                          openProducts ? (
+                            <ExpandLess />
+                          ) : (
+                            <ExpandMore />
+                          )
+                        ) : openOrders ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
                       </ListItemButton>
                     </ListItem>
-                    <Collapse in={openProducts} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={
+                        item.text === "Quản lý sản phẩm"
+                          ? openProducts
+                          : openOrders
+                      }
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <List component="div" disablePadding>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/men")}
-                          >
-                            <ListItemText primary="Giày nam" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/women")}
-                          >
-                            <ListItemText primary="Giày nữ" />
-                          </ListItemButton>
-                        </ListItem>
+                        {item.text === "Quản lý sản phẩm" ? (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() => navigate("/admin/products/men")}
+                              >
+                                <ListItemText primary="Giày nam" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/products/women")
+                                }
+                              >
+                                <ListItemText primary="Giày nữ" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        ) : (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/pending")
+                                }
+                              >
+                                <ListItemText primary="Chờ xác nhận" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/shipping")
+                                }
+                              >
+                                <ListItemText primary="Đang giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/delivered")
+                                }
+                              >
+                                <ListItemText primary="Đã giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/canceled")
+                                }
+                              >
+                                <ListItemText primary="Đã hủy" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        )}
                       </List>
                     </Collapse>
                   </>
@@ -454,7 +575,7 @@ export default function ProductMen() {
             sx={{ backgroundColor: "#a7adad", color: "#fff" }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Quản lý sản phẩm giày nam</Typography>
+            <Typography variant="h5"><b>QUẢN LÝ SẢN PHẨM GIÀY NAM</b></Typography>
               <Typography variant="body1">
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
@@ -552,26 +673,7 @@ export default function ProductMen() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Products.slice()
-                .reverse()
-                .filter(
-                  (Product) =>
-                    (!isNaN(searchTerm) &&
-                      Product.id.toString().includes(searchTerm)) ||
-                    Product.name
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    Product.subcategories
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    (!isNaN(searchTerm) &&
-                      Product.price.toString().includes(searchTerm)) ||
-                    (!isNaN(searchTerm) &&
-                      Product.stock.toString().includes(searchTerm)) ||
-                    Product.status
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase())
-                ).map((Product) => (
+                {paginatedProducts.map((Product) => (
                   <TableRow
                     key={Product.id}
                     hover
@@ -638,11 +740,37 @@ export default function ProductMen() {
                 ))}
               </TableBody>
             </Table>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                margin: "10px 0",
+              }}
+            >
+              <IconButton
+                disabled={currentPage === 0}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                sx={{ mx: 1 }}
+              >
+                <ArrowBack /> {/* Icon Trang Trước */}
+              </IconButton>
+
+              <IconButton
+                disabled={startIndex + ITEMS_PER_PAGE >= filteredProduct.length}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                sx={{ mx: 1 }}
+              >
+                <ArrowForward /> {/* Icon Trang Sau */}
+              </IconButton>
+            </div>
           </TableContainer>
         </Box>
       </Box>
       {/* dialog sửa khách hàng */}
       <Dialog open={editOpen || addOpen} onClose={handleClose}>
+      <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
+  <CircularProgress color="inherit" />
+</Backdrop>
         <DialogTitle>
           {selectedProduct ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
         </DialogTitle>
@@ -706,7 +834,8 @@ export default function ProductMen() {
             fullWidth
             value={selectedProduct ? selectedProduct.price : newProduct.price}
             onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, ""); // Chỉ giữ số
+              let value = e.target.value.replace(/\D/g, ""); // Chỉ giữ số
+              value = Math.min(999999, Math.max(0, Number(value))); // Giới hạn từ 0 - 5
               selectedProduct
                 ? setSelectedProduct({ ...selectedProduct, price: value })
                 : setNewProduct({ ...newProduct, price: value });
