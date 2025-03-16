@@ -8,12 +8,24 @@ import {
 import "../../styles/Header.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showSubmenu, setShowSubmenu] = useState(null); // Điều khiển submenu trên mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024); // Xác định thiết bị
   const navigate = useNavigate();
+
+
+  // Cập nhật trạng thái khi resize màn hình
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const isAuthenticated = !!localStorage.getItem("token");
   const handleAuth = () => {
@@ -24,14 +36,20 @@ const Header = () => {
     }
   };
 
-  // Cập nhật trạng thái khi resize màn hình
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1024);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const handleCartClick = () => {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      toast.error("Vui lòng đăng nhập để xem giỏ hàng !", { position: "top-center" });
+      // Đợi 2 giây (2000ms) trước khi chuyển hướng
+      setTimeout(() => {
+        navigate("/auth");
+      }, 3000);
+      return;
+    }
+
+    navigate("/cart");
+  };
 
   const menuItems = [
     {
@@ -132,24 +150,26 @@ const Header = () => {
 
           <div
             className="cart_box"
-            onClick={() => navigate("/cart")}
+            // onClick={() => navigate("/cart")}
             style={{ cursor: "pointer" }}
           >
-            <FaShoppingCart />
-            <div className="cart_count">1</div>
+            <div className="cart_box" onClick={handleCartClick} style={{ cursor: "pointer" }}>
+              <FaShoppingCart />
+              <div className="cart_count">1</div>
+            </div>
           </div>
-        </div>
 
-        <div className="nav_right-reponsive">
-          <button className="btn btn-link">
-            <FaSearch size={24} />
-          </button>
-          <button className="btn btn-link" onClick={() => handleAuth()}>
-            <FaUser size={24} />
-          </button>
-          <button className="btn btn-link">
-            <FaShoppingCart size={24} />
-          </button>
+          <div className="nav_right-reponsive">
+            <button className="btn btn-link">
+              <FaSearch size={24} />
+            </button>
+            <button className="btn btn-link" onClick={() => handleAuth()}>
+              <FaUser size={24} />
+            </button>
+            <button className="btn btn-link">
+              <FaShoppingCart size={24} />
+            </button>
+          </div>
         </div>
       </nav>
 

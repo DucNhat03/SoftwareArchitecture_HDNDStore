@@ -1,7 +1,12 @@
 /* Container của Wishlist */
 .wishlist-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 20px;
+    margin: 0 auto;
     padding: 20px;
-    margin-top: 10px;
+    top: -10vh;
+    position: relative;
   }
   
   /* Card của Wishlist */

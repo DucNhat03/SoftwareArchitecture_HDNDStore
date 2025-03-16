@@ -24,24 +24,29 @@ const LoginForm = ({ switchMode }) => {
       const response = await api.post("/auth/login", formData);
       const { token, user } = response.data;
 
-      localStorage.setItem("token", token); // Lưu token
-      localStorage.setItem("role", user.role); // Lưu role để phân quyền
+      // Lưu token và role vào localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("userId", JSON.stringify(user._id));
 
+      // Hiển thị thông báo đăng nhập thành công
       toastService.success("Đăng nhập thành công!");
 
-      // ✅ Điều hướng dựa trên vai trò
+      // ✅ Điều hướng sau 2 giây để đảm bảo toast hiển thị trước
       setTimeout(() => {
         if (user.role === "admin") {
           navigate("/admin/users");
         } else {
-          navigate("/profile");
+          navigate("/home");
         }
-      }, 1500);
+      }, 2000); // Chờ 2 giây trước khi chuyển trang để người dùng thấy toast
+
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
       toastService.error(error.response?.data?.error || "Lỗi đăng nhập!");
     }
   };
+
 
   return (
     <Form className="text-center" onSubmit={handleSubmit}>
