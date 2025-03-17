@@ -31,6 +31,7 @@ import {
   InputLabel,
   Collapse,
   TablePagination,
+  Alert,
 } from "@mui/material";
 import {
   Dashboard,
@@ -59,6 +60,7 @@ import sideBar from '../../../components/layout/admin-sideBar';
 const drawerWidth = 260;
 const ITEMS_PER_PAGE = 6;
 
+
 const theme = createTheme({
   palette: {
     primary: { main: "#504c4c" },
@@ -68,7 +70,7 @@ const theme = createTheme({
   },
 });
 
-export default function User() {
+export default function User() { 
   const [Users, setUsers] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -234,6 +236,12 @@ export default function User() {
       .catch((error) => console.error("Lỗi khi kiểm tra trùng lặp:", error));
   };
 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token"); // Xóa token khỏi localStorage
+  //   localStorage.removeItem("userId"); // Xóa User khỏi localStorage
+  //   navigate("/auth"); 
+  // };
+
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -259,8 +267,8 @@ export default function User() {
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 DuyNgayXua
               </Typography>
-              <IconButton color="error" sx={{ mt: 1 }}>
-                <Logout />
+              <IconButton color="error" sx={{ mt: 10 }} >
+                <Logout /> {/* logout, return login form, deleted token, clear local stored*/}
               </IconButton>
             </Box>
           </Toolbar>

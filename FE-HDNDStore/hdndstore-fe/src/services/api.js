@@ -9,6 +9,9 @@ const api = axios.create({
   },
 });
 
+
+
+
 // ✅ Tự động thêm token vào tất cả request
 api.interceptors.request.use(
   (config) => {
@@ -50,5 +53,6 @@ export const resetPassword = async (email, newPassword) => {
     throw error.response?.data || "Lỗi đặt lại mật khẩu!";
   }
 };
+
 
 export default api;
