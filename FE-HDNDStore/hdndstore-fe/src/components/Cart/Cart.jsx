@@ -3,14 +3,33 @@ import "../../styles/cart/ProductDetail.css";
 import "../../styles/cart/Cart.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
+import axios from "axios";
 
 
-
-
-const CartTable = () => {
+const CartTable = ({ setDis }) => {
     const [cart, setCart] = useState([]);
-   
+
     const [cartItems, setCartItems] = useState([]);
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedDiscount, setSelectedDiscount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+    setDis(selectedDiscount);
+    useEffect(() => {
+        const fetchVouchers = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/vouchers");
+
+                // Lọc chỉ lấy voucher có state = "Còn hiệu lực"
+                const validVouchers = response.data.filter(voucher => voucher.state === "Còn hiệu lực");
+
+                setVouchers(validVouchers);
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách voucher:", error);
+            }
+        };
+
+        fetchVouchers();
+    }, []);
 
     useEffect(() => {
         // Lấy userId từ localStorage
@@ -62,118 +81,128 @@ const CartTable = () => {
         storedCarts[userId] = updatedCart;
         localStorage.setItem("carts", JSON.stringify(storedCarts));
     };
-    
 
-// Cart
+    const formatVND = (amount) => {
+        return amount.toLocaleString("vi-VN");
+    };
+
+    useEffect(() => {
+        const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const newTotal = subtotal - selectedDiscount + 20000;
+
+        setTotalAmount(newTotal);
+    }, [cartItems, selectedDiscount]);
+
+    // Cart
     return (
         <>
-        <table className="size-table-chi-tiet">
-            <thead>
-                <tr>
-                    <th>Sản Phẩm</th>
-                    <th>Đơn Giá</th>
-                    <th>Số Lượng</th>
-                    <th>Số Tiền</th>
-                    <th>Thao Tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {cartItems.length > 0 ? (
-                    cartItems.map((item) => (
-                        <tr key={item.id}>
-                            <td>
-                                <div className="san-pham">
-                                    <img src={item.image} alt={item.name} />
-                                    <div className="thong-tin-san-pham">
-                                        <p>{item.name}</p>
-                                        <div className="mau-sac-kich-thuoc">
-                                            <span>Màu: {item.color}</span>
-                                            <span>, Kích thước: {item.size}</span>
+            <table className="size-table-chi-tiet">
+                <thead>
+                    <tr>
+                        <th>Sản Phẩm</th>
+                        <th>Đơn Giá</th>
+                        <th>Số Lượng</th>
+                        <th>Số Tiền</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {cartItems.length > 0 ? (
+                        cartItems.map((item) => (
+                            <tr key={item.id}>
+                                <td>
+                                    <div className="san-pham">
+                                        <img src={item.image} alt={item.name} />
+                                        <div className="thong-tin-san-pham">
+                                            <p>{item.name}</p>
+                                            <div className="mau-sac-kich-thuoc">
+                                                <span>Màu: {item.color}</span>
+                                                <span>, Kích thước: {item.size}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td>{item.price.toLocaleString()} đ</td>
-                            <td>
-                                <div className="quantity-wrapper">
-                                    <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "decrease")} className="quantity-btn">-</button>
-                                    <input type="number" value={item.quantity} readOnly />
-                                    <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "increase")} className="quantity-btn">+</button>
-                                </div>
-                            </td>
-                            <td className="so-tien-cart">{(item.price * item.quantity).toLocaleString()} đ</td>
-                            <td>
-                                <span className="button-edit" onClick={() => handleRemoveItem(item.id, item.color, item.size)}>Xóa</span>
-                            </td>
+                                </td>
+                                <td>{item.price.toLocaleString()} đ</td>
+                                <td>
+                                    <div className="quantity-wrapper">
+                                        <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "decrease")} className="quantity-btn">-</button>
+                                        <input type="number" value={item.quantity} readOnly />
+                                        <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "increase")} className="quantity-btn">+</button>
+                                    </div>
+                                </td>
+                                <td className="so-tien-cart">{(item.price * item.quantity).toLocaleString()} đ</td>
+                                <td>
+                                    <span className="button-edit" onClick={() => handleRemoveItem(item.id, item.color, item.size)}>Xóa</span>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="5" style={{ textAlign: "center" }}>Giỏ hàng trống</td>
                         </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan="5" style={{ textAlign: "center" }}>Giỏ hàng trống</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>
-         <div className="uu-dai">
-            <div className="coupon">
-                <div className="coupon-item">
-                    <img src="/src/images/coupon.png" alt="" />
-                    <p>Mã Coupon</p>
-                    <select id="voucher" name="coupon" className="select-coupon">
-                        <option value="" selected >Chọn coupon</option>
-                        <option value="1">5%</option>
-                        <option value="2">10%</option>
-                        <option value="3">15%</option>
-
-                    </select>
+                    )}
+                </tbody>
+            </table>
+            <div className="uu-dai">
+                <div className="coupon">
+                    <div className="coupon-item">
+                        <img src="/src/images/coupon.png" alt="Coupon" />
+                        <p>Voucher</p>
+                        <select id="voucher" name="coupon" className="select-coupon"
+                            onChange={(e) => setSelectedDiscount(Number(e.target.value))}>
+                            <option value="0" selected>Chọn Voucher</option>
+                            {vouchers.map((voucher) => (
+                                <option key={voucher.id} value={voucher.discount}>
+                                    {voucher.name} - {formatVND(voucher.discount)}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
-                <div className="coupon-item">
-                    <img src="/src/images/coupon.png" alt="" />
-                    <p>Sử dụng điểm (Điểm của bạn: 00)</p>
-                    <input type="text" className="input-diem" />
-                </div>
+                <div className="tong-tien-container">
 
-
-            </div>
-
-            <div className="tong-tien-container">
-                <div className="tong-tien-hang">
-                    <p>Tổng tiền hàng:</p>
-                        <p style={{ marginLeft: '290px' }}>
+                    <div className="tong-tien-hang">
+                        <p>Gía sản phẩm:</p>
+                        <p style={{ marginLeft: '305px' }}>
                             {cartItems
                                 .reduce((sum, item) => sum + item.price * item.quantity, 0)
                                 .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
-                </div>
+                    </div>
 
-                <div className="giam-gia-san-pham">
-                    <p>Giảm giá sản phẩm:</p>
-                    <p style={{ marginLeft: '305px' }}>-00 đ</p>
-                </div>
+                    <div className="giam-gia-san-pham">
+                        <p>Giảm giá sản phẩm:</p>
+                        <p style={{ marginLeft: '305px' }}>0đ</p>
+                    </div>
 
-                <div className="giam-gia-coupon">
-                    <p>Giảm giá coupon:</p>
-                    <p style={{ marginLeft: '320px' }}>-00 đ</p>
-                </div>
+                    <div className="giam-gia-coupon">
+                        <p>Giảm giá theo Voucher:</p>
+                        <p style={{ marginLeft: '250px' }}>{formatVND(selectedDiscount)}đ</p>
+                    </div>
 
-                <div className="phi-van-chuyen">
-                    <p>Phí vận chuyển:</p>
-                    <p style={{ marginLeft: '330px' }}>-00 đ</p>
-                </div>
+                    <div className="phi-van-chuyen">
+                        <p>Phí vận chuyển:</p>
+                        <p style={{ marginLeft: '300px' }}>{formatVND(20000)}đ</p>
+                    </div>
 
-                {/* Để thêm đường kẻ ngang, sử dụng thẻ <hr /> tự đóng */}
-                <hr className="short-hr" style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }} />
+                    {/* Để thêm đường kẻ ngang, sử dụng thẻ <hr /> tự đóng */}
+                    <hr className="short-hr" style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }} />
 
-                <div className="tong-total">
-                        <p style={{ fontSize: '20px' ,fontWeight: 'bold' }}>Tổng cộng:</p>
+                    <div className="tong-total">
+                        <p style={{ fontSize: '20px', fontWeight: 'bold' }}>Tổng cộng:</p>
                         <p style={{ fontSize: '20px', marginLeft: '290px', fontWeight: 'bold' }}>
-                            {cartItems
-                                .reduce((sum, item) => sum + item.price * item.quantity, 0)
-                                .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                            {totalAmount.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
+                        {/* <p >
+                            {cartItems
+                                .reduce((sum, item) => sum + item.price * item.quantity - selectedDiscount + 20000, 0)
+                                .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p> */}
+                    </div>
+
+
                 </div>
-            </div>
 
 
             </div>
@@ -181,15 +210,14 @@ const CartTable = () => {
     );
 };
 
-const ShippingInfo = ({ carts = [] }) => {
+const ShippingInfo = ({ carts = [], dis}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [receiverInfo, setReceiverInfo] = useState(null);
     const [error, setError] = useState(null);
+    const discount = dis;
 
     // Lấy userId từ localStorage
     const userId = localStorage.getItem("userId")?.replace(/"/g, "").trim();
-    
-
     // Hàm lấy thông tin vận chuyển
     const fetchReceiverInfo = async () => {
         if (!userId) {
@@ -198,7 +226,7 @@ const ShippingInfo = ({ carts = [] }) => {
         }
 
         try {
-           
+
             const response = await fetch(`http://localhost:5001/api/users/${userId}`);
             const data = await response.json();
             console.log("data dia chi:", data);
@@ -331,7 +359,7 @@ const ShippingInfo = ({ carts = [] }) => {
             }
 
             console.log("Dữ liệu carts từ localStorage:", storedCarts);
-          
+
 
             if (!storedCarts.hasOwnProperty(userId)) {
                 console.warn(`Không tìm thấy giỏ hàng của userId: ${userId}`);
@@ -348,7 +376,7 @@ const ShippingInfo = ({ carts = [] }) => {
     };
 
 
-    const handleOrder = async () => {
+    const handleOrder = async (discount) => {
         try {
             console.log("carts lưu ", localStorage.getItem("carts"));
 
@@ -404,8 +432,10 @@ const ShippingInfo = ({ carts = [] }) => {
             userId = userId.replace(/"/g, "");
 
             const orderData = {
-                receiver:  userId , // Định dạng đúng ObjectId
+                receiver: userId,
                 cartItems: formattedCart,
+                totalAmount: carts.reduce((sum, item) => (sum + item.price * item.quantity) + 20000, 0),
+                discount: discount, 
             };
 
             console.log("orderData gửi lên:", orderData);
@@ -441,151 +471,151 @@ const ShippingInfo = ({ carts = [] }) => {
 
 
 
-    
-
-return (
-    
-    <>
-       
 
 
-        <div className="thong-tin-van-chuyen">
-            <div className="title-van-chuyen">
-                <p style={{ fontSize: "18px", color: "red", marginBottom: "20px" }}>THÔNG TIN VẬN CHUYỂN</p>
-                <p className="thay-doi" onClick={() => setIsEditing(!isEditing)}>
-                    {isEditing ? "Hủy" : "Thay đổi thông tin nhận hàng"}
-                </p>
+    return (
 
-                
-            </div>
-            <div className="dia-chi-nhan-hang">
+        <>
 
-                {!isEditing ? (
-                    <>
 
+
+            <div className="thong-tin-van-chuyen">
+                <div className="title-van-chuyen">
+                    <p style={{ fontSize: "18px", color: "red", marginBottom: "20px" }}>THÔNG TIN VẬN CHUYỂN</p>
+                    <p className="thay-doi" onClick={() => setIsEditing(!isEditing)}>
+                        {isEditing ? "Hủy" : "Thay đổi thông tin nhận hàng"}
+                    </p>
+
+
+                </div>
+                <div className="dia-chi-nhan-hang">
+
+                    {!isEditing ? (
+                        <>
+
+                            <form>
+                                <div className="form-group">
+                                    <div className="form-group-item">
+                                        <p className="form-group-title">Người nhận: </p>
+                                        <br />
+                                        <p className="form-group-value">{receiverInfo?.fullName || "Chưa có thông tin"}</p>
+
+
+                                    </div>
+                                    <br />
+
+                                </div>
+                                <div className="form-group">
+                                    <div className="form-group-item">
+                                        <p className="form-group-title">Điện thoại: </p>
+                                        <br />
+                                        <p className="form-group-value">{receiverInfo?.phone || "Chưa có thông tin"}</p>
+
+
+                                    </div>
+                                    <br />
+
+                                </div>
+                                <div className="form-group">
+                                    <div className="form-group-item">
+                                        <p className="form-group-title">Địa chỉ: </p>
+                                        <br />
+                                        <p className="form-group-value">{receiverInfo?.address || "Chưa có thông tin"}</p>
+
+
+                                    </div>
+                                    <br />
+
+                                </div>
+
+                            </form>
+
+
+
+                        </>
+                    ) : (
                         <form>
                             <div className="form-group">
-                                <div className="form-group-item">
-                                    <p className="form-group-title">Người nhận: </p>
-                                    <br />
-                                    <p className="form-group-value">{receiverInfo?.fullName || "Chưa có thông tin"}</p>
-
-
-                                </div>
-                                <br />
-
+                                <label>Người nhận:</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={receiverInfo.fullName}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </div>
+
                             <div className="form-group">
-                                <div className="form-group-item">
-                                    <p className="form-group-title">Điện thoại: </p>
-                                    <br />
-                                    <p className="form-group-value">{receiverInfo?.phone || "Chưa có thông tin"}</p>
-
-
-                                </div>
-                                <br />
-
+                                <label>Điện thoại:</label>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={receiverInfo.phone}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </div>
+
                             <div className="form-group">
-                                <div className="form-group-item">
-                                    <p className="form-group-title">Địa chỉ: </p>
-                                    <br />
-                                    <p className="form-group-value">{receiverInfo?.address || "Chưa có thông tin"}</p>
-
-
-                                </div>
-                                <br />
-
+                                <label>Địa chỉ:</label>
+                                <input
+                                    type="text"
+                                    name="address"
+                                    value={receiverInfo.address}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </div>
 
-                        </form>
+                            <div className="form-group">
+                                <label>Chọn Tỉnh/Thành phố:</label>
+                                <select name="province" onChange={handleInputChange}>
+                                    <option value="">Chọn tỉnh</option>
+                                    <option value="Hà Nội">Hà Nội</option>
+                                    <option value="TP HCM">TP Hồ Chí Minh</option>
+                                    <option value="Đà Nẵng">Đà Nẵng</option>
+                                </select>
+                            </div>
 
+                            <div className="form-group">
+                                <label>Chọn Quận/Huyện:</label>
+                                <select name="district" onChange={handleInputChange}>
+                                    <option value="">Chọn quận/huyện</option>
+                                    <option value="Quận 1">Quận 1</option>
+                                    <option value="Quận 2">Quận 2</option>
+                                    <option value="Quận 3">Quận 3</option>
+                                </select>
+                            </div>
 
-
-                    </>
-                ) : (
-                    <form>
-                        <div className="form-group">
-                            <label>Người nhận:</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={receiverInfo.fullName}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Điện thoại:</label>
-                            <input
-                                type="text"
-                                name="phone"
-                                value={receiverInfo.phone}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Địa chỉ:</label>
-                            <input
-                                type="text"
-                                name="address"
-                                value={receiverInfo.address}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Chọn Tỉnh/Thành phố:</label>
-                            <select name="province" onChange={handleInputChange}>
-                                <option value="">Chọn tỉnh</option>
-                                <option value="Hà Nội">Hà Nội</option>
-                                <option value="TP HCM">TP Hồ Chí Minh</option>
-                                <option value="Đà Nẵng">Đà Nẵng</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Chọn Quận/Huyện:</label>
-                            <select name="district" onChange={handleInputChange}>
-                                <option value="">Chọn quận/huyện</option>
-                                <option value="Quận 1">Quận 1</option>
-                                <option value="Quận 2">Quận 2</option>
-                                <option value="Quận 3">Quận 3</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Chọn Xã/Phường:</label>
-                            <select name="ward" onChange={handleInputChange}>
-                                <option value="">Chọn xã/phường</option>
-                                <option value="Phường A">Phường A</option>
-                                <option value="Phường B">Phường B</option>
-                                <option value="Phường C">Phường C</option>
-                            </select>
-                        </div>
+                            <div className="form-group">
+                                <label>Chọn Xã/Phường:</label>
+                                <select name="ward" onChange={handleInputChange}>
+                                    <option value="">Chọn xã/phường</option>
+                                    <option value="Phường A">Phường A</option>
+                                    <option value="Phường B">Phường B</option>
+                                    <option value="Phường C">Phường C</option>
+                                </select>
+                            </div>
 
                             <button type="button" className="button-edit" onClick={handleSaveReceiverInfo}>
-                            Lưu
-                        </button>
-                    </form>
-                )}
+                                Lưu
+                            </button>
+                        </form>
+                    )}
+                </div>
+
+
             </div>
-           
-         
-        </div>
-        <div className="btn-dat-hang">
-            <a onClick={handleOrder}
-            >Đặt hàng</a>
-        </div>
-        <br />
-        <br />
-        <hr />
-        
-    </>
+            <div className="btn-dat-hang">
+                <a onClick={() => handleOrder(discount)}
+                >Đặt hàng</a>
+            </div>
+            <br />
+            <br />
+            <hr />
+
+        </>
     );
 }
 const ContactInfo = () => {
@@ -653,7 +683,7 @@ const Cart = () => {
     });
     // Lấy cart từ localStorage khi component mount
     const [cart, setCart] = useState([]);
-
+    const [dis, setDis] = useState(0);
     useEffect(() => {
         const storedCart = localStorage.getItem("cart");
         if (storedCart) {
@@ -669,8 +699,8 @@ const Cart = () => {
                     <span className="delimiter">| </span>
                     <a href="/cart">Giỏ hàng</a>
                 </div>
-                <CartTable />
-                <ShippingInfo receiverInfo={receiverInfo} setReceiverInfo={setReceiverInfo} cart={cart} />
+                <CartTable setDis={setDis}/>
+                <ShippingInfo receiverInfo={receiverInfo} setReceiverInfo={setReceiverInfo} cart={cart} dis={dis}/>
                 <ContactInfo />
             </div>
             <Footer />

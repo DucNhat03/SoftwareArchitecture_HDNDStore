@@ -1,3 +1,4 @@
+
 *{
     margin: 0;
     padding: 0;
@@ -216,7 +217,7 @@ input[type="number"] {
     height: 20px;
 }
 .select-coupon{
-    margin-left: 200px;
+    margin-left: 100px;
     height: 35px;
 }
 .input-diem{
