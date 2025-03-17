@@ -76,14 +76,12 @@ export default function User() {
     address: { city: "", district: "", ward: "", street: "" },
     birthday: { day: "", month: "", year: "" },
   });
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [UserToDelete, setUserToDelete] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewOpen, setViewOpen] = useState(false);
+
   const [selectedVoucher, setSelectedVoucher] = useState(null);
 
-  // const [orders, setOrders] = useState([]);
-  // const [orderOfUser, setOrderOfUser] = useState([]);
+  const [openOrders, setOpenOrders] = useState(false);
   const navigate = useNavigate();
 
   const [vouchers, setVouchers] = useState([]);
@@ -97,6 +95,10 @@ export default function User() {
     state: "Còn hiệu lực",
     quantity: 1,
   });
+
+    const handleOrdersClick = () => {
+    setOpenOrders(!openOrders);
+  };
 
   const fetchVouchers = async () => {
     try {
@@ -163,17 +165,17 @@ export default function User() {
     }
   };
 
-const handleDeleteVoucher = async (id) => {
-  const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa voucher này không?");
-  if (!isConfirmed) return;
+  const handleDeleteVoucher = async (id) => {
+    const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa voucher này không?");
+    if (!isConfirmed) return;
 
-  try {
-    await axios.delete(`http://localhost:5000/api/vouchers/${id}`);
-    fetchVouchers();
-  } catch (error) {
-    console.error("Lỗi khi xóa voucher:", error);
-  }
-};
+    try {
+      await axios.delete(`http://localhost:5000/api/vouchers/${id}`);
+      fetchVouchers();
+    } catch (error) {
+      console.error("Lỗi khi xóa voucher:", error);
+    }
+  };
 
 
   const updateVoucherStates = async () => {
@@ -218,6 +220,7 @@ const handleDeleteVoucher = async (id) => {
       >
         <CssBaseline />
 
+
         <Drawer
           variant="permanent"
           sx={{
@@ -251,10 +254,16 @@ const handleDeleteVoucher = async (id) => {
               {
                 text: "Quản lý sản phẩm",
                 icon: <ShoppingCart />,
-                path: "/products",
                 isParent: true,
               },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
+              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
+              {
+                text: "Quản lý đơn hàng",
+                icon: <Receipt />,
+                isParent: true,
+              },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
               {
                 text: "Quản lý Khuyến Mãi",
@@ -267,32 +276,105 @@ const handleDeleteVoucher = async (id) => {
                 {item.isParent ? (
                   <>
                     <ListItem disablePadding>
-                      <ListItemButton onClick={handleProductsClick}>
+                      <ListItemButton
+                        onClick={
+                          item.text === "Quản lý sản phẩm"
+                            ? handleProductsClick
+                            : handleOrdersClick
+                        }
+                      >
                         <ListItemIcon sx={{ color: "#fff" }}>
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.text} />
-                        {openProducts ? <ExpandLess /> : <ExpandMore />}
+                        {item.text === "Quản lý sản phẩm" ? (
+                          openProducts ? (
+                            <ExpandLess />
+                          ) : (
+                            <ExpandMore />
+                          )
+                        ) : openOrders ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
                       </ListItemButton>
                     </ListItem>
-                    <Collapse in={openProducts} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={
+                        item.text === "Quản lý sản phẩm"
+                          ? openProducts
+                          : openOrders
+                      }
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <List component="div" disablePadding>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/men")}
-                          >
-                            <ListItemText primary="Giày nam" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/women")}
-                          >
-                            <ListItemText primary="Giày nữ" />
-                          </ListItemButton>
-                        </ListItem>
+                        {item.text === "Quản lý sản phẩm" ? (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() => navigate("/admin/products/men")}
+                              >
+                                <ListItemText primary="Giày nam" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/products/women")
+                                }
+                              >
+                                <ListItemText primary="Giày nữ" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        ) : (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/pending")
+                                }
+                              >
+                                <ListItemText primary="Chờ xác nhận" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/shipping")
+                                }
+                              >
+                                <ListItemText primary="Đang giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/delivered")
+                                }
+                              >
+                                <ListItemText primary="Đã giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/canceled")
+                                }
+                              >
+                                <ListItemText primary="Đã hủy" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        )}
                       </List>
                     </Collapse>
                   </>

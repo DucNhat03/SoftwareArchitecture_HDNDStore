@@ -30,6 +30,7 @@ import {
   FormControl,
   InputLabel,
   Collapse,
+  TablePagination,
 } from "@mui/material";
 import {
   Dashboard,
@@ -38,11 +39,13 @@ import {
   Receipt,
   BarChart,
   Settings,
-  Edit,
-  Delete,
+  // Edit,
+  // Delete,
   Logout,
   ExpandLess,
   ExpandMore,
+  ArrowBack,
+  ArrowForward,
 } from "@mui/icons-material";
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -54,6 +57,7 @@ import { ToastContainer } from "react-toastify";
 import axios from "axios";
 import sideBar from '../../../components/layout/admin-sideBar';
 const drawerWidth = 260;
+const ITEMS_PER_PAGE = 6;
 
 const theme = createTheme({
   palette: {
@@ -85,29 +89,76 @@ export default function User() {
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
   const [orders, setOrders] = useState([]);
   const [orderOfUser, setOrderOfUser] = useState([]);
+  const [openOrders, setOpenOrders] = useState(false);
+  const [page, setPage] = useState(0);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleOrdersClick = () => {
+    setOpenOrders(!openOrders);
+  };
   const navigate = useNavigate();
   useEffect(() => {
     axios
       .get("http://localhost:5000/users/all")
-      .then((response) => setUsers(response.data))
+      .then((response) => {
+        setUsers(response.data);
+        console.log("Danh sách khách hàng:", response.data);
+      })
       .catch((error) =>
         console.error("Lỗi khi lấy danh sách khách hàng:", error)
       );
     console.log(Users);
-    // axios.get("http://localhost:5000/orders/all")
-    //   .then(response => setOrders(response.data))
-    //   .catch(error => console.error("Lỗi khi lấy danh sách đơn hàng:", error));
-    //   console.log(orders);
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/orders/all")
+      .then((response) => {
+        setOrders(response.data.orders);
+        console.log("Danh sách hóa đơn:", response.data.orders);
+      })
+      .catch((error) => console.error("Lỗi khi lấy danh sách hóa đơn:", error));
+  }, []);
 
-  const handleDeleteConfirm = (User) => {
-    setUserToDelete(User);
-    setDeleteOpen(true);
-  };
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // Reset currentPage về 0 khi searchTerm thay đổi
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm]);
+
+  // Lọc đơn hàng theo từ khóa tìm kiếm
+  const filteredUsers = Users.slice()
+    .reverse()
+    .filter(
+      (User) =>
+        User.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.address.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.address.district
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        User.address.ward.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.address.street.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.gender.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+  // Xác định danh sách hóa đơn cần hiển thị
+  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const paginatedUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  // const handleDeleteConfirm = (User) => {
+  //   setUserToDelete(User);
+  //   setDeleteOpen(true);
+  // };
 
   const [openProducts, setOpenProducts] = useState(false);
 
@@ -127,14 +178,18 @@ export default function User() {
   };
   const handleViewUser = (User) => {
     setSelectedUserDetails(User);
-    setOrderOfUser(orders.filter((order) => order.UserId === User.id));
+    console.log("Chi tiết khách hàng:", selectedUserDetails);
+    console.log("Danh sách hóa đơn:", orders);
+    setOrderOfUser(
+      orders.filter((order) => order.receiver === selectedUserDetails._id)
+    );
     setViewOpen(true);
   };
 
-  const handleEdit = (User) => {
-    setSelectedUser(User);
-    setEditOpen(true);
-  };
+  // const handleEdit = (User) => {
+  //   setSelectedUser(User);
+  //   setEditOpen(true);
+  // };
 
   const handleClose = () => {
     setEditOpen(false);
@@ -220,10 +275,16 @@ export default function User() {
               {
                 text: "Quản lý sản phẩm",
                 icon: <ShoppingCart />,
-                path: "/products",
                 isParent: true,
               },
-              { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
+              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
+              {
+                text: "Quản lý đơn hàng",
+                icon: <Receipt />,
+                isParent: true,
+              },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
               {
                 text: "Quản lý Khuyến Mãi",
@@ -236,32 +297,105 @@ export default function User() {
                 {item.isParent ? (
                   <>
                     <ListItem disablePadding>
-                      <ListItemButton onClick={handleProductsClick}>
+                      <ListItemButton
+                        onClick={
+                          item.text === "Quản lý sản phẩm"
+                            ? handleProductsClick
+                            : handleOrdersClick
+                        }
+                      >
                         <ListItemIcon sx={{ color: "#fff" }}>
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.text} />
-                        {openProducts ? <ExpandLess /> : <ExpandMore />}
+                        {item.text === "Quản lý sản phẩm" ? (
+                          openProducts ? (
+                            <ExpandLess />
+                          ) : (
+                            <ExpandMore />
+                          )
+                        ) : openOrders ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
                       </ListItemButton>
                     </ListItem>
-                    <Collapse in={openProducts} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={
+                        item.text === "Quản lý sản phẩm"
+                          ? openProducts
+                          : openOrders
+                      }
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <List component="div" disablePadding>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/men")}
-                          >
-                            <ListItemText primary="Giày nam" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            sx={{ pl: 4 }}
-                            onClick={() => navigate("/admin/products/women")}
-                          >
-                            <ListItemText primary="Giày nữ" />
-                          </ListItemButton>
-                        </ListItem>
+                        {item.text === "Quản lý sản phẩm" ? (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() => navigate("/admin/products/men")}
+                              >
+                                <ListItemText primary="Giày nam" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/products/women")
+                                }
+                              >
+                                <ListItemText primary="Giày nữ" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        ) : (
+                          <>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/pending")
+                                }
+                              >
+                                <ListItemText primary="Chờ xác nhận" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/shipping")
+                                }
+                              >
+                                <ListItemText primary="Đang giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/delivered")
+                                }
+                              >
+                                <ListItemText primary="Đã giao" />
+                              </ListItemButton>
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemButton
+                                sx={{ pl: 4 }}
+                                onClick={() =>
+                                  navigate("/admin/orders/canceled")
+                                }
+                              >
+                                <ListItemText primary="Đã hủy" />
+                              </ListItemButton>
+                            </ListItem>
+                          </>
+                        )}
                       </List>
                     </Collapse>
                   </>
@@ -286,7 +420,9 @@ export default function User() {
             sx={{ backgroundColor: "#a7adad", color: "#fff" }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">Quản lý khách hàng</Typography>
+              <Typography variant="h5">
+                <b>QUẢN LÝ KHÁCH HÀNG</b>
+              </Typography>
               <Typography variant="body1">
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
@@ -359,31 +495,7 @@ export default function User() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Users
-                .filter(
-                  (User) =>
-                    User.fullName
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.email
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.phone
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.address.city
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.address.district
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.address.ward
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase()) ||
-                    User.address.street
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase())
-                ).map((User) => (
+                {paginatedUsers.map((User) => (
                   <TableRow
                     key={User.id}
                     hover
@@ -424,7 +536,7 @@ export default function User() {
                       >
                         <Visibility />
                       </IconButton>
-                      <IconButton
+                      {/* <IconButton
                         color="secondary"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -435,20 +547,41 @@ export default function User() {
                       </IconButton>
                       <IconButton
                         color="error"
-                        onClick={(e) => 
-                          {
-                            e.stopPropagation();
-                            handleDeleteConfirm(User);
-                          }
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteConfirm(User);
+                        }}
                       >
                         <Delete />
-                      </IconButton>
+                      </IconButton> */}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                margin: "10px 0",
+              }}
+            >
+              <IconButton
+                disabled={currentPage === 0}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                sx={{ mx: 1 }}
+              >
+                <ArrowBack /> {/* Icon Trang Trước */}
+              </IconButton>
+
+              <IconButton
+                disabled={startIndex + ITEMS_PER_PAGE >= filteredUsers.length}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                sx={{ mx: 1 }}
+              >
+                <ArrowForward /> {/* Icon Trang Sau */}
+              </IconButton>
+            </div>
           </TableContainer>
         </Box>
       </Box>
@@ -656,7 +789,12 @@ export default function User() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={viewOpen} onClose={() => setViewOpen(false)}>
+      <Dialog
+        open={viewOpen}
+        onClose={() => setViewOpen(false)}
+        maxWidth="md" // Điều chỉnh kích thước, có thể là "sm", "md", "lg", "xl"
+        fullWidth
+      >
         <DialogTitle>Thông tin khách hàng</DialogTitle>
         <DialogContent>
           {selectedUserDetails && (
@@ -690,26 +828,75 @@ export default function User() {
                         Sản phẩm
                       </TableCell>
                       <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                        Số lượng
+                        Ngày đặt hàng
                       </TableCell>
                       <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                        Tổng tiền
+                        Ngày nhận hàng
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                        PT Thanh Toán
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                        TT Thanh Toán
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                        Trạng Thái
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                        Tổng Tiền
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell>{order.id}</TableCell>
-                        <TableCell>{order.product}</TableCell>
-                        <TableCell>{order.quantity}</TableCell>
-                        <TableCell>
-                          {order.total.toLocaleString()} VND
+                    {orderOfUser.length > 0 ? (
+                      orderOfUser.map((order) => (
+                        <TableRow key={order._id}>
+                          <TableCell>{order.idHoaDon}</TableCell>
+                          <TableCell>
+                            {order.cartItems.map((item) => (
+                              <div key={item._id}>
+                                {item.name} -{" "}
+                                {item.variants
+                                  .map(
+                                    (v) => `${v.color}/${v.size} SL: ${v.stock}`
+                                  )
+                                  .join(", ")}{" "}
+                              </div>
+                            ))}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(order.orderDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {order.ngayNhanHang
+                              ? new Date(
+                                  order.ngayNhanHang
+                                ).toLocaleDateString()
+                              : "Chưa nhận hàng"}
+                          </TableCell>
+                          <TableCell>{order.paymentMethod}</TableCell>
+                          <TableCell>{order.statusPayment}</TableCell>
+                          <TableCell>{order.status}</TableCell>
+                          <TableCell>{order.finalAmount} đ</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                          Không có hóa đơn nào
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
+                <TablePagination
+                  rowsPerPageOptions={[5]}
+                  component="div"
+                  count={orderOfUser.length}
+                  rowsPerPage={ITEMS_PER_PAGE}
+                  page={page}
+                  onPageChange={handleChangePage}
+                />
               </TableContainer>
             </Box>
           )}
