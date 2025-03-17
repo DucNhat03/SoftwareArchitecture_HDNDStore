@@ -50,6 +50,7 @@ import {
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
@@ -285,26 +286,26 @@ export default function ProductMen() {
   const handleSaveProduct = async () => {
     try {
       setLoading(true); // Bật hiệu ứng xoay vòng + làm mờ
-  
+
       // ✅ Kiểm tra dữ liệu đầu vào
       if (!selectedProduct?.name && !newProduct.name) {
         toast.error("Vui lòng nhập tên sản phẩm!");
         setLoading(false);
         return;
       }
-  
+
       if (!selectedProduct?.subcategories && !newProduct.subcategories) {
         toast.error("Vui lòng chọn danh mục phụ!");
         setLoading(false);
         return;
       }
-  
+
       if (!selectedProduct?.price && !newProduct.price) {
         toast.error("Vui lòng nhập giá sản phẩm!");
         setLoading(false);
         return;
       }
-  
+
       if (
         selectedProduct?.image?.length + selectedFiles.length > 5 ||
         selectedThumbnails.length > 5
@@ -313,36 +314,36 @@ export default function ProductMen() {
         setLoading(false);
         return;
       }
-  
+
       let imageUrls = [];
       let imagethumUrls = [];
-  
+
       // ✅ Upload ảnh sản phẩm lên Cloudinary nếu có
       if (selectedFiles.length > 0) {
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("image", file));
-  
+
         const response = await axios.post(
           "http://localhost:5000/api/upload",
           formData
         );
         imageUrls = response.data.imageUrls || [];
       }
-  
+
       // ✅ Upload ảnh Thumbnail lên Cloudinary nếu có
       if (selectedThumbnails.length > 0) {
         const formData = new FormData();
         selectedThumbnails.forEach((file) =>
           formData.append("imagethum", file)
         );
-  
+
         const response = await axios.post(
           "http://localhost:5000/api/upload",
           formData
         );
         imagethumUrls = response.data.imagethumUrls || [];
       }
-  
+
       // ✅ Gộp URL ảnh vào sản phẩm trước khi lưu
       if (!selectedProduct || !selectedProduct.id) {
         // Kiểm tra trùng lặp trước khi thêm mới
@@ -352,13 +353,13 @@ export default function ProductMen() {
             params: { name: newProduct.name },
           }
         );
-  
+
         if (checkDuplicate.data.duplicate) {
           toast.error("Sản phẩm đã tồn tại!");
           setLoading(false);
           return;
         }
-  
+
         // ✅ Thêm mới sản phẩm với ảnh đã upload
         await axios.post("http://localhost:5000/products/create", {
           ...newProduct,
@@ -378,7 +379,7 @@ export default function ProductMen() {
         );
         toast.success("Cập nhật sản phẩm thành công!");
       }
-  
+
       // ✅ Lấy danh sách sản phẩm mới sau khi thêm/cập nhật
       const response = await axios.get(
         "http://localhost:5000/products/all/men"
@@ -392,18 +393,19 @@ export default function ProductMen() {
       setLoading(false); // Tắt loading khi xong
     }
   };
-  
+
 
   return (
     <ThemeProvider theme={theme}>
-    <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
-  <CircularProgress color="inherit" />
-</Backdrop>
+      <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <ToastContainer position="top-right" autoClose={3000} />
       <Box
         sx={{ display: "flex", backgroundColor: "#e9ecec", minHeight: "100vh" }}
       >
         <CssBaseline />
+
 
         <Drawer
           variant="permanent"
@@ -440,12 +442,20 @@ export default function ProductMen() {
                 icon: <ShoppingCart />,
                 isParent: true,
               },
+
+              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
               {
                 text: "Quản lý đơn hàng",
                 icon: <Receipt />,
                 isParent: true,
               },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
               <div key={index}>
@@ -575,7 +585,7 @@ export default function ProductMen() {
             sx={{ backgroundColor: "#a7adad", color: "#fff" }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h5"><b>QUẢN LÝ SẢN PHẨM GIÀY NAM</b></Typography>
+              <Typography variant="h5"><b>QUẢN LÝ SẢN PHẨM GIÀY NAM</b></Typography>
               <Typography variant="body1">
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
@@ -768,9 +778,9 @@ export default function ProductMen() {
       </Box>
       {/* dialog sửa khách hàng */}
       <Dialog open={editOpen || addOpen} onClose={handleClose}>
-      <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
-  <CircularProgress color="inherit" />
-</Backdrop>
+        <Backdrop open={loading} style={{ zIndex: 1300, color: "#fff" }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <DialogTitle>
           {selectedProduct ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
         </DialogTitle>
@@ -783,9 +793,9 @@ export default function ProductMen() {
             onChange={(e) => {
               selectedProduct
                 ? setSelectedProduct({
-                    ...selectedProduct,
-                    name: e.target.value,
-                  })
+                  ...selectedProduct,
+                  name: e.target.value,
+                })
                 : setNewProduct({ ...newProduct, name: e.target.value });
             }}
           />
@@ -807,13 +817,13 @@ export default function ProductMen() {
               onChange={(e) => {
                 selectedProduct
                   ? setSelectedProduct({
-                      ...selectedProduct,
-                      subcategories: e.target.value,
-                    })
+                    ...selectedProduct,
+                    subcategories: e.target.value,
+                  })
                   : setNewProduct({
-                      ...newProduct,
-                      subcategories: e.target.value,
-                    });
+                    ...newProduct,
+                    subcategories: e.target.value,
+                  });
               }}
             >
               <MenuItem value="Sandal nam">Sandal nam</MenuItem>
@@ -875,9 +885,9 @@ export default function ProductMen() {
             onChange={(e) => {
               selectedProduct
                 ? setSelectedProduct({
-                    ...selectedProduct,
-                    description: e.target.value,
-                  })
+                  ...selectedProduct,
+                  description: e.target.value,
+                })
                 : setNewProduct({ ...newProduct, description: e.target.value });
             }}
           />

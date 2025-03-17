@@ -49,6 +49,7 @@ import {
   CheckCircle,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -87,7 +88,7 @@ export default function OrderShipping() {
   const [cancelReason, setCancelReason] = useState("");
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const navigate = useNavigate();
-  
+
 
   const [selectedDate, setSelectedDate] = useState(null);
   useEffect(() => {
@@ -126,8 +127,8 @@ export default function OrderShipping() {
     return {
       ...order,
       customerName: user ? user.fullName : "Không có thông tin",
-      customerPhone : user ? user.phone : "Không có thông tin",
-      customerEmail : user ? user.email : "Không có thông tin",
+      customerPhone: user ? user.phone : "Không có thông tin",
+      customerEmail: user ? user.email : "Không có thông tin",
       customerAddress,
     };
   });
@@ -141,10 +142,10 @@ export default function OrderShipping() {
     const matchesDate =
       !selectedDate ||
       dayjs(order.orderDate).format("YYYY-MM-DD") ===
-        dayjs(selectedDate).format("YYYY-MM-DD") ||
+      dayjs(selectedDate).format("YYYY-MM-DD") ||
       !selectedDate ||
       dayjs(order.ngayXacNhan).format("YYYY-MM-DD") ===
-        dayjs(selectedDate).format("YYYY-MM-DD");
+      dayjs(selectedDate).format("YYYY-MM-DD");
 
     return matchesSearch && matchesDate;
   });
@@ -267,12 +268,20 @@ export default function OrderShipping() {
                 icon: <ShoppingCart />,
                 isParent: true,
               },
+
+              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
               {
                 text: "Quản lý đơn hàng",
                 icon: <Receipt />,
                 isParent: true,
               },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
               <div key={index}>
@@ -719,15 +728,15 @@ export default function OrderShipping() {
             Đóng
           </Button>
           <Button
-  onClick={async () => {
-    await generateInvoicePDF(selectedOrderDetails);
-    toast.success("Xuất hóa đơn thành công!");
-    setViewOpen(false);
-  }}
-  color="primary"
->
-  Xuất Hóa Đơn PDF
-</Button>
+            onClick={async () => {
+              await generateInvoicePDF(selectedOrderDetails);
+              toast.success("Xuất hóa đơn thành công!");
+              setViewOpen(false);
+            }}
+            color="primary"
+          >
+            Xuất Hóa Đơn PDF
+          </Button>
         </DialogActions>
       </Dialog>
 

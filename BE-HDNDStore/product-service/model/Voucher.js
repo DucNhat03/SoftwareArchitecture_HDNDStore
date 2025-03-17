@@ -17,6 +17,6 @@ const VoucherSchema = new mongoose.Schema({
         default: "Còn hiệu lực"
     }, // Trạng thái voucher
     quantity: { type: Number, required: true, default: 1 }, // Số lượng còn lại
-}, { collection: "Voucher" }); // Đặt tên collection là "vouchers" 
+}, { collection: "Vouchers" }); // Đặt tên collection là "vouchers" 
 
 module.exports = mongoose.model("Voucher", VoucherSchema, "vouchers");

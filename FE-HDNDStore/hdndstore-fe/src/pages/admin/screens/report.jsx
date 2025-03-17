@@ -421,7 +421,7 @@ export default function User() {
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h5">
-                <b>QUẢN LÝ KHÁCH HÀNG</b>
+                <b>BÁO CÁO DOANH THU</b>
               </Typography>
               <Typography variant="body1">
                 {currentTime.toLocaleDateString()} -{" "}

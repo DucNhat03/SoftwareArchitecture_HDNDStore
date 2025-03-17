@@ -50,6 +50,7 @@ import {
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
@@ -405,6 +406,7 @@ export default function ProductWomen() {
       >
         <CssBaseline />
 
+
         <Drawer
           variant="permanent"
           sx={{
@@ -440,12 +442,20 @@ export default function ProductWomen() {
                 icon: <ShoppingCart />,
                 isParent: true,
               },
+
+              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
+
               {
                 text: "Quản lý đơn hàng",
                 icon: <Receipt />,
                 isParent: true,
               },
               { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
+              {
+                text: "Quản lý Khuyến Mãi",
+                icon: <CardGiftcardIcon />,
+                path: "/admin/voucher",
+              },
               { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
             ].map((item, index) => (
               <div key={index}>
@@ -785,9 +795,9 @@ export default function ProductWomen() {
             onChange={(e) => {
               selectedProduct
                 ? setSelectedProduct({
-                    ...selectedProduct,
-                    name: e.target.value,
-                  })
+                  ...selectedProduct,
+                  name: e.target.value,
+                })
                 : setNewProduct({ ...newProduct, name: e.target.value });
             }}
           />
@@ -809,13 +819,13 @@ export default function ProductWomen() {
               onChange={(e) => {
                 selectedProduct
                   ? setSelectedProduct({
-                      ...selectedProduct,
-                      subcategories: e.target.value,
-                    })
+                    ...selectedProduct,
+                    subcategories: e.target.value,
+                  })
                   : setNewProduct({
-                      ...newProduct,
-                      subcategories: e.target.value,
-                    });
+                    ...newProduct,
+                    subcategories: e.target.value,
+                  });
               }}
             >
               <MenuItem value="Sandal nữ">Sandal nữ</MenuItem>
@@ -877,9 +887,9 @@ export default function ProductWomen() {
             onChange={(e) => {
               selectedProduct
                 ? setSelectedProduct({
-                    ...selectedProduct,
-                    description: e.target.value,
-                  })
+                  ...selectedProduct,
+                  description: e.target.value,
+                })
                 : setNewProduct({ ...newProduct, description: e.target.value });
             }}
           />

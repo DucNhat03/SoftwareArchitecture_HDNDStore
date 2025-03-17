@@ -14,13 +14,15 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 {/* Admin */}
 // import Account from "../../pages/admin/screens/account.jsx";
 import User from "../../pages/admin/screens/user.jsx";
+import Order from "../../pages/admin/screens/orders.jsx";
 import OrderPending from "../../pages/admin/screens/orderpending.jsx";
 import OrderShipping from "../../pages/admin/screens/ordershipping.jsx";
 import OrderDelivered from "../../pages/admin/screens/orderdelivered.jsx";
 import OrderCanceled from "../../pages/admin/screens/ordercanceled.jsx";
 import ProductMen from "../../pages/admin/screens/productmen.jsx";
 import ProductWomen from "../../pages/admin/screens/productwomen.jsx";
-
+import Voucher from "../../pages/admin/screens/vouchers.jsx";
+import Report from "../../pages/admin/screens/report.jsx";
 
 
 const AppRoutes = () => {
@@ -48,13 +50,15 @@ const AppRoutes = () => {
         {/* Admin */}
         {/* <Route path="/admin/account" element={<Account />} /> */}
         <Route path="/admin/users" element={<User />} />
+        {/* <Route path="/admin/order" element={<Order />} /> */}
         <Route path="/admin/orders/pending" element={<OrderPending/>} />
         <Route path="/admin/orders/shipping" element={<OrderShipping/>} />
         <Route path="/admin/orders/delivered" element={<OrderDelivered/>} />
         <Route path="/admin/orders/canceled" element={<OrderCanceled/>} />
         <Route path="/admin/products/men" element={<ProductMen/>} />
         <Route path="/admin/products/women" element={<ProductWomen/>} />
-
+        <Route path="/admin/voucher" element={<Voucher />} />
+        <Route path="/admin/report" element={<Report />} />
 
         {/* 404 - Không tìm thấy trang */}
         <Route path="*" element={<h2 className="text-center mt-5">404 - Không tìm thấy trang</h2>} />
