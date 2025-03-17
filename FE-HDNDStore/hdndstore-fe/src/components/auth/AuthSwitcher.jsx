@@ -61,15 +61,17 @@ const AuthSwitcher = () => {
             </Col>
           </Row>
 
-          {/* Đăng nhập với Google */}
-          <div className="text-center my-3">
-            <p>Hoặc đăng nhập với:</p>
-            <GoogleLogin
-              onSuccess={handleGoogle}
-              onError={() => toastService.error("Đăng nhập Google thất bại!")}
-              useOneTap
-            />
-          </div>
+          {/* Đăng nhập với Google (Ẩn khi ở chế độ forgot password) */}
+          {authMode !== "forgot" && (
+            <div className="text-center my-3">
+              <p>Hoặc đăng nhập với:</p>
+              <GoogleLogin
+                onSuccess={handleGoogle}
+                onError={() => toastService.error("Đăng nhập Google thất bại!")}
+                useOneTap
+              />
+            </div>
+          )}
 
           {/* Hiển thị form login/register/forgot */}
           {authMode === "login" && <LoginForm switchMode={setAuthMode} />}

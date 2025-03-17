@@ -20,5 +20,35 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+export const sendOtp = async (email) => {
+  try {
+    const response = await api.post("/auth/forgot-password/otp", { email });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "Lỗi gửi OTP!";
+  }
+};
+export const verifyOtp = async (email, otp) => {
+  try {
+    const response = await api.post("/auth/forgot-password/verify-otp", {
+      email,
+      otp,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "Lỗi xác minh OTP!";
+  }
+};
+export const resetPassword = async (email, newPassword) => {
+  try {
+    const response = await api.post("/auth/forgot-password/reset-password", {
+      email,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "Lỗi đặt lại mật khẩu!";
+  }
+};
 
 export default api;
