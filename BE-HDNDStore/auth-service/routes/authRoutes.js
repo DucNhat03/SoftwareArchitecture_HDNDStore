@@ -7,6 +7,9 @@ import {
   updateUserProfile,
   changePassword,
   updateAvatar,
+  sendOTP,
+  verifyOTP,
+  resetPassword
 } from "../controllers/authController.js";
 
 import authMiddleware, {
@@ -16,10 +19,15 @@ import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
-/* ublic Routes (Không yêu cầu đăng nhập) */
+/* Public Routes (Không yêu cầu đăng nhập) */
 router.post("/register", register);
 router.post("/login", login);
 router.post("/google", googleLogin);
+
+// Quên mật khẩu bằng OTP
+router.post("/forgot-password/otp", sendOTP); // Gửi OTP đến email
+router.post("/forgot-password/verify-otp", verifyOTP); // Xác thực OTP
+router.post("/forgot-password/reset-password", resetPassword); // Đặt lại mật khẩu
 
 /* Private Routes (Yêu cầu đăng nhập) */
 router.get("/profile", authMiddleware, getUserProfile);
