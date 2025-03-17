@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { OAuth2Client } from "google-auth-library";
 import mongoose from "mongoose";
+import otpGenerator from "otp-generator";
+import nodemailer from "nodemailer";
+import sendOtpEmail from "../services/emailService.js";
 
 // Khởi tạo client Google OAuth
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -222,9 +225,11 @@ export const googleLogin = async (req, res) => {
     res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
   }
 };
+{
+  /*Get access tu product
+  Hàm tìm user theo ID*/
+}
 
-// Get access tu product
-// Hàm tìm user theo ID
 const findUserById = async (userId) => {
   return await User.findById(new mongoose.Types.ObjectId(userId));
 };
@@ -263,7 +268,7 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// API cập nhật thông tin user theo ID
+{/*Update user by ID*/}
 export const updateUserById = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -304,3 +309,89 @@ export const updateUserById = async (req, res) => {
   }
 };
 
+
+{/* send otp */}
+export const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ error: "Email không tồn tại!" });
+    }
+
+    // Tạo mã OTP
+    const otp = otpGenerator.generate(6, { digits: true, upperCase: false, specialChars: false });
+    const otpExpiry = Date.now() + 5 * 60 * 1000; // Hết hạn sau 5 phút
+
+    // Lưu OTP vào database
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+    const name = user.fullName
+
+    // Gửi OTP qua email sang template 
+    await sendOtpEmail(email, name, otp);
+
+    res.status(200).json({ message: "Mã OTP đã được gửi qua email!" });
+  } catch (error) {
+    console.error("Lỗi gửi OTP:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+
+{/* verify otp */}
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ error: "Email không tồn tại!" });
+
+    // Kiểm tra OTP
+    if (user.otp !== otp || Date.now() > user.otpExpiry) {
+      return res.status(400).json({ error: "Mã OTP không hợp lệ hoặc đã hết hạn!" });
+    }
+
+    // OTP hợp lệ → Cho phép đặt lại mật khẩu
+    user.isOtpVerified = true;
+    user.otp = null; // Xóa OTP sau khi xác minh
+    user.otpExpiry = null;
+    await user.save();
+
+    res.status(200).json({ message: "OTP hợp lệ, tiếp tục đặt lại mật khẩu." });
+  } catch (error) {
+    console.error("Lỗi xác thực OTP:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+
+
+{/* reset password sau khi nhap ma otp */}
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ error: "Email không tồn tại!" });
+    }
+
+    // Kiểm tra xem OTP đã được xác minh chưa
+    if (!user.isOtpVerified) {
+      return res.status(400).json({ error: "Bạn chưa xác minh OTP!" });
+    }
+
+    // Hash mật khẩu mới
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+
+    // Xóa trạng thái OTP đã xác minh
+    user.isOtpVerified = false;
+    await user.save();
+
+    res.status(200).json({ message: "Đặt lại mật khẩu thành công!" });
+  } catch (error) {
+    console.error("Lỗi đặt lại mật khẩu:", error);
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
