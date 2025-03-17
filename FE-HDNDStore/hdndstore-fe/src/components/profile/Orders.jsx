@@ -93,7 +93,7 @@ const Orders = () => {
                         <p className="total-sp">🛒 Tổng số sản phẩm: {order.cartItems.length}</p>
                       </Card.Body>
                       <p className="total-amount">
-                        Tổng số tiền: <strong className="total-vnd">{order.totalAmount.toLocaleString()} VND</strong>
+                        Tổng số tiền: <strong className="total-vnd">{order.finalAmount.toLocaleString()} VND</strong>
                       </p>
                     </Card>
                   ))}

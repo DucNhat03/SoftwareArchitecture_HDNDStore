@@ -27,7 +27,12 @@ const fetchUserById = async (userId) => {
 // API Đặt hàng
 router.post("/dat-hang", async (req, res) => {
     try {
-        let { receiver, cartItems } = req.body;
+        let { receiver, cartItems , discount, totalAmount} = req.body;
+                if (totalAmount === undefined) {
+            return res.status(400).json({ message: "Thiếu totalAmount trong request!" });
+        }
+
+        console.log("totalAmount sau khi trích xuất:", totalAmount);
 
         // Kiểm tra receiver có hợp lệ không
         if (!receiver) {
@@ -74,7 +79,7 @@ router.post("/dat-hang", async (req, res) => {
         }
 
         // Tính tổng tiền đơn hàng
-        const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        // const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
      
         //  Lấy đơn hàng mới nhất (hóa đơn cuối cùng)
         const latestOrder = await Order.findOne({}, {}, { sort: { createdAt: -1 } });
@@ -109,8 +114,9 @@ router.post("/dat-hang", async (req, res) => {
                     size: item.size    // Chỉ lấy size đã chọn
                 }]
             })),
-            totalAmount,
-            idHoaDon: newInvoiceNumber, // Thêm mã hóa đơn
+            discount: discount, 
+            totalAmount: totalAmount,
+            idHoaDon: newInvoiceNumber,
         });
 
         await newOrder.save();
