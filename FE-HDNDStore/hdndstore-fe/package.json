@@ -21,7 +21,7 @@
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.4.7",
-    "jspdf": "^3.0.0",
+    "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
     "pdfmake": "^0.2.18",
     "prop-types": "^15.8.1",

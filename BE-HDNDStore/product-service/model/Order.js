@@ -14,11 +14,11 @@ const OrderSchema = new mongoose.Schema({
             rating: { type: Number, default: 0, min: 0, max: 5 },
             image: { type: [String], default: [] },
             imagethum: { type: [String], default: [] },
-            quantity: { type: Number, required: true }, // Số lượng sản phẩm đặt hàng
             variants: [
                 {
                     color: { type: String, required: true }, // Chỉ lấy color
                     size: { type: String, required: true }, // Chỉ lấy size
+                    stock: { type: Number, required: true }, // Chỉ lấy stock
                 }
             ]
         },
@@ -52,6 +52,16 @@ const OrderSchema = new mongoose.Schema({
     },
     note: { type: String, default: "" }, // Ghi chú
     lyDoHuy: { type: String, default: "" }, // Lý do hủy
+    shippingAddress: {
+        fullName: { type: String, required: true }, // Họ và tên người nhận
+        phone: { type: String, required: true }, // Số điện thoại người nhận
+        address: {
+            street: { type: String, required: true }, // Số nhà, đường, chi tiết địa chỉ
+            city: { type: String, required: true }, // Thành phố/tỉnh
+            district: { type: String, required: true }, // Quận/huyện
+            ward: { type: String, required: true }, // Phường/xã
+        }
+    }
 }, { timestamps: true }); 
 
 module.exports = mongoose.model("Order", OrderSchema);

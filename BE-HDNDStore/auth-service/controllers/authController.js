@@ -269,21 +269,35 @@ export const getUserById = async (req, res) => {
 };
 
 {/*Update user by ID*/}
+
+
+
 export const updateUserById = async (req, res) => {
   try {
     const { userId } = req.params;
     const { fullName, phone, address, avatar } = req.body;
 
-    // Kiểm tra userId có hợp lệ không
+    // Kiểm tra userId hợp lệ
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: "User ID không hợp lệ!" });
     }
+    // Kiểm tra address và ép kiểu street thành string nếu cần
+    if (address && typeof address.street === "object") {
+      address.street = String(address.street.street || ""); // Lấy giá trị hợp lệ
+    }
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!fullName || !phone || !address) {
+      return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
+    }
+
+    console.log("Dữ liệu cập nhật:", { fullName, phone, address, avatar });
 
     // Tìm và cập nhật user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { fullName, phone, address, avatar },
-      { new: true } // Trả về dữ liệu sau khi cập nhật
+      { new: true, runValidators: true } // runValidators giúp kiểm tra dữ liệu đầu vào
     );
 
     if (!updatedUser) {
@@ -304,8 +318,8 @@ export const updateUserById = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Lỗi cập nhật user:", error);
-    res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+    console.error("Lỗi cập nhật user:", error.message); // In lỗi chi tiết
+    res.status(500).json({ error: "Lỗi server, vui lòng thử lại sau!" });
   }
 };
 

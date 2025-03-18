@@ -3,33 +3,17 @@ import "../../styles/cart/ProductDetail.css";
 import "../../styles/cart/Cart.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
-const CartTable = ({ setDis }) => {
+
+
+
+const CartTable = () => {
     const [cart, setCart] = useState([]);
-
+   
     const [cartItems, setCartItems] = useState([]);
-    const [vouchers, setVouchers] = useState([]);
-    const [selectedDiscount, setSelectedDiscount] = useState(0);
-    const [totalAmount, setTotalAmount] = useState(0);
-    setDis(selectedDiscount);
-    useEffect(() => {
-        const fetchVouchers = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/api/vouchers");
-
-                // Lọc chỉ lấy voucher có state = "Còn hiệu lực"
-                const validVouchers = response.data.filter(voucher => voucher.state === "Còn hiệu lực");
-
-                setVouchers(validVouchers);
-            } catch (error) {
-                console.error("Lỗi khi lấy danh sách voucher:", error);
-            }
-        };
-
-        fetchVouchers();
-    }, []);
 
     useEffect(() => {
         // Lấy userId từ localStorage
@@ -81,128 +65,118 @@ const CartTable = ({ setDis }) => {
         storedCarts[userId] = updatedCart;
         localStorage.setItem("carts", JSON.stringify(storedCarts));
     };
+    
 
-    const formatVND = (amount) => {
-        return amount.toLocaleString("vi-VN");
-    };
-
-    useEffect(() => {
-        const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        const newTotal = subtotal - selectedDiscount + 20000;
-
-        setTotalAmount(newTotal);
-    }, [cartItems, selectedDiscount]);
-
-    // Cart
+// Cart
     return (
         <>
-            <table className="size-table-chi-tiet">
-                <thead>
-                    <tr>
-                        <th>Sản Phẩm</th>
-                        <th>Đơn Giá</th>
-                        <th>Số Lượng</th>
-                        <th>Số Tiền</th>
-                        <th>Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cartItems.length > 0 ? (
-                        cartItems.map((item) => (
-                            <tr key={item.id}>
-                                <td>
-                                    <div className="san-pham">
-                                        <img src={item.image} alt={item.name} />
-                                        <div className="thong-tin-san-pham">
-                                            <p>{item.name}</p>
-                                            <div className="mau-sac-kich-thuoc">
-                                                <span>Màu: {item.color}</span>
-                                                <span>, Kích thước: {item.size}</span>
-                                            </div>
+        <table className="size-table-chi-tiet">
+            <thead>
+                <tr>
+                    <th>Sản Phẩm</th>
+                    <th>Đơn Giá</th>
+                    <th>Số Lượng</th>
+                    <th>Số Tiền</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {cartItems.length > 0 ? (
+                    cartItems.map((item) => (
+                        <tr key={item.id}>
+                            <td>
+                                <div className="san-pham">
+                                    <img src={item.image} alt={item.name} />
+                                    <div className="thong-tin-san-pham">
+                                        <p>{item.name}</p>
+                                        <div className="mau-sac-kich-thuoc">
+                                            <span>Màu: {item.color}</span>
+                                            <span>, Kích thước: {item.size}</span>
                                         </div>
                                     </div>
-                                </td>
-                                <td>{item.price.toLocaleString()} đ</td>
-                                <td>
-                                    <div className="quantity-wrapper">
-                                        <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "decrease")} className="quantity-btn">-</button>
-                                        <input type="number" value={item.quantity} readOnly />
-                                        <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "increase")} className="quantity-btn">+</button>
-                                    </div>
-                                </td>
-                                <td className="so-tien-cart">{(item.price * item.quantity).toLocaleString()} đ</td>
-                                <td>
-                                    <span className="button-edit" onClick={() => handleRemoveItem(item.id, item.color, item.size)}>Xóa</span>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="5" style={{ textAlign: "center" }}>Giỏ hàng trống</td>
+                                </div>
+                            </td>
+                            <td>{item.price.toLocaleString()} đ</td>
+                            <td>
+                                <div className="quantity-wrapper">
+                                    <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "decrease")} className="quantity-btn">-</button>
+                                    <input type="number" value={item.quantity} readOnly />
+                                    <button onClick={() => handleQuantityChange(item.id, item.color, item.size, "increase")} className="quantity-btn">+</button>
+                                </div>
+                            </td>
+                            <td className="so-tien-cart">{(item.price * item.quantity).toLocaleString()} đ</td>
+                            <td>
+                                <span className="button-edit" onClick={() => handleRemoveItem(item.id, item.color, item.size)}>Xóa</span>
+                            </td>
                         </tr>
-                    )}
-                </tbody>
-            </table>
-            <div className="uu-dai">
-                <div className="coupon">
-                    <div className="coupon-item">
-                        <img src="/src/images/coupon.png" alt="Coupon" />
-                        <p>Voucher</p>
-                        <select id="voucher" name="coupon" className="select-coupon"
-                            onChange={(e) => setSelectedDiscount(Number(e.target.value))}>
-                            <option value="0" selected>Chọn Voucher</option>
-                            {vouchers.map((voucher) => (
-                                <option key={voucher.id} value={voucher.discount}>
-                                    {voucher.name} - {formatVND(voucher.discount)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="5" style={{ textAlign: "center" }}>Giỏ hàng trống</td>
+                    </tr>
+                )}
+            </tbody>
+        </table>
+         <div className="uu-dai">
+            <div className="coupon">
+                <div className="coupon-item">
+                    <img src="/src/images/coupon.png" alt="" />
+                    <p>Mã Coupon</p>
+                    <select id="voucher" name="coupon" className="select-coupon">
+                        <option value="" selected >Chọn coupon</option>
+                        <option value="1">5%</option>
+                        <option value="2">10%</option>
+                        <option value="3">15%</option>
+
+                    </select>
                 </div>
 
-                <div className="tong-tien-container">
+                <div className="coupon-item">
+                    <img src="/src/images/coupon.png" alt="" />
+                    <p>Sử dụng điểm (Điểm của bạn: 00)</p>
+                    <input type="text" className="input-diem" />
+                </div>
 
-                    <div className="tong-tien-hang">
-                        <p>Gía sản phẩm:</p>
-                        <p style={{ marginLeft: '305px' }}>
+
+            </div>
+
+            <div className="tong-tien-container">
+                <div className="tong-tien-hang">
+                    <p>Tổng tiền hàng:</p>
+                        <p style={{ marginLeft: '290px' }}>
                             {cartItems
                                 .reduce((sum, item) => sum + item.price * item.quantity, 0)
                                 .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
-                    </div>
-
-                    <div className="giam-gia-san-pham">
-                        <p>Giảm giá sản phẩm:</p>
-                        <p style={{ marginLeft: '305px' }}>0đ</p>
-                    </div>
-
-                    <div className="giam-gia-coupon">
-                        <p>Giảm giá theo Voucher:</p>
-                        <p style={{ marginLeft: '250px' }}>{formatVND(selectedDiscount)}đ</p>
-                    </div>
-
-                    <div className="phi-van-chuyen">
-                        <p>Phí vận chuyển:</p>
-                        <p style={{ marginLeft: '300px' }}>{formatVND(20000)}đ</p>
-                    </div>
-
-                    {/* Để thêm đường kẻ ngang, sử dụng thẻ <hr /> tự đóng */}
-                    <hr className="short-hr" style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }} />
-
-                    <div className="tong-total">
-                        <p style={{ fontSize: '20px', fontWeight: 'bold' }}>Tổng cộng:</p>
-                        <p style={{ fontSize: '20px', marginLeft: '290px', fontWeight: 'bold' }}>
-                            {totalAmount.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                        </p>
-                        {/* <p >
-                            {cartItems
-                                .reduce((sum, item) => sum + item.price * item.quantity - selectedDiscount + 20000, 0)
-                                .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                        </p> */}
-                    </div>
-
-
                 </div>
+
+                <div className="giam-gia-san-pham">
+                    <p>Giảm giá sản phẩm:</p>
+                    <p style={{ marginLeft: '305px' }}>-00 đ</p>
+                </div>
+
+                <div className="giam-gia-coupon">
+                    <p>Giảm giá coupon:</p>
+                    <p style={{ marginLeft: '320px' }}>-00 đ</p>
+                </div>
+
+                <div className="phi-van-chuyen">
+                    <p>Phí vận chuyển:</p>
+                    <p style={{ marginLeft: '330px' }}>-00 đ</p>
+                </div>
+
+                {/* Để thêm đường kẻ ngang, sử dụng thẻ <hr /> tự đóng */}
+                <hr className="short-hr" style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }} />
+
+                <div className="tong-total">
+                        <p style={{ fontSize: '20px' ,fontWeight: 'bold' }}>Tổng cộng:</p>
+                        <p style={{ fontSize: '20px', marginLeft: '290px', fontWeight: 'bold' }}>
+                            {cartItems
+                                .reduce((sum, item) => sum + item.price * item.quantity, 0)
+                                .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p>
+                </div>
+            </div>
 
 
             </div>
@@ -210,14 +184,26 @@ const CartTable = ({ setDis }) => {
     );
 };
 
-const ShippingInfo = ({ carts = [], dis}) => {
+const ShippingInfo = ({ carts = [] }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [receiverInfo, setReceiverInfo] = useState(null);
+    const [receiverInfo, setReceiverInfo] = useState({
+        fullName: "",
+        phone: "",
+        address: {
+            city: "",
+            district: "",
+            ward: "",
+            street: "", 
+        },
+    });
+    // const [receiverInfo, setReceiverInfo] = useState(null);
+
     const [error, setError] = useState(null);
-    const discount = dis;
 
     // Lấy userId từ localStorage
     const userId = localStorage.getItem("userId")?.replace(/"/g, "").trim();
+    
+
     // Hàm lấy thông tin vận chuyển
     const fetchReceiverInfo = async () => {
         if (!userId) {
@@ -226,7 +212,7 @@ const ShippingInfo = ({ carts = [], dis}) => {
         }
 
         try {
-
+           
             const response = await fetch(`http://localhost:5001/api/users/${userId}`);
             const data = await response.json();
             console.log("data dia chi:", data);
@@ -235,7 +221,12 @@ const ShippingInfo = ({ carts = [], dis}) => {
                 setReceiverInfo({
                     fullName: data.fullName,
                     phone: data.phone,
-                    address: `${data.address.street}, ${data.address.ward}, ${data.address.district}, ${data.address.city}`,
+                    address: {
+                        street: data.address?.street || "",
+                        ward: data.address?.ward || "",
+                        district: data.address?.district || "",
+                        city: data.address?.city || ""
+                    },
                 });
                 setError(null);
             } else {
@@ -253,57 +244,53 @@ const ShippingInfo = ({ carts = [], dis}) => {
         fetchReceiverInfo();
     }, []);
 
-    //Thay đổi thông tin vận chuyển
+    
 
-    const handleSaveReceiverInfo = async () => {
+    const handleSaveReceiverInfo = () => {
         if (!userId) {
             setError("Không tìm thấy userId. Vui lòng đăng nhập lại.");
             return;
         }
 
-        try {
-            const response = await fetch(`http://localhost:5001/api/users/${userId}`, {
-                method: "PUT",  // Dùng PUT để cập nhật thông tin
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    fullName: receiverInfo.fullName,
-                    phone: receiverInfo.phone,
-                    address: {
-                        city: receiverInfo.city || "",
-                        district: receiverInfo.district || "",
-                        ward: receiverInfo.ward || "",
-                        street: receiverInfo.address || "",
-                    },
-                }),
-            });
+        // Lưu tạm địa chỉ vào state
+        setReceiverInfo({
+            fullName: receiverInfo.fullName,
+            phone: receiverInfo.phone,
+            address: {
+                city: receiverInfo.address?.city || "",
+                district: receiverInfo.address?.district || "",
+                ward: receiverInfo.address?.ward || "",
+                street: receiverInfo.address?.street || "",
+            },
+        });
 
-            const result = await response.json();
-            if (response.ok) {
-                console.log("Cập nhật thành công:", result);
-                setIsEditing(false);
-                setError(null);
-            } else {
-                console.error("Lỗi khi cập nhật:", result);
-                setError("Không thể cập nhật thông tin. Vui lòng thử lại!");
-            }
-        } catch (error) {
-            console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
-            setError("Có lỗi xảy ra khi cập nhật thông tin.");
-        }
+        setIsEditing(false);
+        setError(null);
+        console.log("Đã lưu địa chỉ tạm thời:", receiverInfo);
     };
+
+
 
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        setReceiverInfo((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        // Nếu là field của address (city, district, ward, street)
+        if (["city", "district", "ward", "street"].includes(name)) {
+            setReceiverInfo((prev) => ({
+                ...prev,
+                address: {
+                    ...prev.address,
+                    [name]: value,
+                },
+            }));
+        } else {
+            setReceiverInfo((prev) => ({
+                ...prev,
+                [name]: value, // Nếu là fullName hoặc phone
+            }));
+        }
     };
-
 
     const saveCartForUser = (userId, cart) => {
         console.log("userId saveCartForUser:", userId);
@@ -359,7 +346,7 @@ const ShippingInfo = ({ carts = [], dis}) => {
             }
 
             console.log("Dữ liệu carts từ localStorage:", storedCarts);
-
+          
 
             if (!storedCarts.hasOwnProperty(userId)) {
                 console.warn(`Không tìm thấy giỏ hàng của userId: ${userId}`);
@@ -376,15 +363,13 @@ const ShippingInfo = ({ carts = [], dis}) => {
     };
 
 
-    const handleOrder = async (discount) => {
+    const handleOrder = async () => {
         try {
-            console.log("carts lưu ", localStorage.getItem("carts"));
+            console.log("Giỏ hàng lưu:", localStorage.getItem("carts"));
 
             let userId = localStorage.getItem("userId");
 
-            console.log("Giá trị userId trước khi xử lý:", userId);
-
-            if (!userId) {
+            if (!userId || userId === "null" || userId === "undefined") {
                 alert("Vui lòng đăng nhập để đặt hàng!");
                 return;
             }
@@ -393,49 +378,63 @@ const ShippingInfo = ({ carts = [], dis}) => {
                 return;
             }
 
-
-            if (!userId || userId === "null" || userId === "undefined") {
-                alert("Vui lòng đăng nhập để đặt hàng!");
-                return;
-            }
-
-            // Lấy giỏ hàng của user
             let carts = getCartForUser(userId);
 
-            console.log("carts trước khi kiểm tra:", carts);
-
-            // Đảm bảo carts không rỗng
             if (!Array.isArray(carts) || carts.length === 0) {
-                console.warn("Giỏ hàng trống hoặc không hợp lệ:", carts);
                 alert("Giỏ hàng trống! Vui lòng thêm sản phẩm vào giỏ trước khi đặt hàng.");
                 return;
             }
 
-            console.log("carts sau khi xử lý:", carts);
+            // 🔹 Định dạng giỏ hàng trước khi gửi lên server
+            const formattedCart = Object.values(
+                carts.reduce((acc, item) => {
+                    if (!acc[item._id]) {
+                        acc[item._id] = {
+                            _id: item._id,
+                            name: item.name,
+                            price: item.price,
+                            quantity: 0, // Sẽ tính sau
+                            image: Array.isArray(item.image) ? item.image : [item.image],
+                            category: item.category,
+                            description: item.description,
+                            subcategories: Array.isArray(item.subcategories) ? item.subcategories : [item.subcategories],
+                            rating: item.rating,
+                            imagethum: Array.isArray(item.imagethum) ? item.imagethum : [item.imagethum],
+                            variants: [] // Danh sách biến thể (color, size, stock)
+                        };
+                    }
 
-            // Format lại giỏ hàng trước khi gửi lên server
-            const formattedCart = carts.map(item => ({
-                _id: item._id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity || 1,
-                size: item.size,
-                color: item.color,
-                image: Array.isArray(item.image) ? item.image : [item.image],
-                category: item.category,
-                description: item.description,
-                subcategories: Array.isArray(item.subcategories) ? item.subcategories : [item.subcategories],
-                rating: item.rating,
-                imagethum: Array.isArray(item.imagethum) ? item.imagethum : [item.imagethum],
-                variants: item.variants || [{ color: item.color, size: item.size }],
-            }));
+                    let existingVariant = acc[item._id].variants.find(v => v.color === item.color && v.size === item.size);
+
+                    if (existingVariant) {
+                        existingVariant.stock += item.quantity || 1;
+                    } else {
+                        acc[item._id].variants.push({ color: item.color, size: item.size, stock: item.quantity || 1 });
+                    }
+
+                    // Cập nhật tổng số lượng của sản phẩm
+                    acc[item._id].quantity += item.quantity || 1;
+
+                    return acc;
+                }, {})
+            );
+
+            console.log("Giỏ hàng sau khi xử lý:", formattedCart);
+
             userId = userId.replace(/"/g, "");
-
             const orderData = {
                 receiver: userId,
                 cartItems: formattedCart,
-                totalAmount: carts.reduce((sum, item) => (sum + item.price * item.quantity) + 20000, 0),
-                discount: discount, 
+                shippingAddress: {
+                    fullName: receiverInfo.fullName,
+                    phone: receiverInfo.phone,
+                    address: {
+                        city: receiverInfo.address?.city || "",
+                        district: receiverInfo.address?.district || "",
+                        ward: receiverInfo.address?.ward || "",
+                        street: receiverInfo.address?.street || "",
+                    }
+                }
             };
 
             console.log("orderData gửi lên:", orderData);
@@ -447,7 +446,6 @@ const ShippingInfo = ({ carts = [], dis}) => {
                 body: JSON.stringify(orderData),
             });
 
-            // Kiểm tra response từ server
             if (!response.ok) {
                 let errorMessage = "Lỗi không xác định từ server!";
                 try {
@@ -459,9 +457,14 @@ const ShippingInfo = ({ carts = [], dis}) => {
                 throw new Error(errorMessage);
             }
 
-            alert("🎉 Đặt hàng thành công!");
-            saveCartForUser(userId, []); // Xóa giỏ hàng của user sau khi đặt hàng
-            window.location.href = "/dat-hang-thanh-cong";
+            toast.success("Đặt hàng thành công!", {
+                position: "top-right",
+            });
+            // Chờ 2 giây rồi chuyển trang
+            setTimeout(() => {
+                saveCartForUser(userId, []); // Xóa giỏ hàng sau khi đặt hàng
+                window.location.href = "/dat-hang-thanh-cong";
+            }, 2000);
 
         } catch (error) {
             console.error("Lỗi đặt hàng:", error);
@@ -472,150 +475,139 @@ const ShippingInfo = ({ carts = [], dis}) => {
 
 
 
+    
 
-    return (
-
-        <>
-
-
-
-            <div className="thong-tin-van-chuyen">
-                <div className="title-van-chuyen">
-                    <p style={{ fontSize: "18px", color: "red", marginBottom: "20px" }}>THÔNG TIN VẬN CHUYỂN</p>
-                    <p className="thay-doi" onClick={() => setIsEditing(!isEditing)}>
-                        {isEditing ? "Hủy" : "Thay đổi thông tin nhận hàng"}
-                    </p>
+return (
+    
+    <>
+       
 
 
-                </div>
-                <div className="dia-chi-nhan-hang">
+        <div className="thong-tin-van-chuyen">
+            <div className="title-van-chuyen">
+                <p style={{ fontSize: "18px", color: "red", marginBottom: "20px" }}>THÔNG TIN VẬN CHUYỂN</p>
+                <p className="thay-doi" onClick={() => setIsEditing(!isEditing)}>
+                    {isEditing ? "Hủy" : "Thay đổi thông tin nhận hàng"}
+                </p>
 
-                    {!isEditing ? (
-                        <>
-
-                            <form>
-                                <div className="form-group">
-                                    <div className="form-group-item">
-                                        <p className="form-group-title">Người nhận: </p>
-                                        <br />
-                                        <p className="form-group-value">{receiverInfo?.fullName || "Chưa có thông tin"}</p>
-
-
-                                    </div>
-                                    <br />
-
-                                </div>
-                                <div className="form-group">
-                                    <div className="form-group-item">
-                                        <p className="form-group-title">Điện thoại: </p>
-                                        <br />
-                                        <p className="form-group-value">{receiverInfo?.phone || "Chưa có thông tin"}</p>
-
-
-                                    </div>
-                                    <br />
-
-                                </div>
-                                <div className="form-group">
-                                    <div className="form-group-item">
-                                        <p className="form-group-title">Địa chỉ: </p>
-                                        <br />
-                                        <p className="form-group-value">{receiverInfo?.address || "Chưa có thông tin"}</p>
-
-
-                                    </div>
-                                    <br />
-
-                                </div>
-
-                            </form>
-
-
-
-                        </>
-                    ) : (
-                        <form>
-                            <div className="form-group">
-                                <label>Người nhận:</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={receiverInfo.fullName}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Điện thoại:</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    value={receiverInfo.phone}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Địa chỉ:</label>
-                                <input
-                                    type="text"
-                                    name="address"
-                                    value={receiverInfo.address}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Chọn Tỉnh/Thành phố:</label>
-                                <select name="province" onChange={handleInputChange}>
-                                    <option value="">Chọn tỉnh</option>
-                                    <option value="Hà Nội">Hà Nội</option>
-                                    <option value="TP HCM">TP Hồ Chí Minh</option>
-                                    <option value="Đà Nẵng">Đà Nẵng</option>
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Chọn Quận/Huyện:</label>
-                                <select name="district" onChange={handleInputChange}>
-                                    <option value="">Chọn quận/huyện</option>
-                                    <option value="Quận 1">Quận 1</option>
-                                    <option value="Quận 2">Quận 2</option>
-                                    <option value="Quận 3">Quận 3</option>
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Chọn Xã/Phường:</label>
-                                <select name="ward" onChange={handleInputChange}>
-                                    <option value="">Chọn xã/phường</option>
-                                    <option value="Phường A">Phường A</option>
-                                    <option value="Phường B">Phường B</option>
-                                    <option value="Phường C">Phường C</option>
-                                </select>
-                            </div>
-
-                            <button type="button" className="button-edit" onClick={handleSaveReceiverInfo}>
-                                Lưu
-                            </button>
-                        </form>
-                    )}
-                </div>
-
-
+                
             </div>
-            <div className="btn-dat-hang">
-                <a onClick={() => handleOrder(discount)}
-                >Đặt hàng</a>
-            </div>
-            <br />
-            <br />
-            <hr />
+            <div className="dia-chi-nhan-hang">
+                {!isEditing ? (
+                    <form>
+                        <div className="form-group">
+                            <div className="form-group-item">
+                                <p className="form-group-title">Người nhận: </p>
+                                <p className="form-group-value">{receiverInfo?.fullName || "Chưa có thông tin"}</p>
+                            </div>
+                        </div>
 
-        </>
+                        <div className="form-group">
+                            <div className="form-group-item">
+                                <p className="form-group-title">Điện thoại: </p>
+                                <p className="form-group-value">{receiverInfo?.phone || "Chưa có thông tin"}</p>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <div className="form-group-item">
+                                <p className="form-group-title">Địa chỉ: </p>
+                                <p className="form-group-value">
+                                    <p className="form-group-value">
+                                        {receiverInfo?.address?.street || "Chưa có số nhà, đường"},
+                                        {receiverInfo?.address?.ward || "Chưa có xã/phường"},
+                                        {receiverInfo?.address?.district || "Chưa có quận/huyện"},
+                                        {receiverInfo?.address?.city || "Chưa có tỉnh/thành phố"}
+                                    </p>
+
+
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                ) : (
+                    <form>
+                        <div className="form-group">
+                            <label>Người nhận:</label>
+                            <input
+                                type="text"
+                                name="fullName"
+                                value={receiverInfo?.fullName || ""}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Điện thoại:</label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={receiverInfo?.phone || ""}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Địa chỉ:</label>
+                            <input
+                                type="text"
+                                name="street"
+                                placeholder="Nhập số nhà, đường..."
+                                value={receiverInfo?.address?.street || ""}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Chọn Tỉnh/Thành phố:</label>
+                                <select name="city" value={receiverInfo?.address?.city || ""} onChange={handleInputChange}>
+                                <option value="">Chọn tỉnh</option>
+                                <option value="Hà Nội">Hà Nội</option>
+                                <option value="TP HCM">TP Hồ Chí Minh</option>
+                                <option value="Đà Nẵng">Đà Nẵng</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Chọn Quận/Huyện:</label>
+                            <select name="district" value={receiverInfo?.address?.district || ""} onChange={handleInputChange}>
+                                <option value="">Chọn quận/huyện</option>
+                                <option value="Quận 1">Quận 1</option>
+                                <option value="Quận 2">Quận 2</option>
+                                <option value="Quận 3">Quận 3</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Chọn Xã/Phường:</label>
+                            <select name="ward" value={receiverInfo?.address?.ward || ""} onChange={handleInputChange}>
+                                <option value="">Chọn xã/phường</option>
+                                <option value="Phường A">Phường A</option>
+                                <option value="Phường B">Phường B</option>
+                                <option value="Phường C">Phường C</option>
+                            </select>
+                        </div>
+
+                        <button type="button" className="button-edit" onClick={handleSaveReceiverInfo}>
+                            Lưu
+                        </button>
+                    </form>
+                )}
+            </div>
+
+         
+        </div>
+        <div className="btn-dat-hang">
+            <a onClick={handleOrder}
+            >Đặt hàng</a>
+        </div>
+        <br />
+        <br />
+        <hr />
+        
+    </>
     );
 }
 const ContactInfo = () => {
@@ -673,17 +665,10 @@ const ContactInfo = () => {
 
 
 const Cart = () => {
-    const [receiverInfo, setReceiverInfo] = useState({
-        name: "Trần Quốc Huy",
-        phone: "0987654321",
-        address: "123 Đường ABC, Quận XYZ",
-        province: "",
-        district: "",
-        ward: "",
-    });
+
     // Lấy cart từ localStorage khi component mount
     const [cart, setCart] = useState([]);
-    const [dis, setDis] = useState(0);
+
     useEffect(() => {
         const storedCart = localStorage.getItem("cart");
         if (storedCart) {
@@ -699,8 +684,8 @@ const Cart = () => {
                     <span className="delimiter">| </span>
                     <a href="/cart">Giỏ hàng</a>
                 </div>
-                <CartTable setDis={setDis}/>
-                <ShippingInfo receiverInfo={receiverInfo} setReceiverInfo={setReceiverInfo} cart={cart} dis={dis}/>
+                <CartTable />
+                <ShippingInfo cart={cart} />
                 <ContactInfo />
             </div>
             <Footer />

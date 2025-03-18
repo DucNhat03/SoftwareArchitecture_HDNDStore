@@ -86,43 +86,54 @@ const ChiTietSanPham = ({ product }) => {
     };
 
 
-    const addToCart = () => {
+
+
+    const addToCart = (product) => {
         if (!selectedColor || !selectedSize) {
             alert("Vui lòng chọn màu sắc và kích cỡ!");
             return;
         }
 
-        // Lấy userId từ localStorage
         const userId = localStorage.getItem("userId");
-
         if (!userId) {
             alert("Vui lòng đăng nhập để thêm vào giỏ hàng!");
             return;
         }
 
-        // Lấy giỏ hàng theo userId từ localStorage
+        if (!product || !product._id) {
+            console.error("Lỗi: product hoặc product._id không hợp lệ");
+            return;
+        }
+
+        // Lấy giỏ hàng từ localStorage
         const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
         const userCart = storedCarts[userId] || [];
 
-        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-        const existingItem = userCart.find(
-            (cartItem) => cartItem.id === selectedProduct.id && cartItem.color === selectedColor && cartItem.size === selectedSize
+        // Tìm vị trí sản phẩm trong giỏ hàng
+        const existingItemIndex = userCart.findIndex(
+            (cartItem) =>
+                cartItem.id === product._id &&
+                cartItem.color === selectedColor &&
+                cartItem.size === selectedSize
         );
 
         let updatedCart;
-        if (existingItem) {
-            // Nếu sản phẩm đã tồn tại, tăng số lượng
-            updatedCart = userCart.map((cartItem) =>
-                cartItem.id === selectedProduct.id && cartItem.color === selectedColor && cartItem.size === selectedSize
-                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                    : cartItem
-            );
+        if (existingItemIndex !== -1) {
+            // Nếu sản phẩm đã có, tăng số lượng
+            updatedCart = [...userCart];
+            updatedCart[existingItemIndex].quantity += 1;
         } else {
-            // Nếu chưa có, thêm sản phẩm mới với số lượng là 1
-            updatedCart = [...userCart, { ...selectedProduct, color: selectedColor, size: selectedSize, quantity: 1 }];
+            // Nếu chưa có, thêm sản phẩm mới với số lượng = 1
+            updatedCart = [...userCart, {
+                ...product,
+                id: product._id,
+                color: selectedColor,
+                size: selectedSize,
+                quantity: 1
+            }];
         }
 
-        // Cập nhật giỏ hàng vào object `carts`
+        // Cập nhật giỏ hàng vào localStorage
         storedCarts[userId] = updatedCart;
         localStorage.setItem("carts", JSON.stringify(storedCarts));
 
@@ -132,6 +143,18 @@ const ChiTietSanPham = ({ product }) => {
         // Mở modal giỏ hàng
         setIsModalOpenGioHang(true);
     };
+
+    // ✅ Thêm PropTypes để xác nhận product có _id
+    addToCart.propTypes = {
+        product: PropTypes.shape({
+            _id: PropTypes.string.isRequired, // Bắt buộc có _id là string
+            name: PropTypes.string.isRequired, // Tên sản phẩm
+            price: PropTypes.number.isRequired, // Giá sản phẩm
+            image: PropTypes.string, // Hình ảnh (nếu có)
+        }).isRequired,
+    };
+
+
 
     const addToCart2 = () => {
         if (!selectedColor || !selectedSize) {
@@ -567,7 +590,7 @@ const ChiTietSanPham = ({ product }) => {
                                 </div>
                                 <div className="btn-them-vao-gio-hang">
                                     <a href="#" id="addToCartBtn" onClick={() => {
-                                        addToCart();
+                                        addToCart(selectedProduct);
 
                                     }}>
                                         <FaShoppingCart style={{ marginRight: "5px" }} />
