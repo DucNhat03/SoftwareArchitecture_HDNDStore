@@ -5,15 +5,37 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 
 
 
 
-const CartTable = () => {
+const CartTable = ({ setDis }) => {
     const [cart, setCart] = useState([]);
    
     const [cartItems, setCartItems] = useState([]);
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedDiscount, setSelectedDiscount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+
+    setDis(selectedDiscount);
+    useEffect(() => {
+        const fetchVouchers = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/vouchers");
+
+                // Lọc chỉ lấy voucher có state = "Còn hiệu lực"
+                const validVouchers = response.data.filter(voucher => voucher.state === "Còn hiệu lực");
+
+                setVouchers(validVouchers);
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách voucher:", error);
+            }
+        };
+
+        fetchVouchers();
+    }, []);
 
     useEffect(() => {
         // Lấy userId từ localStorage
@@ -51,6 +73,20 @@ const CartTable = () => {
         storedCarts[userId] = updatedCart;
         localStorage.setItem("carts", JSON.stringify(storedCarts));
     };
+
+    const formatVND = (amount) => {
+        return amount.toLocaleString("vi-VN");
+    };
+
+    useEffect(() => {
+        const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const newTotal = subtotal - selectedDiscount + 20000;
+
+        setTotalAmount(newTotal);
+    }, [cartItems, selectedDiscount]);
+
+
+
 
     // Xóa sản phẩm khỏi giỏ hàng
     const handleRemoveItem = (id, color, size) => {
@@ -118,27 +154,21 @@ const CartTable = () => {
             </tbody>
         </table>
          <div className="uu-dai">
-            <div className="coupon">
-                <div className="coupon-item">
-                    <img src="/src/images/coupon.png" alt="" />
-                    <p>Mã Coupon</p>
-                    <select id="voucher" name="coupon" className="select-coupon">
-                        <option value="" selected >Chọn coupon</option>
-                        <option value="1">5%</option>
-                        <option value="2">10%</option>
-                        <option value="3">15%</option>
-
-                    </select>
+                <div className="coupon">
+                    <div className="coupon-item">
+                        <img src="/src/images/coupon.png" alt="Coupon" />
+                        <p>Voucher</p>
+                        <select id="voucher" name="coupon" className="select-coupon"
+                            onChange={(e) => setSelectedDiscount(Number(e.target.value))}>
+                            <option value="0" selected>Chọn Voucher</option>
+                            {vouchers.map((voucher) => (
+                                <option key={voucher.id} value={voucher.discount}>
+                                    {voucher.name} - {formatVND(voucher.discount)}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-
-                <div className="coupon-item">
-                    <img src="/src/images/coupon.png" alt="" />
-                    <p>Sử dụng điểm (Điểm của bạn: 00)</p>
-                    <input type="text" className="input-diem" />
-                </div>
-
-
-            </div>
 
             <div className="tong-tien-container">
                 <div className="tong-tien-hang">
@@ -155,15 +185,15 @@ const CartTable = () => {
                     <p style={{ marginLeft: '305px' }}>-00 đ</p>
                 </div>
 
-                <div className="giam-gia-coupon">
-                    <p>Giảm giá coupon:</p>
-                    <p style={{ marginLeft: '320px' }}>-00 đ</p>
-                </div>
+                    <div className="giam-gia-coupon">
+                        <p>Giảm giá theo Voucher:</p>
+                        <p style={{ marginLeft: '250px' }}>{formatVND(selectedDiscount)}đ</p>
+                    </div>
 
-                <div className="phi-van-chuyen">
-                    <p>Phí vận chuyển:</p>
-                    <p style={{ marginLeft: '330px' }}>-00 đ</p>
-                </div>
+                    <div className="phi-van-chuyen">
+                        <p>Phí vận chuyển:</p>
+                        <p style={{ marginLeft: '300px' }}>{formatVND(20000)}đ</p>
+                    </div>
 
                 {/* Để thêm đường kẻ ngang, sử dụng thẻ <hr /> tự đóng */}
                 <hr className="short-hr" style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }} />
@@ -171,10 +201,13 @@ const CartTable = () => {
                 <div className="tong-total">
                         <p style={{ fontSize: '20px' ,fontWeight: 'bold' }}>Tổng cộng:</p>
                         <p style={{ fontSize: '20px', marginLeft: '290px', fontWeight: 'bold' }}>
-                            {cartItems
-                                .reduce((sum, item) => sum + item.price * item.quantity, 0)
-                                .toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                            {(
+                                cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) // Tổng tiền sản phẩm
+                                - selectedDiscount  // Trừ giảm giá
+                                + 20000 // Cộng phí ship 1 lần
+                            ).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
+
                 </div>
             </div>
 
@@ -184,7 +217,7 @@ const CartTable = () => {
     );
 };
 
-const ShippingInfo = ({ carts = [] }) => {
+const ShippingInfo = ({ carts = [], dis }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [receiverInfo, setReceiverInfo] = useState({
         fullName: "",
@@ -199,6 +232,7 @@ const ShippingInfo = ({ carts = [] }) => {
     // const [receiverInfo, setReceiverInfo] = useState(null);
 
     const [error, setError] = useState(null);
+    const discount = dis;
 
     // Lấy userId từ localStorage
     const userId = localStorage.getItem("userId")?.replace(/"/g, "").trim();
@@ -363,7 +397,7 @@ const ShippingInfo = ({ carts = [] }) => {
     };
 
 
-    const handleOrder = async () => {
+    const handleOrder = async (discount) => {
         try {
             console.log("Giỏ hàng lưu:", localStorage.getItem("carts"));
 
@@ -419,12 +453,16 @@ const ShippingInfo = ({ carts = [] }) => {
                 }, {})
             );
 
-            console.log("Giỏ hàng sau khi xử lý:", formattedCart);
+            // console.log("Giỏ hàng sau khi xử lý:", formattedCart);
+            console.log("Discount nhận vào:", discount);
+            console.log("Loại của discount:", typeof discount);
+
 
             userId = userId.replace(/"/g, "");
             const orderData = {
                 receiver: userId,
                 cartItems: formattedCart,
+                discount: discount, 
                 shippingAddress: {
                     fullName: receiverInfo.fullName,
                     phone: receiverInfo.phone,
@@ -600,7 +638,7 @@ return (
          
         </div>
         <div className="btn-dat-hang">
-            <a onClick={handleOrder}
+            <a onClick={() => handleOrder(discount)}
             >Đặt hàng</a>
         </div>
         <br />
@@ -668,6 +706,7 @@ const Cart = () => {
 
     // Lấy cart từ localStorage khi component mount
     const [cart, setCart] = useState([]);
+    const [dis, setDis] = useState(0);
 
     useEffect(() => {
         const storedCart = localStorage.getItem("cart");
@@ -684,8 +723,8 @@ const Cart = () => {
                     <span className="delimiter">| </span>
                     <a href="/cart">Giỏ hàng</a>
                 </div>
-                <CartTable />
-                <ShippingInfo cart={cart} />
+                <CartTable setDis={setDis} />
+                <ShippingInfo cart={cart} dis={dis} />
                 <ContactInfo />
             </div>
             <Footer />

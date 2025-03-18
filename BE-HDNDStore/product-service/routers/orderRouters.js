@@ -27,10 +27,18 @@ const fetchUserById = async (userId) => {
 // API Đặt hàng
 router.post("/dat-hang", async (req, res) => {
     try {
-        let { receiver, cartItems, shippingAddress } = req.body;
+        let { receiver, cartItems, shippingAddress, discount } = req.body;
 
         console.log("Dữ liệu giỏ hàng nhận được:", JSON.stringify(cartItems, null, 2));
         console.log("Địa chỉ giao hàng:", shippingAddress);
+        console.log("req.body dat hang:", req.body);
+
+        // if (totalAmount === undefined) {
+        //     return res.status(400).json({ message: "Thiếu totalAmount trong request!" });
+        // }
+
+        // console.log("totalAmount sau khi trích xuất:", totalAmount);
+
 
         // Kiểm tra ID người nhận hợp lệ
         if (!receiver || !mongoose.Types.ObjectId.isValid(receiver)) {
@@ -133,8 +141,11 @@ router.post("/dat-hang", async (req, res) => {
 
 
 
-        // Tính tổng tiền đơn hàng
-        const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        // Tính tổng tiền sản phẩm
+        const totalProductPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+        // Tổng tiền đơn hàng = tổng tiền sản phẩm + 20k phí ship
+        const totalAmount = totalProductPrice + 20000;
 
         // Lấy hóa đơn mới nhất
         const latestOrder = await Order.findOne({}, {}, { sort: { createdAt: -1 } });
@@ -197,7 +208,8 @@ router.post("/dat-hang", async (req, res) => {
         const newOrder = new Order({
             receiver,
             cartItems: groupedCartItems,
-            totalAmount,
+            discount: discount,
+            totalAmount: totalAmount,
             idHoaDon: newInvoiceNumber,
             shippingAddress
         });

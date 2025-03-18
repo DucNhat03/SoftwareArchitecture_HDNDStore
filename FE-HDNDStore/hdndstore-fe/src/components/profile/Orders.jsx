@@ -414,7 +414,7 @@ const Orders = () => {
                     </Card.Body>
 
                     <p className="total-amount">
-                      Tổng số tiền: <strong className="total-vnd">{order.totalAmount.toLocaleString()} VND</strong>
+                      Tổng số tiền: <strong className="total-vnd">{order.finalAmount.toLocaleString()} VND</strong>
                     </p>
 
                     {/* Modal hủy đơn hàng */}
