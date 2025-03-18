@@ -131,21 +131,39 @@
   border: 2px solid #ddd;
 }
 
-.product-info {
+.product-info-order {
+ justify-content: flex-start;
+ align-items: flex-start;
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  padding: 10px 10px;
+  border-radius: 10px;
 }
 
 .product-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
 }
 
+
 .product-description {
-  font-size: 14px;
-  color: #666;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    max-height: 1.5em; /* Giới hạn khoảng 2-3 dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Hiển thị tối đa 3 dòng */
+    -webkit-box-orient: vertical;
+    position: relative;
+    margin-bottom: 5px;
 }
 
 .product-quantity {
@@ -194,10 +212,7 @@ display: flex;
 align-items: center;
 justify-content: space-around;
 }
-.product-info{
-  display: flex;
-  align-items: center;
-}
+
 .text-danger{
   color: red;
 }
@@ -241,6 +256,16 @@ margin-left: 5px;
 }
 .ngay-dat{
   font-weight: bold;
+  color: green;
+  align-items: center;
+}
+.ngay-huy {
+  font-weight: bold;
+  color: red;
+  align-items: center;
+}
+.ly-do-huy{
+  font-weight: bold;
   color: red;
   align-items: center;
 }
@@ -249,3 +274,86 @@ margin-left: 5px;
   background-color: #f0f0f0; /* Màu xám nhạt hơn */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Tăng độ nổi */
 }
+.shipping-info {
+  background: #f8f9fa; /* Màu nền nhẹ */
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 5px solid #007bff; /* Thanh viền nổi bật */
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #333;
+}
+
+.shipping-info p {
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+}
+
+.shipping-info svg {
+  color: #007bff; /* Màu icon */
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.shipping-info strong {
+  font-size: 16px;
+  color: #212529;
+}
+
+
+.modal {
+  background: none !important;
+  z-index: 999999 !important;
+ 
+
+}
+
+.modal.fade.show {
+  background: transparent !important;
+  backdrop-filter: none !important;
+
+  
+}
+
+.modal-backdrop {
+  display: none !important;
+  background: none !important;
+  z-index: -1 !important;
+
+}
+
+
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-in-out;
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1);
+  opacity: 11;
+}
+.modal-backdrop.show {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Kích thước modal to hơn */
+.modal-dialog {
+  max-width: 800px; /* Điều chỉnh độ rộng */
+  width: 90%; /* Đảm bảo responsive */
+}
+
+/* Hiệu ứng mở modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

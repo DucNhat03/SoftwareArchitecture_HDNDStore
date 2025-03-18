@@ -657,6 +657,12 @@ select:disabled {
     display: flex;
     margin-bottom: 20px;
     align-items: flex-start;
+    border: 1px solid #ddd;
+    align-items: center;
+    border-radius: 5px;
+}
+.product-info:hover{
+    background-color: #f5f5f5;
 }
 .product-info .details span{
     white-space: nowrap;

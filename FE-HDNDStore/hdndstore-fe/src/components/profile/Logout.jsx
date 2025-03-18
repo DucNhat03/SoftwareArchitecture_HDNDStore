@@ -11,8 +11,8 @@ const Logout = () => {
     localStorage.removeItem("token"); 
     localStorage.removeItem("userId");
     localStorage.removeItem("role");
-    localStorage.removeItem("carts");
-    localStorage.removeItem("selectedProduct");
+    // localStorage.removeItem("carts");
+    // localStorage.removeItem("selectedProduct");
     navigate("/auth"); 
   };
 
