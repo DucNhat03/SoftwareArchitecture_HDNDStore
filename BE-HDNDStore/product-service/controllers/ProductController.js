@@ -14,13 +14,13 @@ const getAllProducts = async (req, res) => {
 // Lọc sản phẩm theo category
 const getProductsByCategory = async (req, res) => {
   try {
-    const category = req.query.category;
+    const category = req.query.subcategories;
 
     if (!category) {
       return res.status(400).json({ message: "Category is required" });
     }
 
-    const products = await Product.find({ category: category });
+    const products = await Product.find({ subcategories: category });
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
