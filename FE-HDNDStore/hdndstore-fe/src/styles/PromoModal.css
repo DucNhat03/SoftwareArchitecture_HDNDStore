@@ -1,94 +1,111 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-  }
-  
-  .modal-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
-  }
-  
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
-  .modal-title {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 24px;
-    margin-bottom: 15px;
-    font-weight: 600;
-  }
-  
-  .modal-image {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-  
-  .modal-description {
-    margin: 15px 0;
-    font-size: 16px;
-  }
-  
-  .modal-cta .modal-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background: #e63946;
-    color: white;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background 0.3s;
-  }
-  
-  .modal-cta .modal-button:hover {
-    background: #d62839;
-  }
-  .per-discout{
-    font-weight: 800;
-    color: #e63946;
-  }
-  
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: scale(0.8) translateY(-20px);
-    }
-    50% {
-      opacity: 0.5;
-      transform: scale(1.02) translateY(0);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  .animate-fadeIn {
-    animation: fadeIn 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Đậm hơn để làm nổi bật modal */
+  z-index: 999;
+}
 
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
 
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.3s;
+}
 
-  
-  
+.close-button:hover {
+  transform: rotate(90deg);
+}
+
+.modal-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.modal-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+.modal-description {
+  margin: 15px 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.per-discout {
+  font-weight: 800;
+  color: yellow;
+  font-size: 22px;
+}
+
+.modal-cta .modal-button {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #ffcc00;
+  color: #333;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
+}
+
+.modal-cta .modal-button:hover {
+  background: #ffaa00;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 204, 0, 0.6);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
