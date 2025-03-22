@@ -1,0 +1,79 @@
+.hotline-container {
+    padding: 30px 15px;
+    background: #222; /* Màu nền đậm hơn để tăng độ tương phản */
+    color: #fff;
+  }
+  
+  .hotline-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: auto;
+    gap: 20px;
+  }
+  
+  .hotline-column {
+    flex: 1;
+    min-width: 280px;
+    padding: 10px 15px;
+  }
+  
+  .hotline-column h4 {
+    color: #ffb400; 
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  
+  .hotline-number {
+    font-size: 24px;
+    color: #ff4d4d; 
+    font-weight: bold;
+  }
+  
+  .hotline-note {
+    font-size: 14px;
+    color: #aaa9a9;
+    margin-top: 5px;
+  }
+  
+  .hotline-column ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .hotline-column ul li {
+    margin: 8px 0;
+  }
+  
+  .hotline-column ul li a {
+    text-decoration: none;
+    color: #ddd;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .hotline-column ul li a:hover {
+    color: #ffb400;
+    text-decoration: underline;
+  }
+  
+  .hotline-socials {
+    display: flex;
+    gap: 15px;
+    margin-top: 12px;
+  }
+  
+  .hotline-socials a {
+    color: #ddd;
+    font-size: 22px;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .hotline-socials a:hover {
+    color: #ffb400;
+    transform: scale(1.1);
+  }
+  

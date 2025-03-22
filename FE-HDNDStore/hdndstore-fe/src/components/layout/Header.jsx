@@ -10,13 +10,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo from "../../assets/img-shop/logo-txt.png";
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showSubmenu, setShowSubmenu] = useState(null); // Điều khiển submenu trên mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024); // Xác định thiết bị
   const navigate = useNavigate();
-
 
   // Cập nhật trạng thái khi resize màn hình
   useEffect(() => {
@@ -40,7 +40,9 @@ const Header = () => {
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
-      toast.error("Vui lòng đăng nhập để xem giỏ hàng !", { position: "top-center" });
+      toast.error("Vui lòng đăng nhập để xem giỏ hàng !", {
+        position: "top-center",
+      });
       // Đợi 2 giây (2000ms) trước khi chuyển hướng
       setTimeout(() => {
         navigate("/auth");
@@ -105,9 +107,12 @@ const Header = () => {
         >
           <FaList size={24} />
         </button>
+        {/**  <a href="/home" className="nav_logo">
+          HDND STORE
+        </a>*/}
 
         <a href="/home" className="nav_logo">
-          HDND STORE
+          <img src={logo} alt="logo" height={50} />
         </a>
 
         <ul className="nav_items m-0 p-0">
@@ -153,7 +158,11 @@ const Header = () => {
             // onClick={() => navigate("/cart")}
             style={{ cursor: "pointer" }}
           >
-            <div className="cart_box" onClick={handleCartClick} style={{ cursor: "pointer" }}>
+            <div
+              className="cart_box"
+              onClick={handleCartClick}
+              style={{ cursor: "pointer" }}
+            >
               <FaShoppingCart />
               <div className="cart_count">1</div>
             </div>

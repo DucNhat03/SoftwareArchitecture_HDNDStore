@@ -224,7 +224,7 @@ const Orders = () => {
 
 
   return (
-    <Container className="orders-container card p-2">
+    <Container className="orders-container card p-4">
       <Tabs activeKey={activeTab} onSelect={handleTabChange} className="orders-tabs">
         {tabs.map((tab) => (
           <Tab key={tab.key} eventKey={tab.key} title={tab.label}>
