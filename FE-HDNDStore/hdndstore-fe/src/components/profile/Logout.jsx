@@ -11,10 +11,22 @@ const Logout = () => {
     localStorage.removeItem("token"); 
     localStorage.removeItem("userId");
     localStorage.removeItem("role");
+    localStorage.removeItem("promo_closed");
+
+    // Xóa tất cả các key có tiền tố "promo_closed_"
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("promo_closed_")) {
+            localStorage.removeItem(key);
+        }
+    });
+
+    // Xóa thêm các thông tin khác nếu cần
     // localStorage.removeItem("carts");
     // localStorage.removeItem("selectedProduct");
+
     navigate("/auth"); 
-  };
+};
+
 
   return (
     <Container className="logout-container">

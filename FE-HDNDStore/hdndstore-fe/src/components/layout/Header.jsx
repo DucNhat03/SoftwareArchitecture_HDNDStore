@@ -112,7 +112,7 @@ const Header = () => {
         </a>*/}
 
         <a href="/home" className="nav_logo">
-          <img src={logo} alt="logo" height={50} />
+          <img src={logo} alt="logo" height={45} />
         </a>
 
         <ul className="nav_items m-0 p-0">
