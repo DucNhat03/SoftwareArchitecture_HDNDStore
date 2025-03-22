@@ -58,7 +58,7 @@ const Wishlist = () => {
   };
 
   return (
-    <Container className="wishlist-container">
+    <Container className="wishlist-container card p-4">
       <Row>
         {wishlist.length > 0 ? (
           wishlist.map((item) => (

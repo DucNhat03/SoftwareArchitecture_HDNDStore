@@ -3,8 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <footer className="footer bg-dark text-light text-center py-3">
-      <p>© 2025 HDND Store - No copy right</p>
+    <footer className="footer">
+      <div className="footer-bottom">
+        <p className="blinking-text">© 2025 HDND Store - Elevate your step.</p>
+      </div>
     </footer>
   );
 };
