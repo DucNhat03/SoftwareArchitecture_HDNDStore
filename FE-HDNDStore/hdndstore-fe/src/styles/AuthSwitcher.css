@@ -4,8 +4,7 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #f8f9fa;
+  background: #fffefe;
   font-family: "Poppins", sans-serif;
   /* Font chữ */
 }

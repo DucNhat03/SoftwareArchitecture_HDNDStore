@@ -68,6 +68,12 @@ a {
     border-radius: 0;
 }
 
+.home_sale-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
 @media screen and (max-width: 1024px) {
     .homeWrapper {
         padding-top: 70px;

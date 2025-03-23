@@ -186,6 +186,7 @@ const Home = () => {
             });
     }, []);
 
+
     useEffect(() => {
         axios
             .get("http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20Th%E1%BB%83%20Thao")
@@ -236,10 +237,10 @@ const Home = () => {
                 {/* slide */}
                 <div className="home_background" id="slide">
                     <div className="home_background-item"
-                        style={{ backgroundImage: "url('https://img.mwc.com.vn/giay-thoi-trang?w=1920&h=0&FileInput=/Resources/Silde/2025/03/01/banner%20collection.jpg')" }}
+                        style={{ backgroundImage: "url('https://i.imgur.com/9ROvoo8.png')" }}
                     ></div>
                     <div className="home_background-item"
-                        style={{ backgroundImage: "url('https://img.mwc.com.vn/giay-thoi-trang?w=1920&h=0&FileInput=/Resources/Silde/2025/02/19/banner%20web_TET.jpg')" }}
+                        style={{ backgroundImage: "url('https://i.imgur.com/6JHbeFp.png')" }}
                     ></div>
 
                     <button className="btn-slide prev" id="prev"><FaChevronLeft /> </button>

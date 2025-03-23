@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logo from "../../assets/img-shop/khuyenmai.png";
+import logo from "../../assets/img-shop/big-sale.png";
 import "../../styles/PromoModal.css"; 
 import { useNavigate } from "react-router-dom";
 
