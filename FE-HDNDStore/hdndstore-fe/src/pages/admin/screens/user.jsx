@@ -48,7 +48,6 @@ import {
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
@@ -56,8 +55,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import axios from "axios";
-import sideBar from '../../../components/layout/admin-sideBar';
-const drawerWidth = 260;
+import SideBar from '../../../components/layout/admin-sideBar';
 const ITEMS_PER_PAGE = 6;
 
 
@@ -250,182 +248,12 @@ export default function User() {
       >
         <CssBaseline />
 
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              backgroundColor: "#a7adad",
-              color: "#fff",
-            },
-          }}
-        >
-          <Toolbar>
-            <Box sx={{ width: "100%", textAlign: "center" }}>
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                DuyNgayXua
-              </Typography>
-              <IconButton color="error" sx={{ mt: 10 }} >
-                <Logout /> {/* logout, return login form, deleted token, clear local stored*/}
-              </IconButton>
-            </Box>
-          </Toolbar>
-          <List>
-            {[
-              { text: "Bảng điều khiển", icon: <Dashboard />, path: "/" },
-              {
-                text: "Quản lý khách hàng",
-                icon: <People />,
-                path: "/admin/users",
-              },
-              {
-                text: "Quản lý sản phẩm",
-                icon: <ShoppingCart />,
-                isParent: true,
-              },
-
-              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
-
-              {
-                text: "Quản lý đơn hàng",
-                icon: <Receipt />,
-                isParent: true,
-              },
-              { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/" },
-              {
-                text: "Quản lý Khuyến Mãi",
-                icon: <CardGiftcardIcon />,
-                path: "/admin/voucher",
-              },
-              { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
-            ].map((item, index) => (
-              <div key={index}>
-                {item.isParent ? (
-                  <>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={
-                          item.text === "Quản lý sản phẩm"
-                            ? handleProductsClick
-                            : handleOrdersClick
-                        }
-                      >
-                        <ListItemIcon sx={{ color: "#fff" }}>
-                          {item.icon}
-                        </ListItemIcon>
-                        <ListItemText primary={item.text} />
-                        {item.text === "Quản lý sản phẩm" ? (
-                          openProducts ? (
-                            <ExpandLess />
-                          ) : (
-                            <ExpandMore />
-                          )
-                        ) : openOrders ? (
-                          <ExpandLess />
-                        ) : (
-                          <ExpandMore />
-                        )}
-                      </ListItemButton>
-                    </ListItem>
-                    <Collapse
-                      in={
-                        item.text === "Quản lý sản phẩm"
-                          ? openProducts
-                          : openOrders
-                      }
-                      timeout="auto"
-                      unmountOnExit
-                    >
-                      <List component="div" disablePadding>
-                        {item.text === "Quản lý sản phẩm" ? (
-                          <>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() => navigate("/admin/products/men")}
-                              >
-                                <ListItemText primary="Giày nam" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/products/women")
-                                }
-                              >
-                                <ListItemText primary="Giày nữ" />
-                              </ListItemButton>
-                            </ListItem>
-                          </>
-                        ) : (
-                          <>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/pending")
-                                }
-                              >
-                                <ListItemText primary="Chờ xác nhận" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/shipping")
-                                }
-                              >
-                                <ListItemText primary="Đang giao" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/delivered")
-                                }
-                              >
-                                <ListItemText primary="Đã giao" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/canceled")
-                                }
-                              >
-                                <ListItemText primary="Đã hủy" />
-                              </ListItemButton>
-                            </ListItem>
-                          </>
-                        )}
-                      </List>
-                    </Collapse>
-                  </>
-                ) : (
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate(item.path)}>
-                      <ListItemIcon sx={{ color: "#fff" }}>
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText primary={item.text} />
-                    </ListItemButton>
-                  </ListItem>
-                )}
-              </div>
-            ))}
-          </List>
-        </Drawer>
+        <SideBar />
 
         <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
           <AppBar
             position="static"
-            sx={{ backgroundColor: "#a7adad", color: "#fff" }}
+            sx={{ backgroundColor: "#2A3F54", color: "#fff" }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h5">
@@ -474,7 +302,7 @@ export default function User() {
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: "#a7adad" }}>
+              <TableHead sx={{ backgroundColor: "#2A3F54" }}>
                 <TableRow>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
                     ID
@@ -827,7 +655,7 @@ export default function User() {
               </Typography>
               <TableContainer component={Paper}>
                 <Table>
-                  <TableHead sx={{ backgroundColor: "#a7adad" }}>
+                  <TableHead sx={{ backgroundColor: "#2A3F54" }}>
                     <TableRow>
                       <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
                         Mã ĐH
