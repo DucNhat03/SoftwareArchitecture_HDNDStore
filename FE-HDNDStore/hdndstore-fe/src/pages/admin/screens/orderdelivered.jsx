@@ -54,7 +54,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { generateInvoicePDF } from "../../../utils/generateInvoice";
-
+import SideBar from '../../../components/layout/admin-sideBar';
 const drawerWidth = 260;
 const ITEMS_PER_PAGE = 6;
 
@@ -181,182 +181,12 @@ export default function OrderDelivered() {
       >
         <CssBaseline />
 
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              backgroundColor: "#a7adad",
-              color: "#fff",
-            },
-          }}
-        >
-          <Toolbar>
-            <Box sx={{ width: "100%", textAlign: "center" }}>
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                DuyNgayXua
-              </Typography>
-              <IconButton color="error" sx={{ mt: 1 }}>
-                <Logout />
-              </IconButton>
-            </Box>
-          </Toolbar>
-          <List>
-            {[
-              { text: "Bảng điều khiển", icon: <Dashboard />, path: "/" },
-              {
-                text: "Quản lý khách hàng",
-                icon: <People />,
-                path: "/admin/users",
-              },
-              {
-                text: "Quản lý sản phẩm",
-                icon: <ShoppingCart />,
-                isParent: true,
-              },
-
-              // { text: "Quản lý đơn hàng", icon: <Receipt />, path: "/admin/order" },
-
-              {
-                text: "Quản lý đơn hàng",
-                icon: <Receipt />,
-                isParent: true,
-              },
-              { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/admin/report" },
-              {
-                text: "Quản lý Khuyến Mãi",
-                icon: <CardGiftcardIcon />,
-                path: "/admin/voucher",
-              },
-              { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
-            ].map((item, index) => (
-              <div key={index}>
-                {item.isParent ? (
-                  <>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={
-                          item.text === "Quản lý sản phẩm"
-                            ? handleProductsClick
-                            : handleOrdersClick
-                        }
-                      >
-                        <ListItemIcon sx={{ color: "#fff" }}>
-                          {item.icon}
-                        </ListItemIcon>
-                        <ListItemText primary={item.text} />
-                        {item.text === "Quản lý sản phẩm" ? (
-                          openProducts ? (
-                            <ExpandLess />
-                          ) : (
-                            <ExpandMore />
-                          )
-                        ) : openOrders ? (
-                          <ExpandLess />
-                        ) : (
-                          <ExpandMore />
-                        )}
-                      </ListItemButton>
-                    </ListItem>
-                    <Collapse
-                      in={
-                        item.text === "Quản lý sản phẩm"
-                          ? openProducts
-                          : openOrders
-                      }
-                      timeout="auto"
-                      unmountOnExit
-                    >
-                      <List component="div" disablePadding>
-                        {item.text === "Quản lý sản phẩm" ? (
-                          <>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() => navigate("/admin/products/men")}
-                              >
-                                <ListItemText primary="Giày nam" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/products/women")
-                                }
-                              >
-                                <ListItemText primary="Giày nữ" />
-                              </ListItemButton>
-                            </ListItem>
-                          </>
-                        ) : (
-                          <>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/pending")
-                                }
-                              >
-                                <ListItemText primary="Chờ xác nhận" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/shipping")
-                                }
-                              >
-                                <ListItemText primary="Đang giao" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/delivered")
-                                }
-                              >
-                                <ListItemText primary="Đã giao" />
-                              </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={{ pl: 4 }}
-                                onClick={() =>
-                                  navigate("/admin/orders/canceled")
-                                }
-                              >
-                                <ListItemText primary="Đã hủy" />
-                              </ListItemButton>
-                            </ListItem>
-                          </>
-                        )}
-                      </List>
-                    </Collapse>
-                  </>
-                ) : (
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate(item.path)}>
-                      <ListItemIcon sx={{ color: "#fff" }}>
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText primary={item.text} />
-                    </ListItemButton>
-                  </ListItem>
-                )}
-              </div>
-            ))}
-          </List>
-        </Drawer>
-
+        <SideBar />
+        
         <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
           <AppBar
             position="static"
-            sx={{ backgroundColor: "#a7adad", color: "#fff" }}
+            sx={{ backgroundColor: "#2A3F54", color: "#fff" }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h5">
@@ -405,7 +235,7 @@ export default function OrderDelivered() {
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: "#a7adad" }}>
+              <TableHead sx={{ backgroundColor: "#2A3F54" }}>
                 <TableRow>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
                     ID
@@ -638,7 +468,7 @@ export default function OrderDelivered() {
                 sx={{ mt: 2, borderRadius: 2, boxShadow: 3 }}
               >
                 <Table>
-                  <TableHead sx={{ backgroundColor: "#a7adad" }}>
+                  <TableHead sx={{ backgroundColor: "#2A3F54" }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
                         Hình ảnh
