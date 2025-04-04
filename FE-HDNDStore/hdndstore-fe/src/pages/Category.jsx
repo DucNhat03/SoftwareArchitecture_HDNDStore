@@ -34,6 +34,11 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sortOption, setSortOption] = useState("1"); // lọc giá
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(12); // Mỗi trang hiển thị 12 sản phẩm
+
+  
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -54,6 +59,42 @@ const ProductList = () => {
         fetchProducts();
     }, []);
 
+
+    // Hàm xử lý sắp xếp theo giá
+    const sortProducts = (option) => {
+        let sortedProducts = [...products];
+        if (option === "2") {
+            // Giá: Thấp đến cao
+            sortedProducts.sort((a, b) => a.price - b.price);
+        } else if (option === "3") {
+            // Giá: Cao đến thấp
+            sortedProducts.sort((a, b) => b.price - a.price);
+        }
+        return sortedProducts;
+    };
+    // Cập nhật sản phẩm khi lựa chọn thay đổi
+    const handleSortChange = (event) => {
+        setSortOption(event.target.value);
+    };
+    const sortedProducts = sortProducts(sortOption);
+
+    // Xác định các sản phẩm cần hiển thị trên trang hiện tại
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+    // Tính số trang tổng cộng
+    const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+    // Chuyển trang
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Tạo danh sách các số trang cần hiển thị (ví dụ: 1, 2, 3, ...)
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
     return (
         <>
             <Header />
@@ -65,13 +106,19 @@ const ProductList = () => {
                             <i className="fa-solid fa-bars text-dark mx-2"></i> BỘ LỌC
                         </button>
                         <span className="text-dark mt-2 px-4">SẮP XẾP THEO: </span>
-                        <select className="form-control form-select" style={{ width: "200px" }}>
+                        <select
+                            className="form-control form-select"
+                            style={{ width: "200px" }}
+                            value={sortOption}
+                            onChange={handleSortChange}
+                        >
                             <option value="1">Tùy chọn</option>
                             <option value="2">Giá: Thấp đến cao</option>
                             <option value="3">Giá: Cao đến thấp</option>
                             <option value="4">Tên: A - Z</option>
                             <option value="5">Bán chạy nhất</option>
                         </select>
+
                     </div>
                 </div>
 
@@ -79,8 +126,8 @@ const ProductList = () => {
                 {error && <p className="text-center text-danger">{error}</p>}
 
                 <div className="row mt-4">
-                    {products.length > 0 ? (
-                        products.map((product) => (
+                    {currentProducts.length > 0 ? (
+                        currentProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))
                     ) : (
@@ -88,11 +135,35 @@ const ProductList = () => {
                     )}
                 </div>
 
+                {/* Phân trang */}
+              
                 <div className="page-number d-flex justify-content-center my-2">
-                    <button className="btn btn-light mx-2"><FaChevronLeft /></button>
-                    <button className="btn btn-light mx-2 active">1</button>
-                    <button className="btn btn-light mx-2">2</button>
-                    <button className="btn btn-light mx-2"><FaChevronRight /></button>
+                    <button
+                        className="btn btn-light mx-2"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        <FaChevronLeft />
+                    </button>
+
+                    {/* Hiển thị các số trang */}
+                    {pageNumbers.map((number) => (
+                        <button
+                            key={number}
+                            className={`btn btn-light mx-2 ${number === currentPage ? 'active' : ''}`}
+                            onClick={() => handlePageChange(number)}
+                        >
+                            {number}
+                        </button>
+                    ))}
+
+                    <button
+                        className="btn btn-light mx-2"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        <FaChevronRight />
+                    </button>
                 </div>
             </div>
             <HotLine />

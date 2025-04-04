@@ -157,7 +157,8 @@ h1 {
 }
 .kich-thuoc{
   font-size: 14px;
-   white-space: nowrap
+   white-space: nowrap;
+   margin-top: 10px;
    
 }
 .mau-sac{
