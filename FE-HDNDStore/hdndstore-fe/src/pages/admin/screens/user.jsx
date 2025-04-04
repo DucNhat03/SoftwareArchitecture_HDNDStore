@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   AppBar,
   Toolbar,
@@ -29,27 +23,13 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Collapse,
   TablePagination,
-  Alert,
 } from "@mui/material";
 import {
-  Dashboard,
-  People,
-  ShoppingCart,
-  Receipt,
-  BarChart,
-  Settings,
-  // Edit,
-  // Delete,
-  Logout,
-  ExpandLess,
-  ExpandMore,
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -89,15 +69,10 @@ export default function User() {
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
   const [orders, setOrders] = useState([]);
   const [orderOfUser, setOrderOfUser] = useState([]);
-  const [openOrders, setOpenOrders] = useState(false);
   const [page, setPage] = useState(0);
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-  const handleOrdersClick = () => {
-    setOpenOrders(!openOrders);
-  };
-  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get("http://localhost:5000/users/all")
@@ -160,11 +135,6 @@ export default function User() {
   //   setDeleteOpen(true);
   // };
 
-  const [openProducts, setOpenProducts] = useState(false);
-
-  const handleProductsClick = () => {
-    setOpenProducts(!openProducts);
-  };
   const handleDeleteUser = () => {
     axios
       .delete(`http://localhost:5000/users/delete/${UserToDelete.id}`)
@@ -185,11 +155,6 @@ export default function User() {
     );
     setViewOpen(true);
   };
-
-  // const handleEdit = (User) => {
-  //   setSelectedUser(User);
-  //   setEditOpen(true);
-  // };
 
   const handleClose = () => {
     setEditOpen(false);
@@ -259,7 +224,7 @@ export default function User() {
               <Typography variant="h5">
                 <b>QUẢN LÝ KHÁCH HÀNG</b>
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
               </Typography>

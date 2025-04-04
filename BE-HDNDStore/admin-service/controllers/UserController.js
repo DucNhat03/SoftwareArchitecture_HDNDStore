@@ -53,12 +53,14 @@ const updateUser = async (req, res) => {
 // Lấy danh sách User
 const getAllUsers = async (req, res) => {
   try {
-    const Users = await User.find();
-    
-    if (!Users || Users.length === 0) {
+    const users = await User.find();
+    const filteredUsers = users.filter(user => user.role !== 'admin'); // Lọc bỏ admin
+
+    if (!filteredUsers || filteredUsers.length === 0) {
       return res.status(404).json({ message: "Không có khách hàng nào." });
     }
-    res.status(200).json(Users);
+
+    res.status(200).json(filteredUsers);
   } catch (error) {
     console.error("Lỗi khi lấy danh sách khách hàng:", error);
     res.status(500).json({ error: "Lỗi máy chủ, vui lòng thử lại sau." });

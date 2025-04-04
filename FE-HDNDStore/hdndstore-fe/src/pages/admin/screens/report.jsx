@@ -12,10 +12,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   TextField,
 } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import SideBar from '../../../components/layout/admin-sideBar';
@@ -36,7 +34,7 @@ const theme = createTheme({
 export default function RevenueReport() {
   const [orders, setOrders] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -78,7 +76,7 @@ export default function RevenueReport() {
           <AppBar position="static" sx={{ backgroundColor: "#2A3F54", color: "#FFFFFF" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h5"><b>BÁO CÁO DOANH THU</b></Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} - {currentTime.toLocaleTimeString()}
               </Typography>
             </Toolbar>

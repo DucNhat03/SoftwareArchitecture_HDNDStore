@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   AppBar,
   Toolbar,
@@ -29,37 +23,24 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Collapse,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
 import {
-  Dashboard,
-  People,
-  ShoppingCart,
-  Receipt,
-  BarChart,
-  Settings,
   Edit,
-  Logout,
   AddCircle,
-  ExpandLess,
-  ExpandMore,
   Add,
   Close as CloseIcon,
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import axios from "axios";
 import SideBar from '../../../components/layout/admin-sideBar';
-const drawerWidth = 260;
 const ITEMS_PER_PAGE = 6;
 
 const theme = createTheme({
@@ -96,8 +77,6 @@ export default function ProductMen() {
   const [selectedStock, setSelectedStock] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]); // Lưu ảnh sản phẩm
   const [selectedThumbnails, setSelectedThumbnails] = useState([]); // Lưu ảnh thumbnail
-
-  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get("http://localhost:5000/products/all/men")
@@ -226,16 +205,6 @@ export default function ProductMen() {
     }
   };
 
-  const [openProducts, setOpenProducts] = useState(false);
-
-  const handleProductsClick = () => {
-    setOpenProducts(!openProducts);
-  };
-  const [openOrders, setOpenOrders] = useState(false);
-  const handleOrdersClick = () => {
-    setOpenOrders(!openOrders);
-  };
-
   const handleViewProduct = (Product) => {
     setSelectedProductDetails(Product);
     setViewOpen(true);
@@ -307,10 +276,17 @@ export default function ProductMen() {
       }
 
       if (
-        selectedProduct?.image?.length + selectedFiles.length > 5 ||
-        selectedThumbnails.length > 5
+        selectedProduct?.image?.length + selectedFiles.length > 1
       ) {
-        toast.error("Số lượng ảnh tối đa là 5!");
+        toast.error("Số lượng ảnh tối đa là 1!");
+        setLoading(false);
+        return;
+      }
+
+      if (
+        selectedProduct?.imagethum?.length + selectedThumbnails.length > 5
+      ) {
+        toast.error("Số lượng ảnh nhỏ tối đa là 5!");
         setLoading(false);
         return;
       }
@@ -414,7 +390,7 @@ export default function ProductMen() {
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h5"><b>QUẢN LÝ SẢN PHẨM GIÀY NAM</b></Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
               </Typography>

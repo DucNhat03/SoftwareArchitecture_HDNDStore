@@ -1,14 +1,37 @@
 import { useState, useEffect } from "react";
 import {
-  Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, AppBar, Toolbar, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Select, FormControl, InputLabel
+  Box,
+  CssBaseline,
+  Typography,
+  AppBar,
+  Toolbar,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import { Dashboard, People, AccountCircle, ShoppingCart, Receipt, BarChart, Settings, Edit, Delete, Logout, AddCircle } from "@mui/icons-material";
+import {
+  Edit,
+  AddCircle,
+} from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import giay from "../../../assets/images/giay01.jpg";
 import { Visibility } from "@mui/icons-material";
-import SideBar from '../../../components/layout/admin-sideBar';
+import SideBar from "../../../components/layout/admin-sideBar";
 
 const theme = createTheme({
   palette: {
@@ -20,7 +43,17 @@ const theme = createTheme({
 });
 
 const initialOrders = [
-  { id: 1, idSanPham: 1, idKhachHang: 1, soLuong: 1, gia: 1000000, ngayDat: "2021-12-12", trangThai: "Chờ xác nhận", diaChiGiao: "123 Điện Biên Phủ, Quận 1, TP.HCM", ghiChu: "Giao hàng giờ hành chính" },
+  {
+    id: 1,
+    idSanPham: 1,
+    idKhachHang: 1,
+    soLuong: 1,
+    gia: 1000000,
+    ngayDat: "2021-12-12",
+    trangThai: "Chờ xác nhận",
+    diaChiGiao: "123 Điện Biên Phủ, Quận 1, TP.HCM",
+    ghiChu: "Giao hàng giờ hành chính",
+  },
 ];
 
 export default function Order() {
@@ -28,9 +61,14 @@ export default function Order() {
   const [editOpen, setEditOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [newOrder, setNewOrder] = useState({ name: "", price: 0, quantity: 0, color: "", description: "", image: "" });
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [OrderToDelete, setOrderToDelete] = useState(null);
+  const [newOrder, setNewOrder] = useState({
+    name: "",
+    price: 0,
+    quantity: 0,
+    color: "",
+    description: "",
+    image: "",
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [editStatusOpen, setEditStatusOpen] = useState(false);
@@ -38,8 +76,6 @@ export default function Order() {
   const [newStatus, setNewStatus] = useState("");
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
-
-  const navigate = useNavigate();
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -48,26 +84,11 @@ export default function Order() {
   }, []);
 
 
-  const handleDeleteConfirm = (Order) => {
-    setOrderToDelete(Order);
-    setDeleteOpen(true);
-  };
   const handleViewOrder = (Order) => {
     setSelectedOrderDetails(Order);
     setViewOpen(true);
   };
 
-  const handleDeleteOrder = () => {
-    setOrders(Orders.filter(acc => acc.id !== OrderToDelete.id));
-    setDeleteOpen(false);
-    setOrderToDelete(null);
-  };
-
-
-  const handleEdit = (Order) => {
-    setSelectedOrder(Order);
-    setEditOpen(true);
-  };
 
   const handleClose = () => {
     setEditOpen(false);
@@ -89,42 +110,54 @@ export default function Order() {
     setEditStatusOpen(true);
   };
   const handleSaveStatus = () => {
-    setOrders(Orders.map(order =>
-      order.id === selectedStatusOrder.id ? { ...order, trangThai: newStatus } : order
-    ));
+    setOrders(
+      Orders.map((order) =>
+        order.id === selectedStatusOrder.id
+          ? { ...order, trangThai: newStatus }
+          : order
+      )
+    );
     setEditStatusOpen(false);
   };
 
-
   const handleSaveOrder = () => {
     if (selectedOrder) {
-      setOrders(Orders.map(acc => acc.id === selectedOrder.id ? { ...selectedOrder } : acc));
+      setOrders(
+        Orders.map((acc) =>
+          acc.id === selectedOrder.id ? { ...selectedOrder } : acc
+        )
+      );
     } else {
       setOrders([...Orders, { id: Orders.length + 1, ...newOrder }]);
     }
     handleClose();
   };
 
-
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex", backgroundColor: "#e9ecec", minHeight: "100vh" }}>
-
+      <Box
+        sx={{ display: "flex", backgroundColor: "#e9ecec", minHeight: "100vh" }}
+      >
         <CssBaseline />
-
 
         <SideBar />
 
         <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
-          <AppBar position="static" sx={{ backgroundColor: "#2A3F54", color: "#fff" }}>
+          <AppBar
+            position="static"
+            sx={{ backgroundColor: "#2A3F54", color: "#fff" }}
+          >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h6">Quản lý đơn hàng</Typography>
-              <Typography variant="body1">
-                {currentTime.toLocaleDateString()} - {currentTime.toLocaleTimeString()}
+              <Typography variant="body1" style={{ color: "#fff" }}>
+                {currentTime.toLocaleDateString()} -{" "}
+                {currentTime.toLocaleTimeString()}
               </Typography>
             </Toolbar>
           </AppBar>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2, mb: 2 }}>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", mt: 2, mb: 2 }}
+          >
             <TextField
               variant="outlined"
               placeholder="🔍 Tìm kiếm đơn hàng ..."
@@ -150,49 +183,91 @@ export default function Order() {
             />
           </Box>
 
-          <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3, mt: 3, backgroundColor: "#f0f0f0" }}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: 2,
+              boxShadow: 3,
+              mt: 3,
+              backgroundColor: "#f0f0f0",
+            }}
+          >
             <Table>
               <TableHead sx={{ backgroundColor: "#2A3F54" }}>
                 <TableRow>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>ID</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Mã sản phẩm</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Mã khách hàng</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Số lượng</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Đơn giá</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Ngày đặt</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Trạng thái</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Actions</TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    ID
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Mã sản phẩm
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Mã khách hàng
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Số lượng
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Đơn giá
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Ngày đặt
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Trạng thái
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Orders
-                  .filter(Order =>
-                    Order.trangThai.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (!isNaN(searchTerm) && Order.id.toString().includes(searchTerm))
-                  )
-                  .map((Order) => (
-                    <TableRow key={Order.id} hover>
-                      <TableCell>{Order.id}</TableCell>
-                      <TableCell>{Order.idSanPham}</TableCell>
-                      <TableCell>{Order.idKhachHang}</TableCell>
-                      <TableCell>{Order.soLuong}</TableCell>
-                      <TableCell>{Order.gia.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</TableCell>
-                      <TableCell>{Order.ngayDat}</TableCell>
-                      <TableCell>{Order.trangThai}</TableCell>
-                      <TableCell>
-                        <IconButton color="info" onClick={() => handleViewOrder(Order)}>
-                          <Visibility />
-                        </IconButton>
-                        <IconButton color="primary" onClick={() => handleEditStatus(Order)}>
-                          <Edit />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                {Orders.filter(
+                  (Order) =>
+                    Order.trangThai
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    (!isNaN(searchTerm) &&
+                      Order.id.toString().includes(searchTerm))
+                ).map((Order) => (
+                  <TableRow key={Order.id} hover>
+                    <TableCell>{Order.id}</TableCell>
+                    <TableCell>{Order.idSanPham}</TableCell>
+                    <TableCell>{Order.idKhachHang}</TableCell>
+                    <TableCell>{Order.soLuong}</TableCell>
+                    <TableCell>
+                      {Order.gia.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </TableCell>
+                    <TableCell>{Order.ngayDat}</TableCell>
+                    <TableCell>{Order.trangThai}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="info"
+                        onClick={() => handleViewOrder(Order)}
+                      >
+                        <Visibility />
+                      </IconButton>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleEditStatus(Order)}
+                      >
+                        <Edit />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
 
                 <TableRow>
                   <TableCell colSpan={5} align="center">
-                    <IconButton color="success" onClick={() => setAddOpen(true)}><AddCircle /></IconButton>
+                    <IconButton
+                      color="success"
+                      onClick={() => setAddOpen(true)}
+                    >
+                      <AddCircle />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -202,7 +277,9 @@ export default function Order() {
       </Box>
 
       <Dialog open={editOpen || addOpen} onClose={handleClose}>
-        <DialogTitle>{selectedOrder ? "Chỉnh sửa sản phẩm" : "Thêm đơn hàng"}</DialogTitle>
+        <DialogTitle>
+          {selectedOrder ? "Chỉnh sửa sản phẩm" : "Thêm đơn hàng"}
+        </DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
@@ -211,7 +288,10 @@ export default function Order() {
             value={selectedOrder ? selectedOrder.idSanPham : newOrder.idSanPham}
             onChange={(e) => {
               selectedOrder
-                ? setSelectedOrder({ ...selectedOrder, idSanPham: e.target.value })
+                ? setSelectedOrder({
+                    ...selectedOrder,
+                    idSanPham: e.target.value,
+                  })
                 : setNewOrder({ ...newOrder, idSanPham: e.target.value });
             }}
           />
@@ -219,10 +299,15 @@ export default function Order() {
             margin="dense"
             label="Id khách hàng"
             fullWidth
-            value={selectedOrder ? selectedOrder.idKhachHang : newOrder.idKhachHang}
+            value={
+              selectedOrder ? selectedOrder.idKhachHang : newOrder.idKhachHang
+            }
             onChange={(e) => {
               selectedOrder
-                ? setSelectedOrder({ ...selectedOrder, idKhachHang: e.target.value })
+                ? setSelectedOrder({
+                    ...selectedOrder,
+                    idKhachHang: e.target.value,
+                  })
                 : setNewOrder({ ...newOrder, idKhachHang: e.target.value });
             }}
           />
@@ -239,7 +324,11 @@ export default function Order() {
             }}
           />
           <Typography variant="body2">
-            Giá hiển thị: {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(selectedOrder ? selectedOrder.price : newOrder.price)}
+            Giá hiển thị:{" "}
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(selectedOrder ? selectedOrder.price : newOrder.price)}
           </Typography>
 
           <TextField
@@ -249,7 +338,10 @@ export default function Order() {
             value={selectedOrder ? selectedOrder.quantity : newOrder.quantity}
             onChange={(e) => {
               selectedOrder
-                ? setSelectedOrder({ ...selectedOrder, quantity: e.target.value })
+                ? setSelectedOrder({
+                    ...selectedOrder,
+                    quantity: e.target.value,
+                  })
                 : setNewOrder({ ...newOrder, quantity: e.target.value });
             }}
           />
@@ -262,7 +354,10 @@ export default function Order() {
             value={selectedOrder ? selectedOrder.ngayDat : newOrder.ngayDat}
             onChange={(e) => {
               selectedOrder
-                ? setSelectedOrder({ ...selectedOrder, ngayDat: e.target.value })
+                ? setSelectedOrder({
+                    ...selectedOrder,
+                    ngayDat: e.target.value,
+                  })
                 : setNewOrder({ ...newOrder, ngayDat: e.target.value });
             }}
           />
@@ -270,10 +365,15 @@ export default function Order() {
             margin="dense"
             label="Địa chỉ"
             fullWidth
-            value={selectedOrder ? selectedOrder.diaChiGiao : newOrder.diaChiGiao}
+            value={
+              selectedOrder ? selectedOrder.diaChiGiao : newOrder.diaChiGiao
+            }
             onChange={(e) => {
               selectedOrder
-                ? setSelectedOrder({ ...selectedOrder, diaChiGiao: e.target.value })
+                ? setSelectedOrder({
+                    ...selectedOrder,
+                    diaChiGiao: e.target.value,
+                  })
                 : setNewOrder({ ...newOrder, diaChiGiao: e.target.value });
             }}
           />
@@ -288,11 +388,14 @@ export default function Order() {
                 : setNewOrder({ ...newOrder, ghiChu: e.target.value });
             }}
           />
-
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="error">Hủy</Button>
-          <Button onClick={handleSaveOrder} color="primary">{selectedOrder ? "Lưu" : "Thêm"}</Button>
+          <Button onClick={handleClose} color="error">
+            Hủy
+          </Button>
+          <Button onClick={handleSaveOrder} color="primary">
+            {selectedOrder ? "Lưu" : "Thêm"}
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={editStatusOpen} onClose={() => setEditStatusOpen(false)}>
@@ -308,17 +411,23 @@ export default function Order() {
                 (selectedStatusOrder.trangThai === "Chờ xác nhận"
                   ? ["Đang vận chuyển", "Đã hủy"]
                   : selectedStatusOrder.trangThai === "Đang vận chuyển"
-                    ? ["Đã giao"]
-                    : []
+                  ? ["Đã giao"]
+                  : []
                 ).map((status) => (
-                  <MenuItem key={status} value={status}>{status}</MenuItem>
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
                 ))}
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditStatusOpen(false)} color="error">Hủy</Button>
-          <Button onClick={handleSaveStatus} color="primary">Lưu</Button>
+          <Button onClick={() => setEditStatusOpen(false)} color="error">
+            Hủy
+          </Button>
+          <Button onClick={handleSaveStatus} color="primary">
+            Lưu
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={viewOpen} onClose={() => setViewOpen(false)}>
@@ -326,27 +435,60 @@ export default function Order() {
         <DialogContent>
           {selectedOrderDetails && (
             <Box>
-              <Typography><b>Id:</b> {selectedOrderDetails.id}</Typography>
-              <Typography><b>Mã sản phẩm:</b> {selectedOrderDetails.idSanPham}</Typography>
-              <Typography><b>Tên sản phẩm:</b> {selectedOrderDetails.idSanPham}</Typography>
-              <Typography><b>Ảnh sản phẩm:</b> <img src={giay} alt="giay" style={{ width: 100, height: 100 }} /></Typography>
-              <Typography><b>Số lượng:</b> {selectedOrderDetails.soLuong}</Typography>
-              <Typography><b>Giá:</b> {selectedOrderDetails.gia.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</Typography>
-              <Typography><b>Mã khách hàng:</b> {selectedOrderDetails.idKhachHang}</Typography>
-              <Typography><b>Tên khách hàng:</b> {selectedOrderDetails.idKhachHang}</Typography>
-              <Typography><b>Ngày đặt:</b> {selectedOrderDetails.ngayDat}</Typography>
-              <Typography><b>Trạng thái:</b> {selectedOrderDetails.trangThai}</Typography>
-              <Typography><b>Địa chỉ giao:</b> {selectedOrderDetails.diaChiGiao}</Typography>
-              <Typography><b>Ghi chú:</b> {selectedOrderDetails.ghiChu}</Typography>
+              <Typography>
+                <b>Id:</b> {selectedOrderDetails.id}
+              </Typography>
+              <Typography>
+                <b>Mã sản phẩm:</b> {selectedOrderDetails.idSanPham}
+              </Typography>
+              <Typography>
+                <b>Tên sản phẩm:</b> {selectedOrderDetails.idSanPham}
+              </Typography>
+              <Typography>
+                <b>Ảnh sản phẩm:</b>{" "}
+                <img
+                  src={giay}
+                  alt="giay"
+                  style={{ width: 100, height: 100 }}
+                />
+              </Typography>
+              <Typography>
+                <b>Số lượng:</b> {selectedOrderDetails.soLuong}
+              </Typography>
+              <Typography>
+                <b>Giá:</b>{" "}
+                {selectedOrderDetails.gia.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </Typography>
+              <Typography>
+                <b>Mã khách hàng:</b> {selectedOrderDetails.idKhachHang}
+              </Typography>
+              <Typography>
+                <b>Tên khách hàng:</b> {selectedOrderDetails.idKhachHang}
+              </Typography>
+              <Typography>
+                <b>Ngày đặt:</b> {selectedOrderDetails.ngayDat}
+              </Typography>
+              <Typography>
+                <b>Trạng thái:</b> {selectedOrderDetails.trangThai}
+              </Typography>
+              <Typography>
+                <b>Địa chỉ giao:</b> {selectedOrderDetails.diaChiGiao}
+              </Typography>
+              <Typography>
+                <b>Ghi chú:</b> {selectedOrderDetails.ghiChu}
+              </Typography>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setViewOpen(false)} color="primary">Đóng</Button>
+          <Button onClick={() => setViewOpen(false)} color="primary">
+            Đóng
+          </Button>
         </DialogActions>
       </Dialog>
-
-
     </ThemeProvider>
   );
 }

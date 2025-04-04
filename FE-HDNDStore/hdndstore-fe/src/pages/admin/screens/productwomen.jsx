@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   AppBar,
   Toolbar,
@@ -29,37 +23,25 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Collapse,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
 import {
-  Dashboard,
-  People,
-  ShoppingCart,
-  Receipt,
-  BarChart,
-  Settings,
   Edit,
-  Logout,
   AddCircle,
-  ExpandLess,
-  ExpandMore,
   Add,
   Close as CloseIcon,
   ArrowBack,
   ArrowForward,
 } from "@mui/icons-material";
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import { Visibility } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import axios from "axios";
 import SideBar from '../../../components/layout/admin-sideBar';
-const drawerWidth = 260;
 const ITEMS_PER_PAGE = 6;
 
 const theme = createTheme({
@@ -96,12 +78,7 @@ export default function ProductWomen() {
   const [selectedStock, setSelectedStock] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]); // Lưu ảnh sản phẩm
   const [selectedThumbnails, setSelectedThumbnails] = useState([]); // Lưu ảnh thumbnail
-  const [openOrders, setOpenOrders] = useState(false);
-  const handleOrdersClick = () => {
-    setOpenOrders(!openOrders);
-  };
 
-  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get("http://localhost:5000/products/all/women")
@@ -230,11 +207,6 @@ export default function ProductWomen() {
     }
   };
 
-  const [openProducts, setOpenProducts] = useState(false);
-
-  const handleProductsClick = () => {
-    setOpenProducts(!openProducts);
-  };
 
   const handleViewProduct = (Product) => {
     setSelectedProductDetails(Product);
@@ -418,7 +390,7 @@ export default function ProductWomen() {
               <Typography variant="h5">
                 <b>QUẢN LÝ SẢN PHẨM GIÀY NỮ</b>
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
               </Typography>
