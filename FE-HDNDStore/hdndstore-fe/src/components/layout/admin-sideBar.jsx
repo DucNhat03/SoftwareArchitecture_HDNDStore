@@ -27,11 +27,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SideBar = () => {
-  const [openProducts, setOpenProducts] = useState(false);
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState({});
 
-  const toggleProducts = () => setOpenProducts(!openProducts);
   const toggleMenu = (menu) => {
     setOpenMenus((prev) => ({
       ...prev,

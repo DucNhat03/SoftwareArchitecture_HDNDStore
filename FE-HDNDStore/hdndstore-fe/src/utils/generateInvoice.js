@@ -4,6 +4,7 @@ import RobotoFont from "./roboto";
 
 export const generateInvoicePDF = (selectedOrderDetails) => {
   const doc = new jsPDF();
+  const { street, ward, district, city } = selectedOrderDetails.shippingAddress.address;
   
   // Đăng ký font chữ Roboto
   doc.addFileToVFS("Roboto-Regular.ttf", RobotoFont);
@@ -38,10 +39,10 @@ export const generateInvoicePDF = (selectedOrderDetails) => {
   doc.text(`Mã Hóa Đơn: ${selectedOrderDetails.idHoaDon}`, 20, y);
   doc.text(`Ngày Lập: ${new Date(selectedOrderDetails.orderDate).toLocaleDateString()}`, 130, y);
   y += 8;
-  doc.text(`Khách Hàng: ${selectedOrderDetails.customerName}`, 20, y);
-  doc.text(`Số Điện Thoại: ${selectedOrderDetails.customerPhone}`, 130, y);
+  doc.text(`Khách Hàng: ${selectedOrderDetails.shippingAddress.fullName}`, 20, y);
+  doc.text(`Số Điện Thoại: ${selectedOrderDetails.shippingAddress.phone}`, 130, y);
   y += 8;
-  doc.text(`Địa Chỉ Giao Hàng: ${selectedOrderDetails.customerAddress}`, 20, y);
+  doc.text(`Địa Chỉ Giao Hàng: ${street}, ${ward}, ${district}, ${city}`, 20, y);
   y += 8;
   doc.text(`Phương Thức Thanh Toán: ${selectedOrderDetails.paymentMethod}`, 20, y);
   doc.text(`Trạng Thái Thanh Toán: ${selectedOrderDetails.statusPayment}`, 130, y);

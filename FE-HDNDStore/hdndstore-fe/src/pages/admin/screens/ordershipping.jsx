@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   AppBar,
   Toolbar,
@@ -26,31 +20,19 @@ import {
   DialogContent,
   DialogActions,
   FormControl,
-  Collapse,
   RadioGroup,
   FormControlLabel,
   Radio,
   DialogContentText,
 } from "@mui/material";
 import {
-  Dashboard,
-  People,
-  ShoppingCart,
-  Receipt,
-  BarChart,
-  Settings,
-  Logout,
-  ExpandLess,
   ArrowBack,
   ArrowForward,
-  ExpandMore,
   Event,
   Visibility,
   CheckCircle,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
@@ -82,11 +64,9 @@ export default function OrderShipping() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
-  const [openProducts, setOpenProducts] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("Đang giao");
   const [cancelReason, setCancelReason] = useState("");
   const [openDatePicker, setOpenDatePicker] = useState(false);
-  const navigate = useNavigate();
 
   const [selectedDate, setSelectedDate] = useState(null);
   useEffect(() => {
@@ -119,18 +99,19 @@ export default function OrderShipping() {
   const [currentPage, setCurrentPage] = useState(0);
   const ordersWithUsers = Orders.map((order) => {
     const user = Users.find((user) => user._id === order.receiver);
-    const customerAddress =
-      user && user.address
-        ? `${user.address.street}, ${user.address.ward}, ${user.address.district}, ${user.address.city}`
-        : "Không có địa chỉ";
     return {
       ...order,
       customerName: user ? user.fullName : "Không có thông tin",
       customerPhone: user ? user.phone : "Không có thông tin",
       customerEmail: user ? user.email : "Không có thông tin",
-      customerAddress,
     };
   });
+
+  const formatAddress = (order) => {
+    const addr = order.shippingAddress.address;
+    return `${addr.street}, ${addr.ward}, ${addr.district}, ${addr.city}`;
+  };
+
   // Lọc đơn hàng theo từ khóa tìm kiếm
   const filteredOrders = ordersWithUsers.filter((order) => {
     const matchesSearch =
@@ -159,14 +140,6 @@ export default function OrderShipping() {
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
-
-  const handleProductsClick = () => {
-    setOpenProducts(!openProducts);
-  };
-  const [openOrders, setOpenOrders] = useState(false);
-  const handleOrdersClick = () => {
-    setOpenOrders(!openOrders);
-  };
   const handleViewOrder = (Order) => {
     setSelectedOrderDetails(Order);
     setViewOpen(true);
@@ -176,14 +149,6 @@ export default function OrderShipping() {
     setOpenDialog(true);
     setSelectedStatus("Đang giao"); // Mặc định chọn Xác nhận
     setCancelReason(""); // Reset lý do hủy
-  };
-
-  const getUserAddressById = (userId, usersList) => {
-    const user = usersList.find((user) => user._id === userId);
-    if (!user || !user.address) return "Không có địa chỉ";
-
-    const { street, ward, district, city } = user.address;
-    return `${street}, ${ward}, ${district}, ${city}`;
   };
 
   const handleClose = () => {
@@ -243,7 +208,7 @@ export default function OrderShipping() {
               <Typography variant="h5">
                 <b>ĐƠN HÀNG ĐANG GIAO</b>
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
               </Typography>
@@ -365,7 +330,7 @@ export default function OrderShipping() {
                     onClick={() => handleViewOrder(Order)}
                   >
                     <TableCell>{Order.idHoaDon}</TableCell>
-                    <TableCell>{Order.customerName}</TableCell>
+                    <TableCell>{Order.shippingAddress.fullName}</TableCell>
                     <TableCell>
                       {Order.cartItems.reduce(
                         (total, item) => total + item.variants.length,
@@ -448,7 +413,8 @@ export default function OrderShipping() {
                 <b>ID đơn hàng:</b> {selectedOrderDetails.idHoaDon}
               </Typography>
               <Typography variant="body1">
-                <b>Khách hàng:</b> {selectedOrderDetails.customerName}
+                <b>Khách hàng:</b>{" "}
+                {selectedOrderDetails.shippingAddress.fullName}
               </Typography>
               <Typography variant="body1">
                 <b>Ngày đặt hàng:</b>{" "}
@@ -461,8 +427,7 @@ export default function OrderShipping() {
                 ).toLocaleDateString()}
               </Typography>
               <Typography variant="body1">
-                <b>Địa chỉ giao hàng:</b>{" "}
-                {getUserAddressById(selectedOrderDetails.receiver, Users)}
+                <b>Địa chỉ giao hàng:</b> {formatAddress(selectedOrderDetails)}
               </Typography>
               <Typography variant="body1">
                 <b>Sản phẩm:</b>{" "}

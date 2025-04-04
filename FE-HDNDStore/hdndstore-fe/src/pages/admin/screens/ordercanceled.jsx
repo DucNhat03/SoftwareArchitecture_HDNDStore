@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   AppBar,
   Toolbar,
@@ -25,25 +19,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Collapse,
 } from "@mui/material";
 import {
-  Dashboard,
-  People,
-  ShoppingCart,
-  Receipt,
-  BarChart,
-  Settings,
-  Logout,
-  ExpandLess,
   ArrowBack,
   ArrowForward,
-  ExpandMore,
   Event,
   Visibility,
 } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
@@ -53,7 +36,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { generateInvoicePDF } from "../../../utils/generateInvoice";
-import SideBar from '../../../components/layout/admin-sideBar';
+import SideBar from "../../../components/layout/admin-sideBar";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -74,10 +57,7 @@ export default function OrderCanceled() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
-  const [openProducts, setOpenProducts] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
-  const navigate = useNavigate();
-
   const [selectedDate, setSelectedDate] = useState(null);
   useEffect(() => {
     axios
@@ -109,17 +89,19 @@ export default function OrderCanceled() {
   const [currentPage, setCurrentPage] = useState(0);
   const ordersWithUsers = Orders.map((order) => {
     const user = Users.find((user) => user._id === order.receiver);
-    const customerAddress = user && user.address
-      ? `${user.address.street}, ${user.address.ward}, ${user.address.district}, ${user.address.city}`
-      : "Không có địa chỉ";
     return {
       ...order,
       customerName: user ? user.fullName : "Không có thông tin",
       customerPhone: user ? user.phone : "Không có thông tin",
       customerEmail: user ? user.email : "Không có thông tin",
-      customerAddress,
     };
   });
+
+  const formatAddress = (order) => {
+    const addr = order.shippingAddress.address;
+    return `${addr.street}, ${addr.ward}, ${addr.district}, ${addr.city}`;
+  };
+
   // Lọc đơn hàng theo từ khóa tìm kiếm
   const filteredOrders = ordersWithUsers.filter((order) => {
     const matchesSearch =
@@ -130,13 +112,13 @@ export default function OrderCanceled() {
     const matchesDate =
       !selectedDate ||
       dayjs(order.orderDate).format("YYYY-MM-DD") ===
-      dayjs(selectedDate).format("YYYY-MM-DD") ||
+        dayjs(selectedDate).format("YYYY-MM-DD") ||
       !selectedDate ||
       dayjs(order.ngayXacNhan).format("YYYY-MM-DD") ===
-      dayjs(selectedDate).format("YYYY-MM-DD") ||
+        dayjs(selectedDate).format("YYYY-MM-DD") ||
       !selectedDate ||
       dayjs(order.ngayHuy).format("YYYY-MM-DD") ===
-      dayjs(selectedDate).format("YYYY-MM-DD");
+        dayjs(selectedDate).format("YYYY-MM-DD");
 
     return matchesSearch && matchesDate;
   });
@@ -152,24 +134,9 @@ export default function OrderCanceled() {
     startIndex + ITEMS_PER_PAGE
   );
 
-  const handleProductsClick = () => {
-    setOpenProducts(!openProducts);
-  };
-  const [openOrders, setOpenOrders] = useState(false);
-  const handleOrdersClick = () => {
-    setOpenOrders(!openOrders);
-  };
   const handleViewOrder = (Order) => {
     setSelectedOrderDetails(Order);
     setViewOpen(true);
-  };
-
-  const getUserAddressById = (userId, usersList) => {
-    const user = usersList.find((user) => user._id === userId);
-    if (!user || !user.address) return "Không có địa chỉ";
-
-    const { street, ward, district, city } = user.address;
-    return `${street}, ${ward}, ${district}, ${city}`;
   };
 
   return (
@@ -191,7 +158,7 @@ export default function OrderCanceled() {
               <Typography variant="h5">
                 <b>ĐƠN HÀNG ĐÃ HỦY</b>
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" style={{ color: "#fff" }}>
                 {currentTime.toLocaleDateString()} -{" "}
                 {currentTime.toLocaleTimeString()}
               </Typography>
@@ -340,7 +307,7 @@ export default function OrderCanceled() {
                     onClick={() => handleViewOrder(Order)}
                   >
                     <TableCell>{Order.idHoaDon}</TableCell>
-                    <TableCell>{Order.customerName}</TableCell>
+                    <TableCell>{Order.shippingAddress.fullName}</TableCell>
                     <TableCell>
                       {Order.cartItems.reduce(
                         (total, item) => total + item.variants.length,
@@ -420,7 +387,7 @@ export default function OrderCanceled() {
                 <b>ID đơn hàng:</b> {selectedOrderDetails.idHoaDon}
               </Typography>
               <Typography variant="body1">
-                <b>Khách hàng:</b> {selectedOrderDetails.customerName}
+              <b>Khách hàng:</b> {selectedOrderDetails.shippingAddress.fullName}
               </Typography>
               <Typography variant="body1">
                 <b>Ngày đặt hàng:</b>{" "}
@@ -431,8 +398,7 @@ export default function OrderCanceled() {
                 {new Date(selectedOrderDetails.ngayHuy).toLocaleDateString()}
               </Typography>
               <Typography variant="body1">
-                <b>Địa chỉ giao hàng:</b>{" "}
-                {getUserAddressById(selectedOrderDetails.receiver, Users)}
+                <b>Địa chỉ giao hàng:</b> {formatAddress(selectedOrderDetails)}
               </Typography>
               <Typography variant="body1">
                 <b>Sản phẩm:</b>{" "}

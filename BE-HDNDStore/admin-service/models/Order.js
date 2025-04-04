@@ -52,6 +52,16 @@ const OrderSchema = new mongoose.Schema({
     },
     note: { type: String, default: "" }, // Ghi chú
     lyDoHuy: { type: String, default: "" }, // Lý do hủy
-});
+    shippingAddress: {
+        fullName: { type: String, required: true }, // Họ và tên người nhận
+        phone: { type: String, required: true }, // Số điện thoại người nhận
+        address: {
+            street: { type: String, required: true }, // Số nhà, đường, chi tiết địa chỉ
+            city: { type: String, required: true }, // Thành phố/tỉnh
+            district: { type: String, required: true }, // Quận/huyện
+            ward: { type: String, required: true }, // Phường/xã
+        }
+    }
+}, { timestamps: true }); 
 
 module.exports = mongoose.model("Order", OrderSchema);
