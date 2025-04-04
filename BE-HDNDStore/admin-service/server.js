@@ -8,6 +8,8 @@ const uploadRoutes = require("./routers/UploadImage");
 const orderRoutes = require("./routers/OrderRouter");
 const voucherRoutes = require("./routers/VoucherRouter");
 dotenv.config();
+const { exec } = require("child_process");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -27,14 +29,27 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("✅ MongoDB connected successfully");
+    console.log("MongoDB connected successfully");
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+    console.error("MongoDB connection error:", error);
     process.exit(1);
   }
 };
 
 connectDB();
+
+const pythonScriptPath = path.join(__dirname, "config", "load.py");
+exec(`python3 ${pythonScriptPath}`, (error, stdout, stderr) => {
+  if (error) {
+    console.error("Lỗi khi chạy file Python:", error.message);
+    return;
+  }
+  if (stderr) {
+    console.error("stderr từ Python:", stderr);
+  }
+  console.log("Kết quả từ Python:\n", stdout);
+});
+
 
 // Khởi động server
 app.listen(PORT, () => {

@@ -1,0 +1,41 @@
+{
+    "paymentRevenue": [
+        {
+            "paymentMethod": "Ti\u1ec1n m\u1eb7t",
+            "finalAmount": 1540000
+        }
+    ],
+    "topSellingProducts": [
+        {
+            "Product": "D\u00e9p Nam MWC 7891",
+            "Sales": 2
+        },
+        {
+            "Product": "Loafer",
+            "Sales": 1
+        }
+    ],
+    "productRevenue": [
+        {
+            "product_name": "Loafer",
+            "product_revenue": 1000000.0
+        },
+        {
+            "product_name": "D\u00e9p Nam MWC 7891",
+            "product_revenue": 540000.0
+        }
+    ],
+    "dailyOrders": [
+        {
+            "orderDate_day": "2025-04-04",
+            "orderCount": 3
+        }
+    ],
+    "paymentMethodDistribution": {
+        "Ti\u1ec1n m\u1eb7t": 3
+    },
+    "genderDistribution": {
+        "Nam": 3,
+        "N\u1eef": 0
+    }
+}

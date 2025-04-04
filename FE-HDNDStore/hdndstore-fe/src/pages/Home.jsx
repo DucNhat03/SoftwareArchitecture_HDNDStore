@@ -131,7 +131,7 @@ const ItemList = ({ title, items }) => {
 
 const Home = () => {
     const [caoGotNu, setcaoGotNu] = useState([]);
-    const [SandalNu, setSandalNu] = useState([]);
+    const [giayLuoi, setGiayLuoi] = useState([]);
     const [Balo, setBalo] = useState([]);
     const [SandalNam, setSandalNam] = useState([]);
     const [GiayNam, setGiayNam] = useState([]);
@@ -139,11 +139,10 @@ const Home = () => {
     // Gọi API để lấy danh sách sản phẩm
     useEffect(() => {
         axios
-            .get("http://localhost:5002/products/all/category?subcategories=Giày Cao Gót")
+            .get("http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20cao%20g%C3%B3t")
             .then((response) => {
                 const firstFourProducts = response.data.slice(0, 4);
                 setcaoGotNu(firstFourProducts);
-                console.log("Danh sách sản phẩm:", caoGotNu);
             })
             .catch((error) => {
                 console.error("Lỗi khi tải sản phẩm:", error);
@@ -152,10 +151,9 @@ const Home = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5002/products/all/category?category=Sandal%20N%E1%BB%AF")
+            .get("http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20l%C6%B0%E1%BB%9Di")
             .then((response) => {
-                setSandalNu(response.data);
-                console.log("Danh sách sản phẩm:", SandalNu);
+                setGiayLuoi(response.data);
             })
             .catch((error) => {
                 console.error("Lỗi khi tải sản phẩm:", error);
@@ -189,11 +187,10 @@ const Home = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20Th%E1%BB%83%20Thao")
+            .get("http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20th%E1%BB%83%20thao")
             .then((response) => {
                 const first4product = response.data.slice(0,4);
                 setGiayNam(first4product);
-                console.log("Danh sách sản phẩm:", GiayNam);
             })
             .catch((error) => {
                 console.error("Lỗi khi tải sản phẩm:", error);
@@ -294,8 +291,8 @@ const Home = () => {
 
                 <ItemList title="Giày cao gót nữ" items={caoGotNu} />
                 {/* <ItemList title="Dép và Sandal nữ" items={SandalNu} />
-                <ItemList title="Balo Thời TRang" items={Balo} />
-                <ItemList title="Sandal & Dép Nam" items={SandalNam} /> */}
+                <ItemList title="Balo Thời TRang" items={Balo} /> */}
+                <ItemList title="Loafer" items={giayLuoi} />
                 <ItemList title="giày thể thao" items={GiayNam} />
                 {/* <ItemList title="Thời trang" items={thoiTrang} /> */}
 

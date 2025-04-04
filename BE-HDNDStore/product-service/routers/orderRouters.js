@@ -8,7 +8,7 @@ const app = express();
 
 // Thêm middleware xử lý JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 
 // Hàm kiểm tra user từ API
 const fetchUserById = async (userId) => {
@@ -89,7 +89,7 @@ router.post("/dat-hang", async (req, res) => {
         console.log("✅ Địa chỉ giao hàng hợp lệ:", JSON.stringify(shippingAddress, null, 2));
 
 
-  
+
         // Kiểm tra hàng tồn kho
         for (const item of cartItems) {
             console.log(` Kiểm tra sản phẩm: ${item.name}`);
@@ -190,7 +190,7 @@ router.post("/dat-hang", async (req, res) => {
                         acc[key].variants.push({
                             color: color,
                             size: size,
-                            stock: stock 
+                            stock: stock
                         });
                     }
                 });
@@ -217,7 +217,7 @@ router.post("/dat-hang", async (req, res) => {
         await newOrder.save();
 
         // Cập nhật tồn kho sau khi đặt hàng thành công
-     
+
         for (const item of cartItems) {
             const product = await Product.findById(item._id);
             if (product) {
@@ -352,7 +352,7 @@ router.put("/orders/:orderId/cancel", async (req, res) => {
                 }
 
                 await product.save(); // Lưu lại thông tin sản phẩm
-            }      
+            }
         }
         order.save(); // Lưu lại thông tin đơn hàng
 
