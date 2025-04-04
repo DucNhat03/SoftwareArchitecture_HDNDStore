@@ -8,6 +8,14 @@ router.put('/update/:idHoaDon', OrderController.updateOrder);
 // Route lấy danh sách Order
 router.get('/all', OrderController.getAllOrders);
 
+// Route lấy danh sách Order trạng thái đã giao
+router.get('/delivered', OrderController.getDeliveredOrders);
+
+router.get("/report", OrderController.getReport);
+
+// Route để lấy dữ liệu JSON phân tích
+router.get('/analysis-results', OrderController.getAnalysisResults);
+
 // Route lấy danh sách Order theo status
 router.get('/status/:status', OrderController.getOrdersOfStatus);
 

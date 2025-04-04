@@ -8,12 +8,12 @@ const Hotline = () => {
       <div className="hotline-content">
         {/* Cột 1: Hotline */}
         <div className="hotline-column">
-          <h4>📞 GỌI MUA HÀNG ONLINE</h4>
+          <h4>GỌI MUA HÀNG ONLINE</h4>
           <p className="hotline-note">(08:00 - 21:00 mỗi ngày)</p>
           <h5 className="hotline-number">1900.633.349</h5>
           <p className="hotline-note">Tất cả các ngày trong tuần (Trừ tết Âm Lịch)</p>
 
-          <h4>🛠 GÓP Ý & KHIẾU NẠI</h4>
+          <h4>GÓP Ý & KHIẾU NẠI</h4>
           <p className="hotline-note">(08:30 - 20:30)</p>
           <h5 className="hotline-number">1900.633.349</h5>
           <p className="hotline-note">Tất cả các ngày trong tuần (Trừ tết Âm Lịch)</p>
@@ -21,7 +21,7 @@ const Hotline = () => {
 
         {/* Cột 2: Thông tin */}
         <div className="hotline-column">
-          <h4>📌 THÔNG TIN</h4>
+          <h4>THÔNG TIN</h4>
           <ul>
             <li><a href="#">Giới thiệu về HDND Store</a></li>
             <li><a href="#">Thông tin Website thương mại điện tử</a></li>
@@ -32,7 +32,7 @@ const Hotline = () => {
 
         {/* Cột 3: FAQ & Social */}
         <div className="hotline-column">
-          <h4>❓ FAQ</h4>
+          <h4>FAQ</h4>
           <ul>
             <li><a href="#">Vận chuyển</a></li>
             <li><a href="#">Chính sách đổi trả</a></li>
