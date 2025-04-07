@@ -7,7 +7,6 @@ const cors = require("cors");
 const ngrok = require("ngrok");
 app.use(cors());
 const config = require("./config");
-const { console } = require("inspector/promises");
 
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
@@ -17,12 +16,11 @@ app.post("/payment", async (req, res) => {
   let {
     accessKey,
     secretKey,
-    orderInfo,
+    // orderInfo,
     partnerCode,
     redirectUrl,
     ipnUrl,
     requestType,
-    extraData,
     orderGroupId,
     autoCapture,
     lang,
@@ -30,11 +28,15 @@ app.post("/payment", async (req, res) => {
 
   const amount = req.body.amount;
   const order = req.body.orderId;
-  var orderId = partnerCode + new Date().getTime();
-  var requestId = orderId;
-  console.log("order: ", order);
+  const orderInfo = order;
+  console.log("orderInfo:", orderInfo);
+  const extraData = order;
+  console.log("extraData:", extraData);
 
-  var rawSignature =
+  const orderId = partnerCode + new Date().getTime();
+  const requestId = orderId;
+
+  const rawSignature =
     "accessKey=" +
     accessKey +
     "&amount=" +
@@ -54,31 +56,29 @@ app.post("/payment", async (req, res) => {
     "&requestId=" +
     requestId +
     "&requestType=" +
-    requestType +
-    "&order=" +
-    order;
+    requestType;
 
-  var signature = crypto
+  const signature = crypto
     .createHmac("sha256", secretKey)
     .update(rawSignature)
     .digest("hex");
 
   const requestBody = JSON.stringify({
-    partnerCode: partnerCode,
+    partnerCode,
     partnerName: "Test",
     storeId: "MomoTestStore",
-    requestId: requestId,
-    amount: amount,
-    orderId: orderId,
-    orderInfo: orderInfo,
-    redirectUrl: redirectUrl,
-    ipnUrl: ipnUrl,
-    lang: lang,
-    requestType: requestType,
-    autoCapture: autoCapture,
-    extraData: extraData,
-    orderGroupId: orderGroupId,
-    signature: signature,
+    requestId,
+    amount,
+    orderId,
+    orderInfo,
+    redirectUrl,
+    ipnUrl,
+    lang,
+    requestType,
+    autoCapture,
+    extraData,
+    orderGroupId,
+    signature,
   });
 
   const options = {
@@ -91,9 +91,8 @@ app.post("/payment", async (req, res) => {
     data: requestBody,
   };
 
-  let result;
   try {
-    result = await axios(options);
+    const result = await axios(options);
     return res.status(200).json(result.data);
   } catch (error) {
     return res.status(500).json({ statusCode: 500, message: error.message });
@@ -101,18 +100,37 @@ app.post("/payment", async (req, res) => {
 });
 
 app.post("/callback", async (req, res) => {
-  console.log("callback: ");
-  console.log(req.body);
+  try {
+    console.log("callback:", req.body);
 
-  const { orderId, resultCode, message, transId, order } = req.body;
-  console.log("orderId: ", orderId);
-  console.log("resultCode: ", resultCode);
-  console.log("message: ", message);
-  console.log("transId: ", transId);
-  console.log("order: ", order);
+    const { orderId, resultCode, message, transId, extraData, orderInfo } = req.body;
 
-  return res.status(204).json(req.body);
+    console.log("orderId (momo):", orderId);
+    console.log("orderId (hệ thống):", extraData);
+    console.log("transId:", transId);
+    console.log("message:", message);
+
+    if (resultCode === 0) {
+      // Truyền qua params trong URL
+      await axios.put(`http://localhost:5002/api/orders/payment`, null, {
+        params: {
+          orderId: orderInfo,
+          statusPayment: "Đã thanh toán",
+          paymentMethod: "Ví điện tử",
+        },
+      });
+      console.log("Đã cập nhật trạng thái thanh toán!");
+    }else {
+      console.log("Giao dịch thất bại:", message);
+    }
+
+    return res.sendStatus(204);
+  } catch (error) {
+    console.error("Callback error:", error.message);
+    return res.sendStatus(500);
+  }
 });
+
 
 app.post("/check-status-transaction", async (req, res) => {
   const { orderId } = req.body;

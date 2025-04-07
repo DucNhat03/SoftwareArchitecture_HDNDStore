@@ -363,6 +363,7 @@ router.put("/orders/:orderId/cancel", async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
 });
+
 //Sửa địa chỉ đơn hàng theo OrderId khi đơn hàng ở trạng thái chờ xác nhận
 router.put("/orders/:orderId/shipping-address", async (req, res) => {
     try {
@@ -399,6 +400,39 @@ router.put("/orders/:orderId/shipping-address", async (req, res) => {
     }
 });
 
+router.put("/orders/payment", async (req, res) => {
+  try {
+    const { orderId, statusPayment, paymentMethod} = req.query;
+
+    console.log("orderId nhận được từ params:", orderId);
+    console.log("Trạng thái thanh toán:", statusPayment);
+
+    // Kiểm tra định dạng ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: "ID đơn hàng không hợp lệ!" });
+    }
+
+    // Cập nhật đơn hàng
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: {
+          statusPayment,
+          paymentMethod,
+        },
+      }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+    }
+
+    return res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công!", updatedOrder });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật trạng thái thanh toán:", error.message);
+    return res.status(500).json({ message: "Lỗi server!", error: error.message });
+  }
+});
 
 
 module.exports = router;

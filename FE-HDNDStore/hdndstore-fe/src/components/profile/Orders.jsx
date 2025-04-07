@@ -518,13 +518,13 @@ const Orders = () => {
                                   Phân loại:{" "}
                                   {item.variants?.length > 0
                                     ? item.variants.map((v, i) => (
-                                        <div key={i}>
-                                          <span>
-                                            {v.color} - {v.size} (Số lượng:{" "}
-                                            {v.stock})
-                                          </span>
-                                        </div>
-                                      ))
+                                      <div key={i}>
+                                        <span>
+                                          {v.color} - {v.size} (Số lượng:{" "}
+                                          {v.stock})
+                                        </span>
+                                      </div>
+                                    ))
                                     : "Không có thông tin"}
                                 </span>
                                 <span className="product-price">
@@ -582,8 +582,8 @@ const Orders = () => {
                       </Modal.Footer>
                     </Modal>
 
-                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
-                    {order.status !== "Đã hủy" && (
+                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy và chưa thanh toán */}
+                    {order.status !== "Đã hủy" && order.statusPayment !== "Đã thanh toán" && (
                       <div className="d-flex justify-content-between">
                         <Button
                           variant="danger"
@@ -607,6 +607,15 @@ const Orders = () => {
                         </Button>
                       </div>
                     )}
+
+                    {/* Hiển thị "Đã thanh toán" nếu đơn hàng đã thanh toán */}
+                    {order.statusPayment === "Đã thanh toán" && (
+                      <div className="d-flex justify-content-between">
+                        <span style={{fontSize: 18, color: "green"}}>Đã thanh toán</span>
+                      </div>
+                    )}
+
+
                   </Card>
                 ))}
               </Row>
