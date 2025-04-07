@@ -1,8 +1,7 @@
 .scroll-to-top {
     position: fixed;
     bottom: 25px;
-    right: 20px;
-    /* background: linear-gradient(45deg, #ffffff, #000000); */
+    right: 15px;
     background-color: black;
     color: white;
     padding: 8px;

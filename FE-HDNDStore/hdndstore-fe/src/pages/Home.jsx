@@ -233,11 +233,14 @@ const Home = () => {
 
                 {/* slide */}
                 <div className="home_background" id="slide">
-                    <div className="home_background-item"
-                        style={{ backgroundImage: "url('https://i.imgur.com/9ROvoo8.png')" }}
+                    <div className="home_background-item mt-2"
+                        style={ { backgroundImage: "url('https://template.canva.com/EAGQcDd9WBA/1/0/1600w-XVVBw3rXV6M.jpg')"}}
+                    ></div>
+                    <div className="home_background-item mt-3"
+                        style={{ backgroundImage: "url('https://template.canva.com/EAGSffnYLDY/1/0/1600w-N7CmXFik4kY.jpg')" }}
                     ></div>
                     <div className="home_background-item"
-                        style={{ backgroundImage: "url('https://i.imgur.com/6JHbeFp.png')" }}
+                        style={{ backgroundImage: "url('https://template.canva.com/EAFWISeesDo/2/0/1600w-1QmT0v_Fh4k.jpg')" }}
                     ></div>
 
                     <button className="btn-slide prev" id="prev"><FaChevronLeft /> </button>

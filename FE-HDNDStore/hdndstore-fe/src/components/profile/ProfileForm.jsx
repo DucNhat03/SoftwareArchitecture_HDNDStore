@@ -3,6 +3,14 @@ import { Form, Button, Row, Col, Image } from "react-bootstrap";
 import api from "../../services/api"; // API helper
 import "../../styles/profile/Profile.css";
 import toastService from "../../utils/toastService.js";
+import {
+  days,
+  months,
+  years,
+  cities,
+  districts,
+  wards,
+} from "../../utils/data.js";
 
 const ProfileForm = () => {
   const [user, setUser] = useState({
@@ -14,9 +22,35 @@ const ProfileForm = () => {
     address: { city: "", district: "", ward: "", street: "" },
     avatar: "",
   });
+  const [availableDistricts, setAvailableDistricts] = useState([]);
+  const [availableWards, setAvailableWards] = useState([]);
 
   const [image, setImage] = useState(null);
+  useEffect(() => {
+    // Khi thành phố thay đổi, cập nhật danh sách quận/huyện
+    if (user.address.city) {
+      setAvailableDistricts(districts[user.address.city] || []);
+      setUser((prev) => ({
+        ...prev,
+        address: { ...prev.address, district: "", ward: "" }, // Reset district và ward khi city thay đổi
+      }));
+    } else {
+      setAvailableDistricts([]);
+    }
+  }, [user.address.city]);
 
+  useEffect(() => {
+    // Khi quận/huyện thay đổi, cập nhật danh sách phường/xã
+    if (user.address.district) {
+      setAvailableWards(wards[user.address.district] || []);
+      setUser((prev) => ({
+        ...prev,
+        address: { ...prev.address, ward: "" }, // Reset ward khi district thay đổi
+      }));
+    } else {
+      setAvailableWards([]);
+    }
+  }, [user.address.district]);
   // Fetch user data when component mounts
   useEffect(() => {
     const fetchUserData = async () => {
@@ -206,58 +240,46 @@ const ProfileForm = () => {
             {/* Ngày sinh */}
             <Form.Group className="mb-3">
               <Form.Label>Ngày Sinh</Form.Label>
-              <Row>
-                <Col>
+              <Row className="g-3">
+                {" "}
+                <Col >
                   <Form.Select
                     name="birthday.day"
                     value={user.birthday?.day || ""}
                     onChange={handleChange}
                   >
                     <option value="">Ngày</option>
-                    {[...Array(31).keys()].map((d) => (
-                      <option key={d + 1} value={d + 1}>
-                        {d + 1}
+                    {days.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
                       </option>
                     ))}
                   </Form.Select>
                 </Col>
-                <Col>
+                <Col >
                   <Form.Select
                     name="birthday.month"
                     value={user.birthday?.month || ""}
                     onChange={handleChange}
                   >
                     <option value="">Tháng</option>
-                    {[
-                      "Tháng 1",
-                      "Tháng 2",
-                      "Tháng 3",
-                      "Tháng 4",
-                      "Tháng 5",
-                      "Tháng 6",
-                      "Tháng 7",
-                      "Tháng 8",
-                      "Tháng 9",
-                      "Tháng 10",
-                      "Tháng 11",
-                      "Tháng 12",
-                    ].map((m, index) => (
+                    {months.map((m, index) => (
                       <option key={index} value={index + 1}>
                         {m}
                       </option>
                     ))}
                   </Form.Select>
                 </Col>
-                <Col>
+                <Col >
                   <Form.Select
                     name="birthday.year"
                     value={user.birthday?.year || ""}
                     onChange={handleChange}
                   >
                     <option value="">Năm</option>
-                    {[...Array(100).keys()].map((y) => (
-                      <option key={y} value={2025 - y}>
-                        {2025 - y}
+                    {years.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
                       </option>
                     ))}
                   </Form.Select>
@@ -276,8 +298,11 @@ const ProfileForm = () => {
                 onChange={(e) => handleAddressChange(e)}
               >
                 <option value="">-- Chọn tỉnh --</option>
-                <option value="Hà Nội">Hà Nội</option>
-                <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
@@ -289,8 +314,11 @@ const ProfileForm = () => {
                 onChange={(e) => handleAddressChange(e)}
               >
                 <option value="">-- Chọn Quận/Huyện --</option>
-                <option value="Quận 1">Quận 1</option>
-                <option value="Quận 2">Quận 2</option>
+                {availableDistricts.map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
@@ -302,8 +330,11 @@ const ProfileForm = () => {
                 onChange={(e) => handleAddressChange(e)}
               >
                 <option value="">-- Chọn Xã/Phường --</option>
-                <option value="Phường A">Phường A</option>
-                <option value="Phường B">Phường B</option>
+                {availableWards.map((ward) => (
+                  <option key={ward} value={ward}>
+                    {ward}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
 
