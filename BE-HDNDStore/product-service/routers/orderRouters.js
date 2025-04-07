@@ -29,9 +29,9 @@ router.post("/dat-hang", async (req, res) => {
     try {
         let { receiver, cartItems, shippingAddress, discount } = req.body;
 
-        console.log("Dữ liệu giỏ hàng nhận được:", JSON.stringify(cartItems, null, 2));
-        console.log("Địa chỉ giao hàng:", shippingAddress);
-        console.log("req.body dat hang:", req.body);
+        // console.log("Dữ liệu giỏ hàng nhận được:", JSON.stringify(cartItems, null, 2));
+        // console.log("Địa chỉ giao hàng:", shippingAddress);
+        // console.log("req.body dat hang:", req.body);
 
         // if (totalAmount === undefined) {
         //     return res.status(400).json({ message: "Thiếu totalAmount trong request!" });
@@ -86,7 +86,7 @@ router.post("/dat-hang", async (req, res) => {
             });
         }
 
-        console.log("✅ Địa chỉ giao hàng hợp lệ:", JSON.stringify(shippingAddress, null, 2));
+        // console.log("✅ Địa chỉ giao hàng hợp lệ:", JSON.stringify(shippingAddress, null, 2));
 
 
 
@@ -99,7 +99,7 @@ router.post("/dat-hang", async (req, res) => {
                 return res.status(404).json({ message: `Sản phẩm ${item.name} không tồn tại!` });
             }
 
-            console.log("📌 Biến thể trong DB:", JSON.stringify(product.variants, null, 2));
+            // console.log("📌 Biến thể trong DB:", JSON.stringify(product.variants, null, 2));
 
             // Tìm tất cả biến thể có màu & size từ giỏ hàng
             const selectedVariants = item.variants.filter(v => v.color && v.size);
@@ -115,7 +115,7 @@ router.post("/dat-hang", async (req, res) => {
                 const normalizedColor = String(selectedVariant.color).trim().toLowerCase();
                 const normalizedSize = String(selectedVariant.size).trim();
 
-                console.log(`🔍 Kiểm tra biến thể: Màu ${normalizedColor}, Size ${normalizedSize}`);
+                // console.log(`🔍 Kiểm tra biến thể: Màu ${normalizedColor}, Size ${normalizedSize}`);
 
                 // Tìm biến thể tương ứng trong DB
                 const variant = product.variants.find(v =>
@@ -314,9 +314,9 @@ router.put("/orders/:orderId/cancel", async (req, res) => {
         const { orderId } = req.params;
         const { lyDoHuy, ngayHuy } = req.body; // Lấy dữ liệu từ request
 
-        console.log("orderId nhận được từ request:", orderId);
-        console.log("Lý do hủy nhận được từ request:", lyDoHuy);
-        console.log("Ngày hủy nhận được từ request:", ngayHuy);
+        // console.log("orderId nhận được từ request:", orderId);
+        // console.log("Lý do hủy nhận được từ request:", lyDoHuy);
+        // console.log("Ngày hủy nhận được từ request:", ngayHuy);
 
         if (!mongoose.Types.ObjectId.isValid(orderId)) {
             return res.status(400).json({ message: "ID đơn hàng không hợp lệ!" });
@@ -368,8 +368,8 @@ router.put("/orders/:orderId/shipping-address", async (req, res) => {
     try {
         const { orderId } = req.params;
         const { fullName, phone, address } = req.body;
-        console.log("orderId nhận được từ đơn hàng:", orderId);
-        console.log("Thông tin địa chỉ nhận được từ đơn hàng:", fullName, phone, address);
+        // console.log("orderId nhận được từ đơn hàng:", orderId);
+        // console.log("Thông tin địa chỉ nhận được từ đơn hàng:", fullName, phone, address);
 
         // Kiểm tra định dạng của orderId
         if (!mongoose.Types.ObjectId.isValid(orderId)) {
