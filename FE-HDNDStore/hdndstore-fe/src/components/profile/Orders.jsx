@@ -1,8 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Tabs, Tab, Container, Row, Col, Card, Modal, Button, Form } from "react-bootstrap";
+import {
+  Tabs,
+  Tab,
+  Container,
+  Row,
+  Col,
+  Card,
+  Modal,
+  Button,
+  Form,
+} from "react-bootstrap";
 import "../../styles/profile/Orders.css";
-import { FaTruck, FaBox, FaCalendarAlt, FaUser, FaPhone, FaMapMarkerAlt, FaTimesCircle, FaExclamationCircle, FaEdit } from "react-icons/fa";
+import {
+  FaTruck,
+  FaBox,
+  FaCalendarAlt,
+  FaUser,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaTimesCircle,
+  FaExclamationCircle,
+  FaEdit,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -10,7 +30,7 @@ const Orders = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [orders, setOrders] = useState([]); // State lưu danh sách đơn hàng
   const [loading, setLoading] = useState(true);
-//Hủy đơn hàng
+  //Hủy đơn hàng
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -26,7 +46,6 @@ const Orders = () => {
     },
   });
   const [error, setError] = useState(null);
-
   // Danh sách các tab
   const tabs = [
     { key: "all", label: "Tất cả" },
@@ -36,9 +55,26 @@ const Orders = () => {
     { key: "cancelled", label: "Đã hủy" },
   ];
 
- 
 
+  const handlePayment = async (total, orderId) => {
+    console.log("Thực hiện thanh toán cho đơn hàng:", orderId);
+    console.log("Tổng tiền:", total);
+    try {
+      const response = await axios.post("http://localhost:5003/payment", {
+        amount: total,
+        orderId: orderId,
+      });
 
+      if (response.data && response.data.payUrl) {
+        // Redirect người dùng sang trang thanh toán MoMo
+        window.location.href = response.data.payUrl;
+      } else {
+        console.error("Không nhận được payUrl từ server:", response.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu thanh toán:", error);
+    }
+  };
 
   // Hàm gọi API lấy danh sách đơn hàng theo userId
   const fetchOrders = async () => {
@@ -51,15 +87,19 @@ const Orders = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:5002/api/orders/user/${userId}`);
+      const response = await axios.get(
+        `http://localhost:5002/api/orders/user/${userId}`
+      );
       setOrders(response.data.orders);
     } catch (error) {
-      console.error("Lỗi khi lấy đơn hàng:", error.response?.data?.message || error.message);
+      console.error(
+        "Lỗi khi lấy đơn hàng:",
+        error.response?.data?.message || error.message
+      );
     } finally {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchOrders();
@@ -68,7 +108,7 @@ const Orders = () => {
   useEffect(() => {
     if (showCancelModal) {
       document.body.classList.remove("modal-open");
-      document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+      document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
     }
   }, [showCancelModal]);
   // Hiển thị modal nhập lý do hủy
@@ -93,8 +133,6 @@ const Orders = () => {
     setShowEditModal(true);
   };
 
-
-
   const handleSaveReceiverInfo = async () => {
     if (!selectedOrderId) {
       console.log("Không tìm thấy OrderId!");
@@ -102,25 +140,32 @@ const Orders = () => {
       return;
     }
 
-    console.log("Gửi request cập nhật địa chỉ...", selectedOrderId, receiverInfo);
+    console.log(
+      "Gửi request cập nhật địa chỉ...",
+      selectedOrderId,
+      receiverInfo
+    );
 
     try {
-      const response = await fetch(`http://localhost:5002/api/orders/${selectedOrderId}/shipping-address`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: receiverInfo.fullName,
-          phone: receiverInfo.phone,
-          address: {
-            city: receiverInfo.address.city || "",
-            district: receiverInfo.address.district || "",
-            ward: receiverInfo.address.ward || "",
-            street: receiverInfo.address.street || "",
+      const response = await fetch(
+        `http://localhost:5002/api/orders/${selectedOrderId}/shipping-address`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            fullName: receiverInfo.fullName,
+            phone: receiverInfo.phone,
+            address: {
+              city: receiverInfo.address.city || "",
+              district: receiverInfo.address.district || "",
+              ward: receiverInfo.address.ward || "",
+              street: receiverInfo.address.street || "",
+            },
+          }),
+        }
+      );
 
       const result = await response.json();
       console.log("Kết quả API:", result);
@@ -137,15 +182,15 @@ const Orders = () => {
         setError(null);
       } else {
         console.error("Lỗi khi cập nhật:", result);
-        setError(result.message || "Không thể cập nhật thông tin. Vui lòng thử lại!");
+        setError(
+          result.message || "Không thể cập nhật thông tin. Vui lòng thử lại!"
+        );
       }
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
       setError("Có lỗi xảy ra khi cập nhật thông tin.");
     }
   };
-
-
 
   const handleCancelOrder = async () => {
     if (!cancelReason) {
@@ -157,7 +202,9 @@ const Orders = () => {
 
     try {
       // Kiểm tra trạng thái đơn hàng trước khi gửi yêu cầu hủy
-      const orderResponse = await fetch(`http://localhost:5002/api/orders/${selectedOrderId}`);
+      const orderResponse = await fetch(
+        `http://localhost:5002/api/orders/${selectedOrderId}`
+      );
       const orderData = await orderResponse.json();
 
       if (!orderResponse.ok) {
@@ -171,24 +218,25 @@ const Orders = () => {
       }
 
       // Nếu trạng thái hợp lệ, gửi yêu cầu hủy
-      const response = await fetch(`http://localhost:5002/api/orders/${selectedOrderId}/cancel`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ lyDoHuy: cancelReason, ngayHuy: cancelDate }),
-      });
+      const response = await fetch(
+        `http://localhost:5002/api/orders/${selectedOrderId}/cancel`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ lyDoHuy: cancelReason, ngayHuy: cancelDate }),
+        }
+      );
 
       const result = await response.json();
       if (response.ok) {
-     
         toast.success("Đơn hàng đã được hủy thành công!", {
           position: "top-right",
         });
 
-
         // Xóa dữ liệu trong form sau khi hủy thành công
-        setCancelReason("");  
+        setCancelReason("");
         setShowCancelModal(false);
         // Chờ 2 giây trước khi reload trang
         setTimeout(() => {
@@ -210,33 +258,47 @@ const Orders = () => {
     cancelled: "Đã hủy",
   };
 
-
   // Hàm lọc đơn hàng theo trạng thái
-  const filteredOrders = activeTab === "all"
-    ? orders
-    : orders.filter((order) => order.status === statusMap[activeTab]);
+  const filteredOrders =
+    activeTab === "all"
+      ? orders
+      : orders.filter((order) => order.status === statusMap[activeTab]);
 
   // Hàm xử lý thay đổi tab
   const handleTabChange = (key) => {
     setActiveTab(key);
   };
 
-
-
   return (
     <Container className="orders-container card p-4">
-      <Tabs activeKey={activeTab} onSelect={handleTabChange} className="orders-tabs">
+      <Tabs
+        activeKey={activeTab}
+        onSelect={handleTabChange}
+        className="orders-tabs"
+      >
         {tabs.map((tab) => (
           <Tab key={tab.key} eventKey={tab.key} title={tab.label}>
             {loading ? (
               <p className="text-center mt-3">Đang tải đơn hàng...</p>
             ) : filteredOrders.length > 0 ? (
               <Row className="mt-4 order-container">
-                {filteredOrders.map((order) => (  
+                {filteredOrders.map((order) => (
                   <Card key={order._id} className="order-card">
-                    <span className="trang-thai-don-hang" style={{ color: order.status === "Đã hủy" ? "red" : "black" }}>
-                      {order.status === "Đã hủy" ? <FaTimesCircle /> : <FaTruck />} Trạng thái:
-                      <span className="trang-thai-don-hang-2">{order.status}</span>
+                    <span
+                      className="trang-thai-don-hang"
+                      style={{
+                        color: order.status === "Đã hủy" ? "red" : "black",
+                      }}
+                    >
+                      {order.status === "Đã hủy" ? (
+                        <FaTimesCircle />
+                      ) : (
+                        <FaTruck />
+                      )}{" "}
+                      Trạng thái:
+                      <span className="trang-thai-don-hang-2">
+                        {order.status}
+                      </span>
                     </span>
 
                     <Card.Body>
@@ -244,13 +306,14 @@ const Orders = () => {
                         <FaBox /> Đơn hàng #{order._id}
                       </Card.Title>
                       <p className="ngay-dat">
-                        <FaCalendarAlt /> Thời gian đặt: {new Intl.DateTimeFormat("vi-VN", {
+                        <FaCalendarAlt /> Thời gian đặt:{" "}
+                        {new Intl.DateTimeFormat("vi-VN", {
                           day: "2-digit",
                           month: "2-digit",
                           year: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
-                          second: "2-digit"
+                          second: "2-digit",
                         }).format(new Date(order.orderDate))}
                       </p>
 
@@ -276,13 +339,28 @@ const Orders = () => {
                       <p>Địa chỉ giao hàng:</p>
                       {order.shippingAddress ? (
                         <div className="shipping-info">
-                          <p><FaUser /> Người nhận: {order.shippingAddress.fullName}</p>
-                          <p><FaPhone /> SĐT: {order.shippingAddress.phone}</p>
-                          <p><FaMapMarkerAlt /> Địa chỉ: {order.shippingAddress.address.street}, {order.shippingAddress.address.ward}, {order.shippingAddress.address.district}, {order.shippingAddress.address.city}</p>
+                          <p>
+                            <FaUser /> Người nhận:{" "}
+                            {order.shippingAddress.fullName}
+                          </p>
+                          <p>
+                            <FaPhone /> SĐT: {order.shippingAddress.phone}
+                          </p>
+                          <p>
+                            <FaMapMarkerAlt /> Địa chỉ:{" "}
+                            {order.shippingAddress.address.street},{" "}
+                            {order.shippingAddress.address.ward},{" "}
+                            {order.shippingAddress.address.district},{" "}
+                            {order.shippingAddress.address.city}
+                          </p>
 
                           {/* Hiển thị nút chỉnh sửa nếu trạng thái đơn hàng là "Chờ xác nhận" */}
                           {order.status === "Chờ xác nhận" && (
-                            <Button variant="warning" className="edit-address-button" onClick={() => handleEditAddress(order)}>
+                            <Button
+                              variant="warning"
+                              className="edit-address-button"
+                              onClick={() => handleEditAddress(order)}
+                            >
                               <FaEdit /> Chỉnh sửa địa chỉ
                             </Button>
                           )}
@@ -291,9 +369,12 @@ const Orders = () => {
                         <p>Không có thông tin địa chỉ giao hàng</p>
                       )}
 
-                   
                       {/* Modal chỉnh sửa địa chỉ giao hàng */}
-                      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+                      <Modal
+                        show={showEditModal}
+                        onHide={() => setShowEditModal(false)}
+                        centered
+                      >
                         <Modal.Header closeButton>
                           <Modal.Title>Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
                         </Modal.Header>
@@ -304,9 +385,12 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.fullName || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo, fullName: e.target.value || ""
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    fullName: e.target.value || "",
+                                  })
+                                }
                               />
                             </Form.Group>
                             <Form.Group>
@@ -314,9 +398,12 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.phone || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo, phone: e.target.value || ""
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    phone: e.target.value || "",
+                                  })
+                                }
                               />
                             </Form.Group>
                             <Form.Group>
@@ -324,10 +411,15 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.address?.city || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo,
-                                  address: { ...receiverInfo.address, city: e.target.value || "" }
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    address: {
+                                      ...receiverInfo.address,
+                                      city: e.target.value || "",
+                                    },
+                                  })
+                                }
                               />
                             </Form.Group>
                             <Form.Group>
@@ -335,10 +427,15 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.address?.district || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo,
-                                  address: { ...receiverInfo.address, district: e.target.value || "" }
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    address: {
+                                      ...receiverInfo.address,
+                                      district: e.target.value || "",
+                                    },
+                                  })
+                                }
                               />
                             </Form.Group>
                             <Form.Group>
@@ -346,10 +443,15 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.address?.ward || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo,
-                                  address: { ...receiverInfo.address, ward: e.target.value || "" }
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    address: {
+                                      ...receiverInfo.address,
+                                      ward: e.target.value || "",
+                                    },
+                                  })
+                                }
                               />
                             </Form.Group>
                             <Form.Group>
@@ -357,16 +459,26 @@ const Orders = () => {
                               <Form.Control
                                 type="text"
                                 value={receiverInfo?.address?.street || ""}
-                                onChange={(e) => setReceiverInfo({
-                                  ...receiverInfo,
-                                  address: { ...receiverInfo.address, street: e.target.value || "" }
-                                })}
+                                onChange={(e) =>
+                                  setReceiverInfo({
+                                    ...receiverInfo,
+                                    address: {
+                                      ...receiverInfo.address,
+                                      street: e.target.value || "",
+                                    },
+                                  })
+                                }
                               />
                             </Form.Group>
                           </Form>
                         </Modal.Body>
                         <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowEditModal(false)}>Hủy</Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setShowEditModal(false)}
+                          >
+                            Hủy
+                          </Button>
                           <Button
                             variant="primary"
                             onClick={() => {
@@ -379,31 +491,45 @@ const Orders = () => {
                         </Modal.Footer>
                       </Modal>
 
-
-                      
-
-
-                      <p><strong>Sản phẩm trong đơn hàng:</strong></p>
+                      <p>
+                        <strong>Sản phẩm trong đơn hàng:</strong>
+                      </p>
                       {order.cartItems.length > 0 ? (
                         <ul>
                           {order.cartItems.map((item, index) => (
                             <li key={index}>
-                              <img src={item.image?.[0] || "https://via.placeholder.com/60"} alt={item.name} />
+                              <img
+                                src={
+                                  item.image?.[0] ||
+                                  "https://via.placeholder.com/60"
+                                }
+                                alt={item.name}
+                              />
                               <div className="product-info-order">
-                                <span className="product-name">{item.name}</span>
-                                <span className="product-description">{item.description}</span>
+                                <span className="product-name">
+                                  {item.name}
+                                </span>
+                                <span className="product-description">
+                                  {item.description}
+                                </span>
 
                                 {/* Hiển thị tất cả màu sắc và size */}
                                 <span className="phan-loai">
-                                  Phân loại: {item.variants?.length > 0 ? (
-                                    item.variants.map((v, i) => (
+                                  Phân loại:{" "}
+                                  {item.variants?.length > 0
+                                    ? item.variants.map((v, i) => (
                                       <div key={i}>
-                                        <span>{v.color} - {v.size} (Số lượng: {v.stock})</span>
+                                        <span>
+                                          {v.color} - {v.size} (Số lượng:{" "}
+                                          {v.stock})
+                                        </span>
                                       </div>
                                     ))
-                                  ) : "Không có thông tin"}
+                                    : "Không có thông tin"}
                                 </span>
-                                <span className="product-price">Giá: {item.price.toLocaleString()} VND</span>
+                                <span className="product-price">
+                                  Giá: {item.price.toLocaleString()} VND
+                                </span>
                               </div>
                             </li>
                           ))}
@@ -414,11 +540,20 @@ const Orders = () => {
                     </Card.Body>
 
                     <p className="total-amount">
-                      Tổng số tiền: <strong className="total-vnd">{order.finalAmount.toLocaleString()} VND</strong>
+                      Tổng số tiền:{" "}
+                      <strong className="total-vnd">
+                        {order.finalAmount.toLocaleString()} VND
+                      </strong>
                     </p>
 
                     {/* Modal hủy đơn hàng */}
-                    <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)} animation={false} backdrop={false} centered>
+                    <Modal
+                      show={showCancelModal}
+                      onHide={() => setShowCancelModal(false)}
+                      animation={false}
+                      backdrop={false}
+                      centered
+                    >
                       <Modal.Header closeButton>
                         <Modal.Title>Hủy đơn hàng</Modal.Title>
                       </Modal.Header>
@@ -432,26 +567,55 @@ const Orders = () => {
                         />
                       </Modal.Body>
                       <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowCancelModal(false)}>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setShowCancelModal(false)}
+                        >
                           Đóng
                         </Button>
-                        <Button variant="danger" onClick={() => handleCancelOrder(selectedOrderId)}>
+                        <Button
+                          variant="danger"
+                          onClick={() => handleCancelOrder(selectedOrderId)}
+                        >
                           Xác nhận hủy
                         </Button>
                       </Modal.Footer>
                     </Modal>
 
-                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
-                    {order.status !== "Đã hủy" && (
+                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy và chưa thanh toán */}
+                    {order.status !== "Đã hủy" && order.statusPayment !== "Đã thanh toán" && (
                       <div className="d-flex justify-content-between">
-                        <Button variant="danger" className="cancel-button" onClick={() => handleShowCancelModal(order._id)}>
+                        <Button
+                          variant="danger"
+                          className="cancel-button"
+                          onClick={() => handleShowCancelModal(order._id)}
+                        >
                           Hủy đơn hàng
                         </Button>
-                        <Button variant="success" className="pay-button">
+                        <Button
+                          variant="success"
+                          className="pay-button"
+                          onClick={() => {
+                            handlePayment(order.finalAmount, order._id);
+                            toast.success("Đang chuyển đến trang thanh toán!", {
+                              position: "top-right",
+                              autoClose: 2000,
+                            });
+                          }}
+                        >
                           Thanh toán
                         </Button>
                       </div>
                     )}
+
+                    {/* Hiển thị "Đã thanh toán" nếu đơn hàng đã thanh toán */}
+                    {order.statusPayment === "Đã thanh toán" && (
+                      <div className="d-flex justify-content-between">
+                        <span style={{fontSize: 18, color: "green"}}>Đã thanh toán</span>
+                      </div>
+                    )}
+
+
                   </Card>
                 ))}
               </Row>
@@ -475,4 +639,3 @@ const Orders = () => {
 };
 
 export default Orders;
-
