@@ -55,7 +55,6 @@ const Orders = () => {
     { key: "cancelled", label: "Đã hủy" },
   ];
 
-
   const handlePayment = async (total, orderId) => {
     console.log("Thực hiện thanh toán cho đơn hàng:", orderId);
     console.log("Tổng tiền:", total);
@@ -378,7 +377,9 @@ const Orders = () => {
                         <Modal.Header closeButton>
                           {/* <Modal.Title className="modal-title-small">Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
                            */}
-                          <p className="dia-chi-title">Chỉnh sửa địa chỉ nhận hàng</p>
+                          <p className="dia-chi-title">
+                            Chỉnh sửa địa chỉ nhận hàng
+                          </p>
                         </Modal.Header>
                         <Modal.Body>
                           <Form>
@@ -520,13 +521,13 @@ const Orders = () => {
                                   Phân loại:{" "}
                                   {item.variants?.length > 0
                                     ? item.variants.map((v, i) => (
-                                      <div key={i}>
-                                        <span>
-                                          {v.color} - {v.size} (Số lượng:{" "}
-                                          {v.stock})
-                                        </span>
-                                      </div>
-                                    ))
+                                        <div key={i}>
+                                          <span>
+                                            {v.color} - {v.size} (Số lượng:{" "}
+                                            {v.stock})
+                                          </span>
+                                        </div>
+                                      ))
                                     : "Không có thông tin"}
                                 </span>
                                 <span className="product-price">
@@ -585,39 +586,45 @@ const Orders = () => {
                     </Modal>
 
                     {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
-                    {order.status !== "Đã hủy" && order.status !== "Đã giao" && order.status !== "Đang giao" && (
-                      <div className="d-flex justify-content-between">
-                        <Button
-                          variant="danger"
-                          className="cancel-button"
-                          onClick={() => handleShowCancelModal(order._id)}
-                        >
-                          Hủy đơn hàng
-                        </Button>
-                        <Button
-                          variant="success"
-                          className="pay-button"
-                          onClick={() => {
-                            handlePayment(order.finalAmount, order._id);
-                            toast.success("Đang chuyển đến trang thanh toán!", {
-                              position: "top-right",
-                              autoClose: 2000,
-                            });
-                          }}
-                        >
-                          Thanh toán
-                        </Button>
-                      </div>
-                    )}
+                    {order.status !== "Đã hủy" &&
+                      order.status !== "Đã giao" &&
+                      order.status !== "Đang giao" &&
+                      order.statusPayment !== "Đã thanh toán" && (
+                        <div className="d-flex justify-content-between">
+                          <Button
+                            variant="danger"
+                            className="cancel-button"
+                            onClick={() => handleShowCancelModal(order._id)}
+                          >
+                            Hủy đơn hàng
+                          </Button>
+                          <Button
+                            variant="success"
+                            className="pay-button"
+                            onClick={() => {
+                              handlePayment(order.finalAmount, order._id);
+                              toast.success(
+                                "Đang chuyển đến trang thanh toán!",
+                                {
+                                  position: "top-right",
+                                  autoClose: 2000,
+                                }
+                              );
+                            }}
+                          >
+                            Thanh toán
+                          </Button>
+                        </div>
+                      )}
 
                     {/* Hiển thị "Đã thanh toán" nếu đơn hàng đã thanh toán */}
                     {order.statusPayment === "Đã thanh toán" && (
                       <div className="d-flex justify-content-between">
-                        <span style={{fontSize: 18, color: "green"}}>Đã thanh toán</span>
+                        <span style={{ fontSize: 18, color: "green" }}>
+                          Đã thanh toán
+                        </span>
                       </div>
                     )}
-
-
                   </Card>
                 ))}
               </Row>

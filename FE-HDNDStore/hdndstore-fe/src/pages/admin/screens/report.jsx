@@ -77,6 +77,7 @@ export default function RevenueReport() {
       .get("http://localhost:5000/orders/analysis-results")
       .then((response) => {
         setAnalysisResults(response.data || {});
+        console.log("--------Kết quả phân tích:", response.data);
       })
       .catch((error) => {
         console.error("Lỗi khi lấy kết quả phân tích:", error);

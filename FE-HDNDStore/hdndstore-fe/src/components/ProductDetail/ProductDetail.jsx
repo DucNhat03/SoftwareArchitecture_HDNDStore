@@ -7,6 +7,7 @@ import { FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import Slider from "react-slick";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
+import Hotline from "../layout/Hotline";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -774,61 +775,11 @@ const ChiTietSanPham = ({ product }) => {
 
                     <br /><br /><hr />
 
-                    <div className="thong-tin-lien-he">
-                        {/* Thông tin liên hệ */}
-                        <div className="thong-tin-lien-he-item">
-                            <p className="thong-tin-lien-he-item-1">
-                                GỌI MUA HÀNG ONLINE (08:00 - 21:00 mỗi ngày)
-                            </p>
-                            <p className="thong-tin-lien-he-item-2">1900.633.349</p>
-                            <p className="thong-tin-lien-he-item-3">
-                                Tất cả các ngày trong tuần (Trừ tết Âm Lịch)
-                            </p>
-                            <br />
-                            <p className="thong-tin-lien-he-item-1">GÓP Ý & KHIẾU NẠI (08:30 - 20:30)</p>
-                            <p className="thong-tin-lien-he-item-2">1900.633.349</p>
-                            <p className="thong-tin-lien-he-item-3">
-                                Tất cả các ngày trong tuần (Trừ tết Âm Lịch)
-                            </p>
-                        </div>
-
-                        {/* Thông tin */}
-                        <div className="thong-tin-lien-he-item-tt">
-                            <p className="thong-tin-lien-he-item-1">THÔNG TIN</p>
-                            <ul>
-                                <li><a href="#">Giới thiệu về MWC</a></li>
-                                <li><a href="#">Thông tin Website thương mại điện tử</a></li>
-                                <li><a href="#">Than Phiền Góp Ý</a></li>
-                                <li><a href="#">Chính sách và quy định</a></li>
-                            </ul>
-                        </div>
-
-                        {/* FAQ */}
-                        <div className="thong-tin-lien-he-item-faq">
-                            <p className="thong-tin-lien-he-item-1">FAQ</p>
-                            <ul>
-                                <li><a href="#">Vận chuyển</a></li>
-                                <li><a href="#">Chính sách đổi trả</a></li>
-                                <li><a href="#">Chính sách đổi trả bảo hành</a></li>
-                            </ul>
-                            <div className="logo-truyen-thong">
-                                <img
-                                    style={{ marginLeft: "-15px", marginTop: "10px", height: "45px" }}
-                                    src="/src/images/logo-truyen-thong.png"
-                                    alt="Logo Truyền Thông"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-
-
                 </div>
-
-
+                
             </div>
 
-
+            <Hotline />
             <Footer />
         </div>
     );

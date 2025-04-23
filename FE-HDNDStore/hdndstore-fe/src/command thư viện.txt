@@ -1,2 +1,0 @@
-npm install react-icons
-npm install react-slick slick-carousel

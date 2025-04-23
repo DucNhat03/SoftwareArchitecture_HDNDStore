@@ -5,21 +5,37 @@ const axios = require("axios");
 const crypto = require("crypto");
 const cors = require("cors");
 const ngrok = require("ngrok");
-app.use(cors());
 const config = require("./config");
 
+app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(express.static("./public"));
 
+let ipnUrl = "";
+
+const startNgrok = async (port) => {
+  try {
+    const url = await ngrok.connect({
+      addr: port,
+      proto: "http",
+      authtoken: '2T8fQw9v3a6MnMzWmTeRP4WQ97q_5TyiMEBqHAcZeiD57k6Dv',
+    });
+    ipnUrl = `${url}/callback`; // 👉 Gán ipnUrl sau khi có URL từ ngrok
+    console.log("✔ Ngrok started at:", url);
+    console.log("✔ ipnUrl:", ipnUrl);
+  } catch (err) {
+    console.error("Ngrok failed to start:", err.message);
+    process.exit(1);
+  }
+};
+
 app.post("/payment", async (req, res) => {
-  let {
+  const {
     accessKey,
     secretKey,
-    // orderInfo,
     partnerCode,
     redirectUrl,
-    ipnUrl,
     requestType,
     orderGroupId,
     autoCapture,
@@ -29,41 +45,21 @@ app.post("/payment", async (req, res) => {
   const amount = req.body.amount;
   const order = req.body.orderId;
   const orderInfo = order;
-  console.log("orderInfo:", orderInfo);
   const extraData = order;
-  console.log("extraData:", extraData);
-
   const orderId = partnerCode + new Date().getTime();
   const requestId = orderId;
 
   const rawSignature =
-    "accessKey=" +
-    accessKey +
-    "&amount=" +
-    amount +
-    "&extraData=" +
-    extraData +
-    "&ipnUrl=" +
-    ipnUrl +
-    "&orderId=" +
-    orderId +
-    "&orderInfo=" +
-    orderInfo +
-    "&partnerCode=" +
-    partnerCode +
-    "&redirectUrl=" +
-    redirectUrl +
-    "&requestId=" +
-    requestId +
-    "&requestType=" +
-    requestType;
+    `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}` +
+    `&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}` +
+    `&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
 
   const signature = crypto
     .createHmac("sha256", secretKey)
     .update(rawSignature)
     .digest("hex");
 
-  const requestBody = JSON.stringify({
+  const requestBody = {
     partnerCode,
     partnerName: "Test",
     storeId: "MomoTestStore",
@@ -79,20 +75,14 @@ app.post("/payment", async (req, res) => {
     extraData,
     orderGroupId,
     signature,
-  });
-
-  const options = {
-    method: "POST",
-    url: "https://test-payment.momo.vn/v2/gateway/api/create",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(requestBody),
-    },
-    data: requestBody,
   };
 
   try {
-    const result = await axios(options);
+    const result = await axios.post("https://test-payment.momo.vn/v2/gateway/api/create", requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return res.status(200).json(result.data);
   } catch (error) {
     return res.status(500).json({ statusCode: 500, message: error.message });
@@ -131,42 +121,38 @@ app.post("/callback", async (req, res) => {
   }
 });
 
-
+// Kiểm tra trạng thái
 app.post("/check-status-transaction", async (req, res) => {
   const { orderId } = req.body;
+  const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+  const accessKey = "F8BBA842ECF85";
 
-  var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-  var accessKey = "F8BBA842ECF85";
   const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
+  const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
 
-  const signature = crypto
-    .createHmac("sha256", secretKey)
-    .update(rawSignature)
-    .digest("hex");
-
-  const requestBody = JSON.stringify({
+  const requestBody = {
     partnerCode: "MOMO",
     requestId: orderId,
-    orderId: orderId,
-    signature: signature,
+    orderId,
+    signature,
     lang: "vi",
-  });
-
-  const options = {
-    method: "POST",
-    url: "https://test-payment.momo.vn/v2/gateway/api/query",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: requestBody,
   };
 
-  const result = await axios(options);
-
-  return res.status(200).json(result.data);
+  try {
+    const result = await axios.post("https://test-payment.momo.vn/v2/gateway/api/query", requestBody, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return res.status(200).json(result.data);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 });
 
 const PORT = 5003;
-app.listen(PORT, () => {
-  console.log(`Server is running at port ${PORT}`);
+
+// 👉 Start ngrok trước khi mở server
+startNgrok(PORT).then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running at port ${PORT}`);
+  });
 });

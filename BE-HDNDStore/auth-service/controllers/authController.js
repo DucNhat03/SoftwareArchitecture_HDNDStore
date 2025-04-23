@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import otpGenerator from "otp-generator";
 import nodemailer from "nodemailer";
 import sendOtpEmail from "../services/emailService.js";
+import cloudinary from "../config/cloudinaryConfig.js";
+import streamifier from "streamifier";
 
 // Khởi tạo client Google OAuth
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -79,11 +81,28 @@ export const login = async (req, res) => {
 }
 export const getUserProfile = async (req, res) => {
   try {
+    console.log("Getting user profile for ID:", req.user.id);
     const user = await User.findById(req.user.id).select("-password"); // Loại bỏ password
     if (!user)
       return res.status(404).json({ error: "Người dùng không tồn tại" });
 
-    res.json(user);
+    console.log("User avatar from DB:", user.avatar);
+    
+    // Ensure avatar is included in the response
+    res.json({
+      _id: user._id,
+      email: user.email,
+      phone: user.phone,
+      fullName: user.fullName,
+      gender: user.gender,
+      birthday: user.birthday,
+      address: user.address,
+      role: user.role,
+      avatar: user.avatar,
+      provider: user.provider,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    });
   } catch (error) {
     console.error("Lỗi khi lấy thông tin user:", error);
     res.status(500).json({ error: "Lỗi máy chủ" });
@@ -157,16 +176,55 @@ export const updateAvatar = async (req, res) => {
     }
 
     const userId = req.user.id;
-    const avatarPath = `/uploads/avatars/${req.file.filename}`;
+    console.log("⭐ Updating avatar for user ID:", userId);
+    
+    // Upload ảnh lên Cloudinary
+    let uploadResult;
+    try {
+      uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "avatars" },
+          (error, result) => {
+            if (error) {
+              console.error("❌ Lỗi upload Cloudinary:", error);
+              return reject(error);
+            }
+            console.log("✅ Cloudinary upload success, secure_url:", result.secure_url);
+            resolve(result);
+          }
+        );
+        
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      });
+    } catch (cloudinaryError) {
+      console.error("❌ Lỗi khi upload lên Cloudinary:", cloudinaryError);
+      return res.status(500).json({ error: "Lỗi khi upload ảnh lên Cloudinary!" });
+    }
 
-    // Cập nhật avatar trong DB
-    await User.findByIdAndUpdate(userId, { avatar: avatarPath });
-
-    return res
-      .status(200)
-      .json({ message: "Cập nhật avatar thành công!", avatar: avatarPath });
+    // Lưu URL Cloudinary vào DB
+    try {
+      const updateResult = await User.findByIdAndUpdate(
+        userId, 
+        { avatar: uploadResult.secure_url },
+        { new: true } // Trả về document đã cập nhật
+      );
+      
+      if (!updateResult) {
+        console.error("❌ Không tìm thấy user để cập nhật avatar:", userId);
+        return res.status(404).json({ error: "Không tìm thấy người dùng!" });
+      }
+      
+      console.log("✅ DB update success, saved avatar:", updateResult.avatar);
+      
+      return res
+        .status(200)
+        .json({ message: "Cập nhật avatar thành công!", avatar: uploadResult.secure_url });
+    } catch (dbError) {
+      console.error("❌ Lỗi khi cập nhật avatar vào database:", dbError);
+      return res.status(500).json({ error: "Lỗi khi lưu avatar vào database!" });
+    }
   } catch (error) {
-    console.error("Lỗi cập nhật avatar:", error);
+    console.error("❌ Lỗi cập nhật avatar:", error);
     return res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
   }
 };
