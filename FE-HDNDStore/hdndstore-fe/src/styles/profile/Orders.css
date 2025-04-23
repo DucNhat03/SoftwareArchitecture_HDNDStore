@@ -344,7 +344,17 @@ margin-left: 5px;
   max-width: 800px; /* Điều chỉnh độ rộng */
   width: 90%; /* Đảm bảo responsive */
 }
-
+.modal-title-small {
+  font-size: 16px; /* Thay đổi giá trị theo ý muốn */
+}
+.dia-chi-title{
+  font-size: 20px;
+  font-weight: bold;
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-left: 60px;
+}
 /* Hiệu ứng mở modal */
 @keyframes fadeIn {
   from {
