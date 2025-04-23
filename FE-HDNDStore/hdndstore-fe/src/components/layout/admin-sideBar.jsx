@@ -30,24 +30,20 @@ const SideBar = () => {
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState({});
 
- const userId = localStorage.getItem("userId");
- console.log("User ID:", userId); // Log the userId to the console
-
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
+    localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("role");
     localStorage.removeItem("promo_closed");
 
     Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("promo_closed_")) {
-            localStorage.removeItem(key);
-        }
+      if (key.startsWith("promo_closed_")) {
+        localStorage.removeItem(key);
+      }
     });
 
-
-    navigate("/auth"); 
-};
+    navigate("/auth");
+  };
 
   const toggleMenu = (menu) => {
     setOpenMenus((prev) => ({
@@ -76,7 +72,7 @@ const SideBar = () => {
         { text: "Chờ xác nhận", path: "/admin/orders/pending" },
         { text: "Đang giao", path: "/admin/orders/shipping" },
         { text: "Đã giao", path: "/admin/orders/delivered" },
-        { text: "Đã hủy", path: "/admin/orders/canceled" }
+        { text: "Đã hủy", path: "/admin/orders/canceled" },
       ],
     },
     { text: "Báo cáo doanh thu", icon: <BarChart />, path: "/admin/report" },
@@ -104,7 +100,7 @@ const SideBar = () => {
       <Toolbar>
         <Box sx={{ width: "100%", textAlign: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            DuyNgayXua
+            {"ADMIN"}
           </Typography>
           <IconButton color="error" sx={{ mt: 1 }}>
             <Logout onClick={() => handleLogout()} />
