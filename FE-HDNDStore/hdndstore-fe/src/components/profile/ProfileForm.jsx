@@ -67,12 +67,9 @@ const ProfileForm = () => {
         });
 
         setUser(response.data);
-        setImage(
-          response.data.avatar
-            ? `http://localhost:5001${response.data.avatar}`
-            : null
-        );
-        console.log(response.data.avatar);
+        // Sử dụng URL Cloudinary trực tiếp, không cần thêm tiền tố
+        setImage(response.data.avatar || null);
+        console.log("Avatar URL:", response.data.avatar);
       } catch (error) {
         console.error(
           "Lỗi khi lấy thông tin user:",
@@ -108,7 +105,8 @@ const ProfileForm = () => {
         },
       });
 
-      setImage(`http://localhost:5001${response.data.avatar}`);
+      // Sử dụng URL Cloudinary trực tiếp, không cần thêm tiền tố
+      setImage(response.data.avatar);
       toastService.success("Cập nhật avatar thành công!");
     } catch (error) {
       console.error("Lỗi khi tải ảnh lên:", error.response?.data || error);

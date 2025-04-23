@@ -23,12 +23,41 @@ import {
   ExpandMore,
 } from "@mui/icons-material";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api"; // Đường dẫn đến file api.js
 
 const SideBar = () => {
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState({});
+  const [fullName, setFullName] = useState("");
+
+  useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          const token = localStorage.getItem("token");
+  
+          if (!token) {
+            console.error("Chưa có token, vui lòng đăng nhập!");
+            return;
+          }
+  
+          const response = await api.get("/auth/profile", {
+            headers: { Authorization: `Bearer ${token}` }, 
+          });
+          setFullName(response.data.fullName);
+  
+          console.log("Avatar URL:", response.data.avatar);
+        } catch (error) {
+          console.error(
+            "Lỗi khi lấy thông tin user:",
+            error.response?.data || error
+          );
+        }
+      };
+  
+      fetchUserData();
+    }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -100,7 +129,7 @@ const SideBar = () => {
       <Toolbar>
         <Box sx={{ width: "100%", textAlign: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            {"ADMIN"}
+            {fullName}
           </Typography>
           <IconButton color="error" sx={{ mt: 1 }}>
             <Logout onClick={() => handleLogout()} />

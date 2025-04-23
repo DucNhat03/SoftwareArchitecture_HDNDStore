@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
 
     // Thêm trường OTP và xác thực OTP
     otp: { type: String },
-    otpExpires: { type: Date },
+    otpExpiry: { type: Date },
     isOtpVerified: { type: Boolean, default: false }, 
   },
   { timestamps: true }
