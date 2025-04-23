@@ -10,6 +10,7 @@ import {
   Box,
   Typography,
   IconButton,
+  Alert,
 } from "@mui/material";
 import {
   Dashboard,
@@ -29,6 +30,25 @@ import { useNavigate } from "react-router-dom";
 const SideBar = () => {
   const navigate = useNavigate();
   const [openMenus, setOpenMenus] = useState({});
+
+ const userId = localStorage.getItem("userId");
+ console.log("User ID:", userId); // Log the userId to the console
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    localStorage.removeItem("promo_closed");
+
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("promo_closed_")) {
+            localStorage.removeItem(key);
+        }
+    });
+
+
+    navigate("/auth"); 
+};
 
   const toggleMenu = (menu) => {
     setOpenMenus((prev) => ({
@@ -88,7 +108,7 @@ const SideBar = () => {
             DuyNgayXua
           </Typography>
           <IconButton color="error" sx={{ mt: 1 }}>
-            <Logout />
+            <Logout onClick={() => handleLogout()} />
           </IconButton>
         </Box>
       </Toolbar>
