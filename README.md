@@ -12,7 +12,8 @@ Dự án được chia thành nhiều **microservices**, bao gồm:
 
 - 🧑‍💼 **Auth Service** – Xác thực người dùng (phụ trách: Nguyễn Đức Nhật)  
 - 🛒 **Order Service** – Quản lý đơn hàng (phụ trách: Trần Quốc Huy)  
-- 📦 **Product Service** – Quản lý sản phẩm (phụ trách: Phan Nguyễn Đại Dương)  
+- 📦 **Product Service** – Quản lý sản phẩm (chính: Trần Quốc Huy, hỗ trợ: Phan Nguyễn Đại Dương)
+- 🧩 **Payment Service** – Thanh toán (phụ trách: Phan Nguyễn Đại Dương)  
 - ⚙️ **Admin Service** – Quản lý admin dashboard (phụ trách: Trương Công Duy)  
 - 🌐 **API Gateway** – Là cổng giao tiếp trung gian, định tuyến request từ client đến đúng service  
 
