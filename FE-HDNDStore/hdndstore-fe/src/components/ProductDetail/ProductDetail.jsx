@@ -298,6 +298,7 @@ const ChiTietSanPham = ({ product }) => {
             price: "295,000₫",
         },
     ];
+  
 
 
     return (
@@ -366,22 +367,50 @@ const ChiTietSanPham = ({ product }) => {
                                 </div>
 
                             </div>
+                           
 
                             {/* Kích thước sản phẩm */}
                             <div className="kich-thuoc-san-pham">
                                 <span className="kich-thuoc">Kích thước</span>
                                 <div className="so-kich-thuoc">
                                     {[
-                                        ...new Set(selectedProduct.variants?.map(variant => variant.size)) // Lấy danh sách size không trùng lặp
-                                    ].map((size, index) => (
-                                        <span
-                                            key={index}
-                                            className={selectedSize === size.toString() ? "selected" : ""}
-                                            onClick={() => setSelectedSize(size.toString())}
-                                        >
-                                            {size}
-                                        </span>
-                                    ))}
+                                        ...new Set(
+                                            selectedProduct.variants
+                                                ?.filter(variant => variant.color === selectedColor) // Chỉ lấy size theo màu đã chọn
+                                                .map(variant => variant.size)
+                                        ),
+                                    ].map((size, index) => {
+                                        // Tìm variant theo color + size
+                                        const matchedVariant = selectedProduct.variants.find(
+                                            (v) => v.color === selectedColor && v.size === size
+                                        );
+                                        const isOutOfStock = !matchedVariant || Number(matchedVariant.stock) <= 0;
+                                        console.log("Matched Variant:", matchedVariant);
+                                        console.log("stock:", matchedVariant?.stock);
+                                        return (
+                                            <span
+                                                key={index}
+                                                className={`kich-thuoc-item ${selectedSize === size ? "selected" : ""} ${isOutOfStock ? "out-of-stock" : ""}`}
+                                                title={isOutOfStock ? "Hết hàng" : `Size ${size}`}
+                                                onClick={!isOutOfStock ? () => setSelectedSize(size) : undefined}
+                                                style={{
+                                                    backgroundColor: isOutOfStock ? "#e0e0e0" : "#fff",
+                                                    color: isOutOfStock ? "#888" : "#000",
+                                                    cursor: isOutOfStock ? "not-allowed" : "pointer",
+                                                    border: selectedSize === size ? "2px solid #007bff" : "1px solid #ccc",
+                                                    padding: "6px 12px",
+                                                    borderRadius: "4px",
+                                                    margin: "4px",
+                                                    display: "inline-block",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                {size}
+                                            </span>
+
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -513,8 +542,6 @@ const ChiTietSanPham = ({ product }) => {
                                                 </div>
 
 
-
-                                                {/* Kích thước sản phẩm */}
                                                 {/* Kích thước sản phẩm */}
                                                 <div className="kich-thuoc-san-pham">
                                                     <span className="kich-thuoc">Kích thước</span>

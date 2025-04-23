@@ -376,7 +376,9 @@ const Orders = () => {
                         centered
                       >
                         <Modal.Header closeButton>
-                          <Modal.Title>Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
+                          {/* <Modal.Title className="modal-title-small">Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
+                           */}
+                          <p className="dia-chi-title">Chỉnh sửa địa chỉ nhận hàng</p>
                         </Modal.Header>
                         <Modal.Body>
                           <Form>
@@ -582,8 +584,8 @@ const Orders = () => {
                       </Modal.Footer>
                     </Modal>
 
-                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy và chưa thanh toán */}
-                    {order.status !== "Đã hủy" && order.statusPayment !== "Đã thanh toán" && (
+                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
+                    {order.status !== "Đã hủy" && order.status !== "Đã giao" && order.status !== "Đang giao" && (
                       <div className="d-flex justify-content-between">
                         <Button
                           variant="danger"

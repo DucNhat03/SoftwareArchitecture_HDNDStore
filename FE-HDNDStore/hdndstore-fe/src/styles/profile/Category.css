@@ -21,6 +21,7 @@
     border-radius: 10px;
     overflow: hidden;
     border: 2px solid transparent; /* Viền trong suốt mặc định */
+    margin-bottom: 40px;
 }
 
 .product-card:hover {
