@@ -1,6 +1,7 @@
-/* .homeWrapper {
-    padding-top: 70px;
-} */
+.homeWrapper {
+    padding-left: 10%;
+    padding-right: 10%;
+}
 
 a {
     text-decoration: none;
@@ -16,11 +17,12 @@ a {
 
 .home_background-item {
     width: 100%;
-    height: 100%;
-    background-size: cover;
+    aspect-ratio: 16 / 9; 
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
   }
+  
 
 .btn-slide {
     position: absolute;
@@ -72,6 +74,10 @@ a {
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 20px;
+}
+
+.home_sale-title:hover {
+    color: #f0790b;
 }
 
 @media screen and (max-width: 1024px) {

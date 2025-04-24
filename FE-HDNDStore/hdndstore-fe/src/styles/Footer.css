@@ -1,28 +1,24 @@
 .footer {
-    background: #111; 
-    color: #fff; 
-    text-align: center;
-  }
-  
-  .footer-bottom {
-    padding: 18px 0; 
-  }
-  
-  .blinking-text {
-    font-size: 16px;
-    font-weight: 300; 
-    color: #fff; 
-    animation: blink 1s infinite;
-    margin-top: 6px;
-  }
-  
-  /* Hiệu ứng nhấp nháy */
-  @keyframes blink {
-    0%, 100% {
-      opacity: 1; 
-    }
-    50% {
-      opacity: 0.7; 
-    }
-  }
-  
+  background-color: #222;
+  color: #fff;
+  padding: 6px 10%;
+}
+
+.footer-container {
+  max-width: 100%;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 280px;
+  padding: 5px 0;
+  font-size: 14px;
+  color: #ffffff;
+}

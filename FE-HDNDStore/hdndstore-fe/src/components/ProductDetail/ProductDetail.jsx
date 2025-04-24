@@ -144,14 +144,12 @@ const ChiTietSanPham = ({ product }) => {
         // Mở modal giỏ hàng
         setIsModalOpenGioHang(true);
     };
-
-    // ✅ Thêm PropTypes để xác nhận product có _id
     addToCart.propTypes = {
         product: PropTypes.shape({
-            _id: PropTypes.string.isRequired, // Bắt buộc có _id là string
-            name: PropTypes.string.isRequired, // Tên sản phẩm
-            price: PropTypes.number.isRequired, // Giá sản phẩm
-            image: PropTypes.string, // Hình ảnh (nếu có)
+            _id: PropTypes.string.isRequired, 
+            name: PropTypes.string.isRequired, 
+            price: PropTypes.number.isRequired, 
+            image: PropTypes.string, 
         }).isRequired,
     };
 
@@ -171,13 +169,11 @@ const ChiTietSanPham = ({ product }) => {
             return;
         }
 
-        // Lấy danh sách giỏ hàng của tất cả user từ localStorage
+
         const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
 
-        // Lấy giỏ hàng của user hiện tại
         const currentCart = storedCarts[userId] || [];
 
-        // Tìm sản phẩm đã tồn tại trong giỏ hàng
         const existingItemIndex = currentCart.findIndex(
             (cartItem) =>
                 cartItem.id === selectedProduct.id &&
@@ -186,10 +182,8 @@ const ChiTietSanPham = ({ product }) => {
         );
 
         if (existingItemIndex !== -1) {
-            // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1
             currentCart[existingItemIndex].quantity += 1;
         } else {
-            // Nếu chưa có, thêm sản phẩm mới với số lượng là 1
             currentCart.push({
                 ...selectedProduct,
                 color: selectedColor,
@@ -198,16 +192,11 @@ const ChiTietSanPham = ({ product }) => {
             });
         }
 
-        // Cập nhật giỏ hàng của user vào object `carts`
         storedCarts[userId] = currentCart;
 
-        // Lưu lại toàn bộ danh sách giỏ hàng vào localStorage
         localStorage.setItem("carts", JSON.stringify(storedCarts));
-
-        // Cập nhật state giỏ hàng của user hiện tại
         setCart(currentCart);
 
-        // Chuyển hướng sang trang giỏ hàng
         navigate("/cart");
     };
 
@@ -306,14 +295,14 @@ const ChiTietSanPham = ({ product }) => {
         <div >
             <Header />
 
-            <div className="container">
+            <div className="container p-2 ">
                 <div className="container-san-pham">
                     <div className="breadcum">
                         <a href="/home">Trang chủ</a> <span className="delimiter"></span>
                         <span> | </span>
                         <a href="/category">{selectedProduct.category}</a> <span className="delimiter"></span>
                         <span> | </span>
-                        <span className="present">{selectedProduct.name}</span>
+                        <span className="present" style={{fontSize: "14px"}}>{selectedProduct.name}</span>
                     </div>
 
                     <div className="container-hinh-san-pham">
@@ -423,7 +412,7 @@ const ChiTietSanPham = ({ product }) => {
                                     console.log("Mở modal");
                                     setIsModalOpen(true);
                                 }}>
-                                    Hướng dẫn tính size
+                                    HƯỚNG DẪN CHỌN SIZE
                                 </button>
 
                             </div>
@@ -441,10 +430,10 @@ const ChiTietSanPham = ({ product }) => {
                                 >
                                     <div
                                         className="modal-content"
-                                        onClick={(e) => e.stopPropagation()} // Ngăn không cho sự kiện click lan ra ngoài
+                                        onClick={(e) => e.stopPropagation()} 
                                     >
                                         <span className="close" onClick={() => setIsModalOpen(false)}>&times;</span>
-                                        <h2>Hướng dẫn tính size</h2>
+                                        <h2>HƯỚNG DẪN CHỌN SIZE</h2>
                                         <div className="huong-dan">
                                             <img src="/src/images/giaynam/tinh-size-1.jpg" alt="Hướng dẫn chọn size" />
                                             <h2>01. Vẽ khung bàn chân</h2>
@@ -525,9 +514,9 @@ const ChiTietSanPham = ({ product }) => {
                                                     <span className="mau-sac">Màu sắc</span>
                                                     <div className="so-mau-sac">
                                                         {[
-                                                            ...new Set(selectedProduct.variants?.map(variant => variant.color)) // Lấy danh sách màu không trùng lặp
+                                                            ...new Set(selectedProduct.variants?.map(variant => variant.color)) 
                                                         ].map((color, index) => {
-                                                            const backgroundColor = colorMap[color.toLowerCase()] || color; // Chuyển tên màu thành mã HEX nếu có
+                                                            const backgroundColor = colorMap[color.toLowerCase()] || color; 
                                                             return (
                                                                 <span
                                                                     key={index}
@@ -619,7 +608,6 @@ const ChiTietSanPham = ({ product }) => {
                                 <div className="btn-them-vao-gio-hang">
                                     <a href="#" id="addToCartBtn" onClick={() => {
                                         addToCart(selectedProduct);
-
                                     }}>
                                         <FaShoppingCart style={{ marginRight: "5px" }} />
                                         THÊM VÀO GIỎ HÀNG
@@ -750,7 +738,7 @@ const ChiTietSanPham = ({ product }) => {
 
                     <div className="co-the-ban-cung-thich">
 
-                        <span>CÓ THỂ BẠN CŨNG THÍCH</span>
+                        <span style={{fontSize: "20px"}}>CÓ THỂ BẠN CŨNG THÍCH</span>
                         <br /><br />
                         <div className="co-the-ban-cung-thich-item">
                             {products.map((selectedProduct) => (
@@ -764,21 +752,15 @@ const ChiTietSanPham = ({ product }) => {
                                         <span className="gia-san-pham">
                                             295.000 đ
                                         </span>
-
-
-
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <br /><br /><hr />
-
                 </div>
-                
             </div>
-
+            <br></br>
             <Hotline />
             <Footer />
         </div>

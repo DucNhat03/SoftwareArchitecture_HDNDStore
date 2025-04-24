@@ -2,8 +2,8 @@
     position: fixed;
     bottom: 25px;
     right: 15px;
-    background-color: black;
-    color: white;
+    background-color: #f0790b;
+    color: #000;
     padding: 8px;
     border-radius: 50%;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -24,8 +24,8 @@
   
   .scroll-to-top:hover {
     transform: scale(1.1);
-    background-color: aliceblue;
-    color: black;
+    background-color: black;
+    color: #f0790b;
   }
   
   /* Tooltip */

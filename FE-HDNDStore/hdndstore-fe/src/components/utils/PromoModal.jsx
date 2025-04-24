@@ -46,7 +46,7 @@ const PromoModal = () => {
         <button className="close-button" onClick={handleClose}>
           ✖
         </button>
-        <h2 className="modal-title">🎉 ƯU ĐÃI ĐẶC BIỆT 🎉</h2>
+        <h2 className="modal-title">ƯU ĐÃI ĐẶC BIỆT 🎉🎉🎉</h2>
         <img src={logo} alt="Quảng cáo" className="modal-image" />
         <p className="modal-description">
           🔥 Giảm ngay <span className="per-discout">20% </span> khi mua từ 2 sản phẩm! 🔥
