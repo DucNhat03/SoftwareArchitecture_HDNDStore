@@ -1,51 +1,167 @@
-/* Container của thông báo */
-.notifications-container {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: none;
-    position: relative;
-    top: -13vh;
-  }
-  
-  /* Danh sách thông báo */
-  .notification-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .notification-item:hover {
-    background-color: #f8f9fa;
-  }
-  
-  /* Biểu tượng chuông */
-  .notification-icon {
-    font-size: 20px;
-    color: #007bff;
-    margin-right: 10px;
-  }
-  
-  /* Nội dung thông báo */
-  .notification-content {
-    flex-grow: 1;
-  }
-  
-  /* Đánh dấu thông báo chưa đọc */
-  .unread {
-    font-weight: bold;
-    background-color: #eaf4ff;
-  }
-  
-  /* Nút xóa thông báo */
-  .delete-btn {
-    color: #ff4d4d;
-    font-size: 16px;
-  }
-  
-  .delete-btn:hover {
-    color: #cc0000;
-  }
-  
+/* styles/profile/Notifications.css */
+.notifications-section {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Header icon styling */
+.notification-header-icon {
+  position: relative;
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+/* Tab styling */
+.notification-tabs {
+  padding: 0 15px;
+}
+
+.notification-tabs .nav-link {
+  color: #6c757d;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.notification-tabs .nav-link:hover {
+  color: #495057;
+  border-bottom-color: #dee2e6;
+}
+
+.notification-tabs .nav-link.active {
+  color: #4e54c8;
+  background-color: transparent;
+  border-bottom-color: #4e54c8;
+  font-weight: 500;
+}
+
+/* Notification item styling */
+.notification-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 15px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+
+.notification-item.unread {
+  background-color: rgba(13, 110, 253, 0.05);
+  border-left-color: #4e54c8;
+}
+
+.notification-item:hover {
+  background-color: rgba(0, 0, 0, 0.025);
+}
+
+.notification-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.notification-icon-wrapper.order {
+  background-color: rgba(25, 135, 84, 0.1);
+}
+
+.notification-icon-wrapper.promotion {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.notification-icon-wrapper.product {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.notification-icon-wrapper.system {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+.notification-type-icon {
+  font-size: 1.1rem;
+}
+
+.order-icon {
+  color: #198754;
+}
+
+.promo-icon {
+  color: #ffc107;
+}
+
+.product-icon {
+  color: #0d6efd;
+}
+
+.system-icon {
+  color: #6c757d;
+}
+
+.notification-detail {
+  opacity: 0.8;
+}
+
+.time-text {
+  font-size: 0.75rem;
+}
+
+.delete-btn {
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.notification-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.empty-notifications {
+  padding: 2rem;
+}
+
+/* Scrollbar styling */
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}

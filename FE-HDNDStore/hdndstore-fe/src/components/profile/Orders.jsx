@@ -10,6 +10,10 @@ import {
   Modal,
   Button,
   Form,
+  Badge,
+  Spinner,
+  ListGroup,
+  Accordion,
 } from "react-bootstrap";
 import "../../styles/profile/Orders.css";
 import {
@@ -22,13 +26,19 @@ import {
   FaTimesCircle,
   FaExclamationCircle,
   FaEdit,
+  FaCreditCard,
+  FaCheckCircle,
+  FaRegSadTear,
+  FaSearch,
+  FaFileInvoiceDollar,
+  FaShippingFast,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Orders = () => {
   const [activeTab, setActiveTab] = useState("all");
-  const [orders, setOrders] = useState([]); // State lưu danh sách đơn hàng
+  const [orders, setOrders] = useState([]); 
   const [loading, setLoading] = useState(true);
   //Hủy đơn hàng
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -48,11 +58,27 @@ const Orders = () => {
   const [error, setError] = useState(null);
   // Danh sách các tab
   const tabs = [
-    { key: "all", label: "Tất cả" },
-    { key: "pending", label: "Chờ xác nhận" },
-    { key: "shipping", label: "Đang giao" },
-    { key: "delivered", label: "Đã giao" },
-    { key: "cancelled", label: "Đã hủy" },
+    { key: "all", label: "Tất cả", icon: <FaSearch className="me-1" /> },
+    {
+      key: "pending",
+      label: "Chờ xác nhận",
+      icon: <FaFileInvoiceDollar className="me-1" />,
+    },
+    {
+      key: "shipping",
+      label: "Đang giao",
+      icon: <FaShippingFast className="me-1" />,
+    },
+    {
+      key: "delivered",
+      label: "Đã giao",
+      icon: <FaCheckCircle className="me-1" />,
+    },
+    {
+      key: "cancelled",
+      label: "Đã hủy",
+      icon: <FaTimesCircle className="me-1" />,
+    },
   ];
 
   const handlePayment = async (total, orderId) => {
@@ -110,6 +136,7 @@ const Orders = () => {
       document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
     }
   }, [showCancelModal]);
+
   // Hiển thị modal nhập lý do hủy
   const handleShowCancelModal = (orderId) => {
     console.log("Mở modal hủy đơn:", orderId); // Debug
@@ -268,381 +295,519 @@ const Orders = () => {
     setActiveTab(key);
   };
 
+  // Hàm render badge status
+  const renderStatusBadge = (status) => {
+    switch (status) {
+      case "Chờ xác nhận":
+        return (
+          <Badge bg="warning" text="dark" className="py-2 px-3">
+            <FaFileInvoiceDollar className="me-1" /> {status}
+          </Badge>
+        );
+      case "Đang giao":
+        return (
+          <Badge bg="info" className="py-2 px-3">
+            <FaShippingFast className="me-1" /> {status}
+          </Badge>
+        );
+      case "Đã giao":
+        return (
+          <Badge bg="success" className="py-2 px-3">
+            <FaCheckCircle className="me-1" /> {status}
+          </Badge>
+        );
+      case "Đã hủy":
+        return (
+          <Badge bg="danger" className="py-2 px-3">
+            <FaTimesCircle className="me-1" /> {status}
+          </Badge>
+        );
+      default:
+        return (
+          <Badge bg="secondary" className="py-2 px-3">
+            {status}
+          </Badge>
+        );
+    }
+  };
+
+  // Hàm render payment badge
+  const renderPaymentBadge = (status) => {
+    return status === "Đã thanh toán" ? (
+      <Badge bg="success" className="py-2 px-3">
+        <FaCheckCircle className="me-1" /> Đã thanh toán
+      </Badge>
+    ) : (
+      <Badge bg="light" text="dark" className="py-2 px-3">
+        <FaCreditCard className="me-1" /> Chưa thanh toán
+      </Badge>
+    );
+  };
+
   return (
-    <Container className="orders-container card p-4">
+    <Container className="orders-container card p-4 shadow-sm rounded">
+      <h4 className="mb-4 border-bottom pb-3">Quản lý đơn hàng</h4>
+
       <Tabs
         activeKey={activeTab}
         onSelect={handleTabChange}
-        className="orders-tabs"
+        className="orders-tabs mb-4 nav-tabs-custom"
+        fill
       >
         {tabs.map((tab) => (
-          <Tab key={tab.key} eventKey={tab.key} title={tab.label}>
+          <Tab
+            key={tab.key}
+            eventKey={tab.key}
+            title={
+              <span>
+                {tab.icon} {tab.label}
+              </span>
+            }
+          >
             {loading ? (
-              <p className="text-center mt-3">Đang tải đơn hàng...</p>
+              <div className="text-center my-5 py-5">
+                <Spinner animation="border" variant="primary" />
+                <p className="mt-3">Đang tải đơn hàng...</p>
+              </div>
             ) : filteredOrders.length > 0 ? (
-              <Row className="mt-4 order-container">
+              <Row className="mt-3 order-container">
                 {filteredOrders.map((order) => (
-                  <Card key={order._id} className="order-card">
-                    <span
-                      className="trang-thai-don-hang"
-                      style={{
-                        color: order.status === "Đã hủy" ? "red" : "black",
-                      }}
-                    >
-                      {order.status === "Đã hủy" ? (
-                        <FaTimesCircle />
-                      ) : (
-                        <FaTruck />
-                      )}{" "}
-                      Trạng thái:
-                      <span className="trang-thai-don-hang-2">
-                        {order.status}
-                      </span>
-                    </span>
+                  <Card
+                    key={order._id}
+                    className="order-card mb-4 shadow-sm border-0"
+                  >
+                    <Card.Header className="d-flex justify-content-between align-items-center bg-light py-2 ">
+                      <div>
+                        <h5 className="mb-0 fw-bold">
+                          <FaBox className="me-2" />
+                          Đơn hàng #{order._id.substring(0, 50)}
+                        </h5>
+                        <small className="text-muted">
+                          <FaCalendarAlt className="me-1" />
+                          {new Intl.DateTimeFormat("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }).format(new Date(order.orderDate))}
+                        </small>
+                      </div>
+                      <div className="d-flex gap-2">
+                        {renderStatusBadge(order.status)}
+                        {renderPaymentBadge(order.statusPayment)}
+                      </div>
+                    </Card.Header>
 
                     <Card.Body>
-                      <Card.Title className="don-hang">
-                        <FaBox /> Đơn hàng #{order._id}
-                      </Card.Title>
-                      <p className="ngay-dat">
-                        <FaCalendarAlt /> Thời gian đặt:{" "}
-                        {new Intl.DateTimeFormat("vi-VN", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        }).format(new Date(order.orderDate))}
-                      </p>
-
                       {order.ngayHuy && order.lyDoHuy && (
-                        <div className="thong-tin-huy">
-                          <p className="ngay-huy">
-                            <FaCalendarAlt /> Thời gian hủy:{" "}
-                            {new Intl.DateTimeFormat("vi-VN", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              second: "2-digit",
-                            }).format(new Date(order.ngayHuy))}
-                          </p>
-                          <p className="ly-do-huy">
-                            <FaExclamationCircle /> Lý do hủy: {order.lyDoHuy}
-                          </p>
+                        <div className="alert alert-danger mb-3">
+                          <div className="d-flex align-items-center">
+                            <FaExclamationCircle
+                              className="me-2"
+                              size="1.5em"
+                            />
+                            <div>
+                              <h6 className="mb-1">Đơn hàng đã bị hủy</h6>
+                              <p className="mb-1">
+                                <strong>Lý do:</strong> {order.lyDoHuy}
+                              </p>
+                              <small className="text-muted">
+                                <FaCalendarAlt className="me-1" /> Thời gian
+                                hủy:{" "}
+                                {new Intl.DateTimeFormat("vi-VN", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }).format(new Date(order.ngayHuy))}
+                              </small>
+                            </div>
+                          </div>
                         </div>
                       )}
-                      {/* Hiển thị địa chỉ giao hàng */}
-                      <p>Địa chỉ giao hàng:</p>
-                      {order.shippingAddress ? (
-                        <div className="shipping-info">
-                          <p>
-                            <FaUser /> Người nhận:{" "}
-                            {order.shippingAddress.fullName}
-                          </p>
-                          <p>
-                            <FaPhone /> SĐT: {order.shippingAddress.phone}
-                          </p>
-                          <p>
-                            <FaMapMarkerAlt /> Địa chỉ:{" "}
-                            {order.shippingAddress.address.street},{" "}
-                            {order.shippingAddress.address.ward},{" "}
-                            {order.shippingAddress.address.district},{" "}
-                            {order.shippingAddress.address.city}
-                          </p>
 
-                          {/* Hiển thị nút chỉnh sửa nếu trạng thái đơn hàng là "Chờ xác nhận" */}
-                          {order.status === "Chờ xác nhận" && (
-                            <Button
-                              variant="warning"
-                              className="edit-address-button"
-                              onClick={() => handleEditAddress(order)}
-                            >
-                              <FaEdit /> Chỉnh sửa địa chỉ
-                            </Button>
-                          )}
-                        </div>
-                      ) : (
-                        <p>Không có thông tin địa chỉ giao hàng</p>
-                      )}
+                      <Accordion defaultActiveKey="0" className="mb-3">
+                        <Accordion.Item eventKey="0">
+                          <Accordion.Header>
+                            <FaUser className="me-2" /> Thông tin giao hàng
+                          </Accordion.Header>
+                          <Accordion.Body>
+                            {order.shippingAddress ? (
+                              <Card className="border-0 bg-light mt-2">
+                                <Card.Body>
+                                  <ListGroup
+                                    variant="flush"
+                                    className="bg-transparent"
+                                  >
+                                    <ListGroup.Item className="d-flex justify-content-between align-items-center bg-transparent border-0 py-1">
+                                      <span className="text-muted">
+                                        <FaUser className="me-2" /> Người nhận:
+                                      </span>
+                                      <span className="fw-bold">
+                                        {order.shippingAddress.fullName}
+                                      </span>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item className="d-flex justify-content-between align-items-center bg-transparent border-0 py-1">
+                                      <span className="text-muted">
+                                        <FaPhone className="me-2" /> Số điện
+                                        thoại:
+                                      </span>
+                                      <span className="fw-bold">
+                                        {order.shippingAddress.phone}
+                                      </span>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item className="d-flex justify-content-between align-items-center bg-transparent border-0 py-1">
+                                      <span className="text-muted">
+                                        <FaMapMarkerAlt className="me-2" /> Địa
+                                        chỉ:
+                                      </span>
+                                      <span className="fw-bold text-end">
+                                        {order.shippingAddress.address.street},{" "}
+                                        {order.shippingAddress.address.ward},{" "}
+                                        {order.shippingAddress.address.district}
+                                        , {order.shippingAddress.address.city}
+                                      </span>
+                                    </ListGroup.Item>
+                                  </ListGroup>
 
-                      {/* Modal chỉnh sửa địa chỉ giao hàng */}
-                      <Modal
-                        show={showEditModal}
-                        onHide={() => setShowEditModal(false)}
-                        centered
-                      >
-                        <Modal.Header closeButton>
-                          {/* <Modal.Title className="modal-title-small">Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
-                           */}
-                          <p className="dia-chi-title">
-                            Chỉnh sửa địa chỉ nhận hàng
-                          </p>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form>
-                            <Form.Group>
-                              <Form.Label>Người nhận</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.fullName || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    fullName: e.target.value || "",
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group>
-                              <Form.Label>Số điện thoại</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.phone || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    phone: e.target.value || "",
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group>
-                              <Form.Label>Thành phố</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.address?.city || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    address: {
-                                      ...receiverInfo.address,
-                                      city: e.target.value || "",
-                                    },
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group>
-                              <Form.Label>Quận/Huyện</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.address?.district || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    address: {
-                                      ...receiverInfo.address,
-                                      district: e.target.value || "",
-                                    },
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group>
-                              <Form.Label>Phường/Xã</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.address?.ward || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    address: {
-                                      ...receiverInfo.address,
-                                      ward: e.target.value || "",
-                                    },
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group>
-                              <Form.Label>Địa chỉ cụ thể</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={receiverInfo?.address?.street || ""}
-                                onChange={(e) =>
-                                  setReceiverInfo({
-                                    ...receiverInfo,
-                                    address: {
-                                      ...receiverInfo.address,
-                                      street: e.target.value || "",
-                                    },
-                                  })
-                                }
-                              />
-                            </Form.Group>
-                          </Form>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button
-                            variant="secondary"
-                            onClick={() => setShowEditModal(false)}
-                          >
-                            Hủy
-                          </Button>
-                          <Button
-                            variant="primary"
-                            onClick={() => {
-                              console.log("Nút Lưu đã được bấm!"); // Kiểm tra xem nút có hoạt động không
-                              handleSaveReceiverInfo();
-                            }}
-                          >
-                            Lưu
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
+                                  {order.status === "Chờ xác nhận" && (
+                                    <div className="text-end mt-2">
+                                      <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={() => handleEditAddress(order)}
+                                      >
+                                        <FaEdit className="me-1" /> Chỉnh sửa
+                                        địa chỉ
+                                      </Button>
+                                    </div>
+                                  )}
+                                </Card.Body>
+                              </Card>
+                            ) : (
+                              <div className="alert alert-warning">
+                                Không có thông tin địa chỉ giao hàng
+                              </div>
+                            )}
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      </Accordion>
 
-                      <p>
-                        <strong>Sản phẩm trong đơn hàng:</strong>
-                      </p>
+                      <h6 className="mb-3 fw-bold border-bottom pb-2">
+                        Sản phẩm
+                      </h6>
+
                       {order.cartItems.length > 0 ? (
-                        <ul>
+                        <div className="product-list">
                           {order.cartItems.map((item, index) => (
-                            <li key={index}>
+                            <div
+                              key={index}
+                              className="product-item mb-3 p-3 border rounded d-flex"
+                            >
                               <img
                                 src={
                                   item.image?.[0] ||
                                   "https://via.placeholder.com/60"
                                 }
                                 alt={item.name}
+                                className="product-image rounded me-3"
+                                style={{
+                                  width: "70px",
+                                  height: "70px",
+                                  objectFit: "cover",
+                                }}
                               />
-                              <div className="product-info-order">
-                                <span className="product-name">
-                                  {item.name}
-                                </span>
-                                <span className="product-description">
-                                  {item.description}
-                                </span>
+                              <div className="product-details w-100">
+                                <h6 className="mb-1">{item.name}</h6>
+                                <p
+                                  className="text-muted small mb-1 text-wrap"
+                                  style={{
+                                    wordBreak: "break-word",
+                                    whiteSpace: "pre-wrap",
+                                  }}
+                                >
+                                  {item.description?.substring(0, 1000)}
+                                </p>
 
-                                {/* Hiển thị tất cả màu sắc và size */}
-                                <span className="phan-loai">
-                                  Phân loại:{" "}
-                                  {item.variants?.length > 0
-                                    ? item.variants.map((v, i) => (
-                                        <div key={i}>
-                                          <span>
-                                            {v.color} - {v.size} (Số lượng:{" "}
-                                            {v.stock})
-                                          </span>
-                                        </div>
-                                      ))
-                                    : "Không có thông tin"}
-                                </span>
-                                <span className="product-price">
-                                  Giá: {item.price.toLocaleString()} VND
-                                </span>
+                                <div className="d-flex justify-content-between align-items-end mt-2">
+                                  <div>
+                                    {item.variants?.length > 0 && (
+                                      <div className="variants">
+                                        {item.variants.map((v, i) => (
+                                          <Badge
+                                            key={i}
+                                            bg="light"
+                                            text="dark"
+                                            className="me-2 mb-1"
+                                          >
+                                            {v.color} - {v.size} (SL: {v.stock})
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-primary fw-bold">
+                                    {item.price.toLocaleString()} đ
+                                  </span>
+                                </div>
                               </div>
-                            </li>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       ) : (
-                        <p>Không có sản phẩm trong giỏ hàng</p>
+                        <div className="alert alert-warning">
+                          Không có sản phẩm trong đơn hàng
+                        </div>
                       )}
                     </Card.Body>
 
-                    <p className="total-amount">
-                      Tổng số tiền:{" "}
-                      <strong className="total-vnd">
-                        {order.finalAmount.toLocaleString()} VND
-                      </strong>
-                    </p>
-
-                    {/* Modal hủy đơn hàng */}
-                    <Modal
-                      show={showCancelModal}
-                      onHide={() => setShowCancelModal(false)}
-                      animation={false}
-                      backdrop={false}
-                      centered
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Hủy đơn hàng</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
-                        <Form.Control
-                          type="text"
-                          placeholder="Nhập lý do hủy"
-                          value={cancelReason}
-                          onChange={(e) => setCancelReason(e.target.value)}
-                        />
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => setShowCancelModal(false)}
-                        >
-                          Đóng
-                        </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => handleCancelOrder(selectedOrderId)}
-                        >
-                          Xác nhận hủy
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-
-                    {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
-                    {order.status !== "Đã hủy" &&
-                      order.status !== "Đã giao" &&
-                      order.status !== "Đang giao" &&
-                      order.statusPayment !== "Đã thanh toán" && (
-                        <div className="d-flex justify-content-between">
-                          <Button
-                            variant="danger"
-                            className="cancel-button"
-                            onClick={() => handleShowCancelModal(order._id)}
-                          >
-                            Hủy đơn hàng
-                          </Button>
-                          <Button
-                            variant="success"
-                            className="pay-button"
-                            onClick={() => {
-                              handlePayment(order.finalAmount, order._id);
-                              toast.success(
-                                "Đang chuyển đến trang thanh toán!",
-                                {
-                                  position: "top-right",
-                                  autoClose: 2000,
-                                }
-                              );
-                            }}
-                          >
-                            Thanh toán
-                          </Button>
+                    <Card.Footer className="bg-light">
+                      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div className="mb-3 mb-md-0">
+                          <h5 className="mb-0 d-flex align-items-center">
+                            <span className="text-muted me-2">Tổng tiền:</span>
+                            <span className="text-danger fw-bold">
+                              {order.finalAmount.toLocaleString()} đ
+                            </span>
+                          </h5>
                         </div>
-                      )}
 
-                    {/* Hiển thị "Đã thanh toán" nếu đơn hàng đã thanh toán */}
-                    {order.statusPayment === "Đã thanh toán" && (
-                      <div className="d-flex justify-content-between">
-                        <span style={{ fontSize: 18, color: "green" }}>
-                          Đã thanh toán
-                        </span>
+                        <div className="d-flex gap-2">
+                          {/* Chỉ hiển thị nút nếu đơn hàng chưa bị hủy */}
+                          {order.status !== "Đã hủy" &&
+                            order.status !== "Đã giao" &&
+                            order.status !== "Đang giao" &&
+                            order.statusPayment !== "Đã thanh toán" && (
+                              <>
+                                <Button
+                                  variant="outline-danger"
+                                  onClick={() =>
+                                    handleShowCancelModal(order._id)
+                                  }
+                                >
+                                  <FaTimesCircle className="me-1" /> Hủy đơn
+                                </Button>
+                                <Button
+                                  variant="success"
+                                  onClick={() => {
+                                    handlePayment(order.finalAmount, order._id);
+                                    toast.success(
+                                      "Đang chuyển đến trang thanh toán!",
+                                      {
+                                        position: "top-right",
+                                        autoClose: 2000,
+                                      }
+                                    );
+                                  }}
+                                >
+                                  <FaCreditCard className="me-1" /> Thanh toán
+                                </Button>
+                              </>
+                            )}
+                        </div>
                       </div>
-                    )}
+                    </Card.Footer>
                   </Card>
                 ))}
               </Row>
             ) : (
-              <Row className="justify-content-center mt-4">
-                <Col md={6} className="text-center">
-                  <img
-                    src="https://static.vecteezy.com/system/resources/thumbnails/020/696/242/small_2x/3d-minimal-customer-order-online-shopping-concept-customer-service-concept-order-clipboard-with-a-checkmark-3d-illustration-png.png"
-                    alt="No Orders"
-                    className="empty-orders-img"
-                  />
-                  <p className="mt-3">Chưa có đơn hàng</p>
-                </Col>
-              </Row>
+              <div className="text-center py-5 my-4 border rounded bg-light">
+                <FaRegSadTear size="3em" className="text-muted mb-3" />
+                <h5>Không có đơn hàng nào</h5>
+                <p className="text-muted">
+                  Bạn chưa có đơn hàng nào trong danh mục này
+                </p>
+                <Button variant="primary">Mua sắm ngay</Button>
+              </div>
             )}
           </Tab>
         ))}
       </Tabs>
+
+      {/* Modal chỉnh sửa địa chỉ giao hàng */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {error && <div className="alert alert-danger">{error}</div>}
+          <Form>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Người nhận</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={receiverInfo?.fullName || ""}
+                    onChange={(e) =>
+                      setReceiverInfo({
+                        ...receiverInfo,
+                        fullName: e.target.value || "",
+                      })
+                    }
+                    placeholder="Nhập tên người nhận"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Số điện thoại</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={receiverInfo?.phone || ""}
+                    onChange={(e) =>
+                      setReceiverInfo({
+                        ...receiverInfo,
+                        phone: e.target.value || "",
+                      })
+                    }
+                    placeholder="Nhập số điện thoại"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Địa chỉ cụ thể</Form.Label>
+              <Form.Control
+                type="text"
+                value={receiverInfo?.address?.street || ""}
+                onChange={(e) =>
+                  setReceiverInfo({
+                    ...receiverInfo,
+                    address: {
+                      ...receiverInfo.address,
+                      street: e.target.value || "",
+                    },
+                  })
+                }
+                placeholder="Ví dụ: 123 Đường ABC"
+              />
+            </Form.Group>
+
+            <Row>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Phường/Xã</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={receiverInfo?.address?.ward || ""}
+                    onChange={(e) =>
+                      setReceiverInfo({
+                        ...receiverInfo,
+                        address: {
+                          ...receiverInfo.address,
+                          ward: e.target.value || "",
+                        },
+                      })
+                    }
+                    placeholder="Nhập phường/xã"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Quận/Huyện</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={receiverInfo?.address?.district || ""}
+                    onChange={(e) =>
+                      setReceiverInfo({
+                        ...receiverInfo,
+                        address: {
+                          ...receiverInfo.address,
+                          district: e.target.value || "",
+                        },
+                      })
+                    }
+                    placeholder="Nhập quận/huyện"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Tỉnh/Thành phố</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={receiverInfo?.address?.city || ""}
+                    onChange={(e) =>
+                      setReceiverInfo({
+                        ...receiverInfo,
+                        address: {
+                          ...receiverInfo.address,
+                          city: e.target.value || "",
+                        },
+                      })
+                    }
+                    placeholder="Nhập thành phố"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-secondary"
+            onClick={() => setShowEditModal(false)}
+          >
+            Hủy
+          </Button>
+          <Button variant="primary" onClick={handleSaveReceiverInfo}>
+            <FaCheckCircle className="me-1" /> Lưu thay đổi
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal hủy đơn hàng */}
+      <Modal
+        show={showCancelModal}
+        onHide={() => setShowCancelModal(false)}
+        centered
+        backdrop="static"
+      >
+        <Modal.Header closeButton className="bg-danger text-white">
+          <Modal.Title>Xác nhận hủy đơn hàng</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="alert alert-warning">
+            <FaExclamationCircle className="me-2" /> Sau khi hủy, đơn hàng sẽ
+            không thể khôi phục lại.
+          </div>
+          <Form.Group>
+            <Form.Label>Vui lòng cho biết lý do hủy đơn:</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Ví dụ: Tôi muốn thay đổi sản phẩm..."
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-secondary"
+            onClick={() => setShowCancelModal(false)}
+          >
+            Quay lại
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => handleCancelOrder(selectedOrderId)}
+            disabled={!cancelReason.trim()}
+          >
+            <FaTimesCircle className="me-1" /> Xác nhận hủy
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
