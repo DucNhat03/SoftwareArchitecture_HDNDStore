@@ -497,7 +497,7 @@ const ProfileForm = () => {
             <Col lg={4}>
               <Card
                 className="text-center shadow-sm "
-                style={{ marginTop: "-50%" }}
+                style={{ marginTop: "-40%" }}
               >
                 <Card.Body className="d-flex flex-column justify-content-center py-5">
                   <div className="position-relative mx-auto mb-4">

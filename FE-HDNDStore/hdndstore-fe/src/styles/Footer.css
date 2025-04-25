@@ -1,24 +1,150 @@
 .footer {
-  background-color: #222;
+  background-color: #0a0f15;
   color: #fff;
-  padding: 6px 10%;
+  padding: 20px 5%;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .footer-container {
-  max-width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .footer-content {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 30px;
 }
 
 .footer-column {
   flex: 1;
-  min-width: 280px;
-  padding: 5px 0;
+  min-width: 250px;
+  padding: 10px 0;
+  line-height: 1.8;
+}
+
+.footer-info {
   font-size: 14px;
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-info strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.info-icon {
+  color: #3b82f6;
+  margin-right: 10px;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.footer-social {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.footer-social-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.footer-social-icon:hover {
+  background: #3b82f6;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.footer-payments {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.payment-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 25px;
+  margin-left: 245px;
+}
+
+.payment-icon {
+  height: 40px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.payment-icon:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 0, 128, 0.3);
+  cursor: pointer;
+}
+
+.footer-copyright {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: right;
+  margin-top: 10px;
+}
+
+.footer-copyright span {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 15px 20px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  
+  .footer-column {
+    min-width: 100%;
+  }
+  
+  .footer-social {
+    justify-content: flex-start;
+  }
+  
+  .footer-payments {
+    justify-content: flex-start;
+    margin-bottom: 15px;
+  }
+  
+  .footer-copyright {
+    text-align: left;
+  }
 }
