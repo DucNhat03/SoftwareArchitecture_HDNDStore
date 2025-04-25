@@ -2,216 +2,458 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import HotLine from "../components/layout/Hotline.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/profile/Home.css";
-import "../script.js";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import React, { useState, useEffect } from "react";
+import "../styles/Home.css";
+import {
+  FaChevronRight,
+  FaChevronLeft,
+  FaShoppingBag,
+  FaHeart,
+  FaEye,
+  FaFire,
+  FaStar,
+  FaTags,
+  FaArrowRight,
+  FaMapMarkerAlt,
+  FaTruck,
+  FaPhoneAlt,
+  FaRegClock,
+} from "react-icons/fa";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Badge,
+  Spinner,
+} from "react-bootstrap";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const ProductCard = ({ img, title, price }) => {
+const ProductCard = ({ product, isNew, discount }) => {
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Debug what's actually in the product object
+  console.log("Product received by ProductCard:", product);
+
+  // Extract image correctly - handle both string and array formats
+  let img;
+  if (
+    product.image &&
+    Array.isArray(product.image) &&
+    product.image.length > 0
+  ) {
+    img = product.image[0];
+  } else if (product.img) {
+    img = product.img;
+  } else {
+    img = "https://via.placeholder.com/300x300?text=No+Image";
+  }
+
+  // Extract title and price with fallbacks
+  const title = product.name || product.title || "Product Name";
+  const price = product.price || 0;
+
+  // Format price correctly
+  const displayPrice =
+    typeof price === "number"
+      ? new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(price)
+      : price;
+
+  const handleClick = () => {
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
+    navigate("/chi-tiet-san-pham");
+  };
+
   return (
-    <div
-      className="product-card m-0 card p-0"
-      onClick={() => navigate(`/chi-tiet-san-pham`)}
-      style={{ cursor: "pointer" }}
+    <Card
+      className="product-card border-0 shadow-sm h-100"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <a href="#">
-        <img className="product-img card-img-top" src={img} alt={title} />
-        <div className="card-body">
-          <p className="card-title my-1 p-1">{title}</p>
-          <p
-            className="card-price m-0 p-0 text-center"
-            style={{ fontWeight: "bold", fontSize: 18 }}
-          >
-            {price}
-          </p>
-          <div className="choose-color d-flex justify-content-center mt-2">
-            <div className="card-product_color bg-light active"></div>
-            <div className="card-product_color bg-primary"></div>
-            <div className="card-product_color bg-secondary"></div>
+      {isNew && (
+        <Badge bg="primary" className="product-badge new-badge">
+          Mới
+        </Badge>
+      )}
+
+      {discount && (
+        <Badge bg="danger" className="product-badge sale-badge">
+          -{discount}%
+        </Badge>
+      )}
+
+      <div className="product-img-container">
+        <Card.Img
+          variant="top"
+          src={img}
+          alt={title}
+          className="product-img"
+          onClick={handleClick}
+          onError={(e) => {
+            e.target.src =
+              "https://via.placeholder.com/300x300?text=Image+Error";
+          }}
+        />
+
+        {isHovered && (
+          <div className="product-actions">
+            <Button
+              variant="light"
+              className="product-action-btn"
+              title="Thêm vào giỏ hàng"
+            >
+              <FaShoppingBag />
+            </Button>
+            <Button
+              variant="light"
+              className="product-action-btn"
+              title="Yêu thích"
+            >
+              <FaHeart />
+            </Button>
+            <Button
+              variant="light"
+              className="product-action-btn"
+              title="Xem nhanh"
+              onClick={handleClick}
+            >
+              <FaEye />
+            </Button>
           </div>
+        )}
+      </div>
+
+      <Card.Body className="p-3">
+        <div className="product-rating">
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              className={
+                i < (product.rating || 4) ? "rating-star filled" : "rating-star"
+              }
+              size={12}
+            />
+          ))}
+          <small className="ms-1 rating-count">(24)</small>
         </div>
-      </a>
-    </div>
-  );
-};
 
-const productx = [
-  {
-    img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
-    title:
-      "Dép Nữ MWC 8346 - Dép Nữ Quai Ngang Bản To Đính Nơ Phối Khóa Chữ Xinh Xắn, Thời Trang.",
-    price: "250.000đ",
-  },
-  {
-    img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/04/z6092365614579_f62dc01f434003a9427af6c017ce3d3d.jpg",
-    title:
-      "Giày Thể Thao Nữ MWC A205 - Giày Thể Thao Nữ Đế Cao Siêu Hack Dáng, Thể Thao Nữ Kiểu Dáng Sneaker Trẻ Trung, Năng Động, Thời Trang.",
-    price: "295.000đ",
-  },
-  {
-    img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/06/z6095835436711_180c834e94a1915d9451b05482771b7f.jpg",
-    title:
-      "Giày Sandal Nữ MWC E144 - Sandal Nữ 2 Quai Ngang Phối Lót Dán Thanh Lịch, Sandal Nữ Đế Đúc Siêu Bền Đẹp, Thời Trang.",
-    price: "250.000đ",
-  },
-  {
-    img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/11/z6119144407944_24a4cb6ac285456b09483848b9b45a51.jpg",
-    title:
-      "Giày Sandal Nữ MWC E146 - Sandal Quai Tròn Mảnh Ngang Chéo Cách Điệu, Sandal Đế Cao 4cm Siêu Hack Dáng Năng Động, Trẻ Trung.",
-    price: "250.000đ",
-  },
-];
+        <Card.Title className="product-title" onClick={handleClick}>
+          {title}
+        </Card.Title>
 
-const ListItem = ({ name, price, image, description }) => {
-  // Định dạng giá theo VND
-  const formattedPrice = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(price);
-
-  return (
-    <div className="col-sm-3 sale-product">
-      <div className="card product-card">
-        <a href="/chi-tiet-san-pham">
-          <img className="card-img-top product-img" src={image} alt={name} />
-          <div className="card-body">
-            <p className="card-title my-1 p-0">
-              {name} - {description}
-            </p>
-            <p className="card-price text-center m-0 p-0 fw-bold">
-              {formattedPrice}
-            </p>
-            <div className="choose-color d-flex justify-content-center mt-2">
-              <div className="card-product_color bg-dark"></div>
-              <div className="card-product_color bg-secondary"></div>
-            </div>
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <div className="color-options">
+            {/* Show actual color options if available */}
+            {product.variants &&
+            Array.isArray(product.variants) &&
+            product.variants.length > 0 ? (
+              product.variants.slice(0, 3).map((variant, idx) => (
+                <span
+                  key={idx}
+                  className="color-dot"
+                  style={{
+                    backgroundColor:
+                      variant.color.toLowerCase() === "đen"
+                        ? "black"
+                        : variant.color.toLowerCase() === "trắng"
+                        ? "white"
+                        : variant.color.toLowerCase() === "xanh"
+                        ? "blue"
+                        : "#ddd",
+                    border:
+                      variant.color.toLowerCase() === "trắng"
+                        ? "1px solid #ddd"
+                        : "none",
+                  }}
+                ></span>
+              ))
+            ) : (
+              <>
+                <span className="color-dot bg-light border"></span>
+                <span className="color-dot bg-dark"></span>
+                <span className="color-dot bg-primary"></span>
+              </>
+            )}
           </div>
-        </a>
-      </div>
-    </div>
+
+          <div className="product-price">{displayPrice}</div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 
-const ItemList = ({ title, items }) => {
+const SectionHeading = ({ title, viewAllLink }) => (
+  <div className="section-heading d-flex justify-content-between align-items-center mb-4">
+    <h2 className="section-title">{title}</h2>
+    {viewAllLink && (
+      <a href={viewAllLink} className="view-all-link">
+        Xem tất cả <FaArrowRight className="ms-1" size={12} />
+      </a>
+    )}
+  </div>
+);
+
+const ItemList = ({ title, items, viewAllLink }) => {
+  // Add more detailed logging
+  console.log(`ItemList ${title} received items:`, items);
+
+  // Special message when items array exists but is empty
+  if (Array.isArray(items) && items.length === 0) {
+    return (
+      <Container className="pb-4">
+        <SectionHeading title={title} viewAllLink={viewAllLink} />
+        <div className="text-center py-5">
+          <p className="text-muted">
+            Không có sản phẩm nào trong danh mục này.
+          </p>
+        </div>
+      </Container>
+    );
+  }
+
+  // Loading state when items is null/undefined
+  if (!items) {
+    return (
+      <Container className="pb-4">
+        <SectionHeading title={title} viewAllLink={viewAllLink} />
+        <div className="text-center py-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-3">Đang tải sản phẩm...</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
-    <div className="container-fluid">
-      <p
-        className="text-secondary my-5 text-center text-uppercase"
-        style={{
-          fontSize: "1.5rem",
-          color: "#e63946",
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          borderBottom: "2px solidrgb(100, 80, 82)",
-        }}
-      >
-        {title}
-      </p>
-      <div className="row">
-        {items.map((item) => (
-          <ListItem key={item.id} {...item} />
-        ))}
-      </div>
-    </div>
+    <section className="product-section mb-5">
+      <Container className="pb-4">
+        <SectionHeading title={title} viewAllLink={viewAllLink} />
+        <Row>
+          {items.map((item, index) => (
+            <Col
+              xs={6}
+              md={3}
+              key={item.id || item._id || index}
+              className="mb-2 mt-4"
+            >
+              <ProductCard
+                product={item}
+                isNew={index % 3 === 0}
+                discount={index % 4 === 0 ? 15 : null}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </section>
   );
 };
 
-const Home = () => {
-  const [caoGotNu, setcaoGotNu] = useState([]);
-  const [giayLuoi, setGiayLuoi] = useState([]);
-  const [Balo, setBalo] = useState([]);
-  const [SandalNam, setSandalNam] = useState([]);
-  const [GiayNam, setGiayNam] = useState([]);
 
-  // Gọi API để lấy danh sách sản phẩm
-  useEffect(() => {
-    axios
-      .get(
-        "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20cao%20g%C3%B3t"
-      )
-      .then((response) => {
-        const firstFourProducts = response.data.slice(0, 4);
-        setcaoGotNu(firstFourProducts);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-  }, []);
+const FeaturedCategories = () => {
+  const categories = [
+    {
+      id: 1,
+      name: "Giày Nữ",
+      image:
+        "https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=0&FileInput=/Resources/Product/2024/12/26/z6166903262125-de559018a1bdd8144b94c12b91a1b09abd3111d4-d9f2-4eab-addc-c91b966f57ed.jpg",
+      count: 120,
+      link: "/category?for=women",
+    },
+    {
+      id: 2,
+      name: "Giày Nam",
+      image:
+        "https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=0&FileInput=/Resources/Product/2024/07/28/z5675570332315_4065b624dda274375779934cda756cdf%20(1).jpg",
+      count: 85,
+      link: "/category?for=men",
+    },
+    {
+      id: 3,
+      name: "Sandal & Dép",
+      image:
+        "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=//Upload/2022/03/z3262734596830-9d62acf46043ab931c61d7909da7f239.jpg",
+      count: 64,
+      link: "/category?type=sandal",
+    },
+    {
+      id: 4,
+      name: "Phụ Kiện",
+      image:
+        "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=//Upload/2022/02/z3215035913919-3d1e0a2a97c7e0208089d32f52f14c3a.jpg",
+      count: 100,
+      link: "/category?type=accessories",
+    },
+  ];
 
-  useEffect(() => {
-    axios
-      .get(
-        "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20l%C6%B0%E1%BB%9Di"
-      )
-      .then((response) => {
-        setGiayLuoi(response.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-  }, []);
+  return (
+    <section className="featured-categories py-0 my-0">
+  <Container className="pb-4">
+    <SectionHeading title="Danh Mục Nổi Bật" />
+    <Row>
+      {categories.map((category) => (
+        <Col md={3} sm={6} className="mb-4" key={category.id}>
+          <a href={category.link} className="category-card-link">
+            <div className="category-card h-100">
+              <div className="category-image">
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                />
+              </div>
+              <div className="category-content">
+                <h3>{category.name}</h3>
+                <span className="category-count">
+                  {category.count} sản phẩm
+                </span>
+                <Button variant="outline-light" size="sm" className="mt-2">
+                  Khám phá
+                </Button>
+              </div>
+            </div>
+          </a>
+        </Col>
+      ))}
+    </Row>
+  </Container>
+</section>
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:5002/products/all/category?category=Balo")
-      .then((response) => {
-        setBalo(response.data);
-        console.log("Danh sách sản phẩm:", Balo);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-  }, []);
+  );
+  
+};
 
-  useEffect(() => {
-    axios
-      .get(
-        "http://localhost:5002/products/all/category?category=SandalDep%20Nam"
-      )
-      .then((response) => {
-        setSandalNam(response.data);
-        console.log("Danh sách sản phẩm:", SandalNam);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-  }, []);
+const PromoBanner = () => (
+  <section className="promo-banner" style={{ marginTop: "-4%" }}>
+    <Container>
+      <Row className="align-items-center">
+        <Col md={6} className="mb-4 mb-md-0">
+          <div className="promo-content">
+            <Badge bg="danger" className="mb-3">
+              <FaTags className="me-1" /> Hot Sale
+            </Badge>
+            <h2 className="mb-3">Giảm Giá Lên Đến 50%</h2>
+            <p className="mb-4">
+              Khám phá bộ sưu tập giày dép mới nhất với nhiều mẫu mã đa dạng và
+              phong cách. Cơ hội tuyệt vời để sở hữu những sản phẩm chất lượng
+              với giá ưu đãi.
+            </p>
+            <Button variant="primary" size="lg">
+              Mua ngay
+            </Button>
+          </div>
+        </Col>
+        <Col md={6}>
+          <img
+            src="https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=1550&FileInput=/Resources/Silde/2024/12/25/IMG_5218.JPG"
+            className="img-fluid rounded"
+            alt="Promotion"
+          />
+        </Col>
+      </Row>
+    </Container>
+  </section>
+);
 
-  useEffect(() => {
-    axios
-      .get(
-        "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20th%E1%BB%83%20thao"
-      )
-      .then((response) => {
-        const first4product = response.data.slice(0, 4);
-        setGiayNam(first4product);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      });
-  }, []);
+const StoreServices = () => {
+  const services = [
+    {
+      icon: <FaTruck />,
+      title: "Miễn Phí Vận Chuyển",
+      description: "Cho đơn hàng từ 500.000đ",
+    },
+    {
+      icon: <FaRegClock />,
+      title: "Đổi Trả 30 Ngày",
+      description: "Nếu sản phẩm có lỗi",
+    },
+    {
+      icon: <FaPhoneAlt />,
+      title: "Hỗ Trợ 24/7",
+      description: "Hotline: 039.799.6969",
+    },
+    {
+      icon: <FaMapMarkerAlt />,
+      title: "Cửa Hàng",
+      description: "Hệ thống cửa hàng trên toàn quốc",
+    },
+  ];
+
+  return (
+    <section className="store-services " style={{ marginTop: "-4%" }}>
+      <Container>
+        <Row>
+          {services.map((service, index) => (
+            <Col md={3} sm={6} className="mb-2" key={index}>
+              <div className="service-item text-center">
+                <div className="service-icon">{service.icon}</div>
+                <h4 className="service-title">{service.title}</h4>
+                <p className="service-description">{service.description}</p>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </section>
+  );
+};
+
+const HeroSlider = () => {
+  const sliderRef = useRef(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const totalSlides = 3;
+
+  const slides = [
+    {
+      image: "https://template.canva.com/EAGbDiUQ-wQ/1/0/1600w-qnv0_ENRCWE.jpg",
+      title: "Bộ Sưu Tập Mới Nhất",
+      subtitle: "Khám phá các mẫu giày thời thượng cho mùa mới",
+      btnText: "Khám phá ngay",
+      btnVariant: "primary",
+    },
+    {
+      image: "https://template.canva.com/EAGVteuluIA/2/0/1600w-vGT2ZMW4kH4.jpg",
+      title: "Ưu Đãi Mùa Hè",
+      subtitle: "Giảm giá đến 50% cho tất cả sản phẩm mùa hè",
+      btnText: "Mua ngay",
+      btnVariant: "danger",
+    },
+    {
+      image: "https://template.canva.com/EAGTIenP2yg/1/0/1600w-W9zKAT7okuw.jpg",
+      title: "Phong Cách Đẳng Cấp",
+      subtitle: "Nâng tầm phong cách với bộ sưu tập giày cao cấp",
+      btnText: "Xem bộ sưu tập",
+      btnVariant: "dark",
+    },
+  ];
 
   useEffect(() => {
     const nextBtn = document.getElementById("next");
     const prevBtn = document.getElementById("prev");
-    const slide = document.getElementById("slide");
+    const slide = sliderRef.current;
 
     if (!nextBtn || !prevBtn || !slide) return;
 
     const nextSlide = () => {
-      let lists = document.querySelectorAll(".home_background-item");
+      setActiveSlide((prev) => (prev + 1) % totalSlides);
+      const lists = document.querySelectorAll(".slide-item");
       slide.appendChild(lists[0]);
     };
 
     const prevSlide = () => {
-      let lists = document.querySelectorAll(".home_background-item");
+      setActiveSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+      const lists = document.querySelectorAll(".slide-item");
       slide.prepend(lists[lists.length - 1]);
     };
 
-    const autoSlide = setInterval(nextSlide, 3000);
+    const autoSlide = setInterval(nextSlide, 5000);
 
     nextBtn.addEventListener("click", nextSlide);
     prevBtn.addEventListener("click", prevSlide);
@@ -224,90 +466,223 @@ const Home = () => {
   }, []);
 
   return (
+    <div className="hero-slider" ref={sliderRef}>
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`slide-item ${index === activeSlide ? "active" : ""}`}
+          style={{ backgroundImage: `url('${slide.image}')`}}
+        >
+        </div>
+      ))}
+
+      <button className="slider-control prev" id="prev">
+        <FaChevronLeft />
+      </button>
+      <button className="slider-control next" id="next">
+        <FaChevronRight />
+      </button>
+
+      <div className="slider-indicators">
+        {slides.map((_, index) => (
+          <div
+            key={index}
+            className={`slider-indicator ${
+              index === activeSlide ? "active" : ""
+            }`}
+            onClick={() => setActiveSlide(index)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const Home = () => {
+  const [caoGotNu, setcaoGotNu] = useState([]);
+  const [giayLuoi, setGiayLuoi] = useState([]);
+  const [Balo, setBalo] = useState([]);
+  const [SandalNam, setSandalNam] = useState([]);
+  const [GiayNam, setGiayNam] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Refactor API calls to use Promise.all for better performance
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchProducts = async () => {
+      try {
+        // Add logging to see request status
+        console.log("Fetching products...");
+
+        const [caoGotNuRes, giayLuoiRes, baloRes, sandalNamRes, giayNamRes] =
+          await Promise.all([
+            axios.get(
+              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20cao%20g%C3%B3t"
+            ),
+            axios.get(
+              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20l%C6%B0%E1%BB%9Di"
+            ),
+            axios.get(
+              "http://localhost:5002/products/all/category?subcategories=Balo"
+            ),
+            axios.get(
+              "http://localhost:5002/products/all/category?subcategories=Sandal%20Nam"
+            ),
+            axios.get(
+              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20th%E1%BB%83%20thao"
+            ),
+          ]);
+
+        // Log the first item from each response to inspect data structure
+        console.log("First item from each category:", {
+          caoGotNu: caoGotNuRes.data[0],
+          giayLuoi: giayLuoiRes.data[0],
+          balo: baloRes.data[0],
+          sandalNam: sandalNamRes.data[0],
+          giayNam: giayNamRes.data[0],
+        });
+
+        // Only set state if data exists
+        if (caoGotNuRes.data && Array.isArray(caoGotNuRes.data)) {
+          console.log("Setting cao got nu data:", caoGotNuRes.data.slice(0, 8));
+          setcaoGotNu(caoGotNuRes.data.slice(0, 8));
+        } else {
+          console.warn("No cao got nu data or wrong format");
+        }
+
+        if (giayLuoiRes.data && Array.isArray(giayLuoiRes.data)) {
+          setGiayLuoi(giayLuoiRes.data.slice(0, 8));
+        }
+
+        if (baloRes.data && Array.isArray(baloRes.data)) {
+          setBalo(baloRes.data);
+        }
+
+        if (sandalNamRes.data && Array.isArray(sandalNamRes.data)) {
+          setSandalNam(sandalNamRes.data);
+        }
+
+        if (giayNamRes.data && Array.isArray(giayNamRes.data)) {
+          setGiayNam(giayNamRes.data.slice(0, 8));
+        }
+
+        // Add fallbacks if any category has no products
+        if (
+          (!caoGotNuRes.data || !caoGotNuRes.data.length) &&
+          caoGotNu.length === 0
+        ) {
+          console.log("Using fallback for cao got nu");
+          setcaoGotNu([
+            {
+              id: 1,
+              name: "Giày Cao Gót MWC Sample",
+              price: 295000,
+              image: [
+                "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
+              ],
+              rating: 4,
+              variants: [
+                { size: "38", color: "Đen", stock: 10 },
+                { size: "39", color: "Trắng", stock: 5 },
+              ],
+            },
+            // Add more fallback products for testing...
+          ]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+
+        // Log specific error details
+        if (error.response) {
+          console.error("Error response data:", error.response.data);
+          console.error("Error response status:", error.response.status);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Request setup error:", error.message);
+        }
+
+        // Set fallback data for testing UI when API fails
+        if (caoGotNu.length === 0) {
+          const fallbackProducts = [
+            {
+              id: 1,
+              name: "Giày Cao Gót MWC Fallback",
+              price: 295000,
+              image: [
+                "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
+              ],
+              rating: 4,
+            },
+            // Add more fallback products...
+          ];
+          setcaoGotNu(fallbackProducts);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Featured products for bestseller section
+  const featuredProducts = [
+    {
+      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
+      title: "Dép Nữ MWC 8346 - Đính Nơ Phối Khóa Chữ Xinh Xắn",
+      price: "250.000đ",
+      isNew: true,
+    },
+    {
+      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/04/z6092365614579_f62dc01f434003a9427af6c017ce3d3d.jpg",
+      title: "Giày Thể Thao Nữ MWC A205 - Đế Cao Siêu Hack Dáng",
+      price: "295.000đ",
+      isNew: false,
+      discount: 15,
+    },
+    {
+      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/06/z6095835436711_180c834e94a1915d9451b05482771b7f.jpg",
+      title: "Giày Sandal Nữ MWC E144 - 2 Quai Ngang Phối Lót Dán",
+      price: "250.000đ",
+      isNew: false,
+    },
+    {
+      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/11/z6119144407944_24a4cb6ac285456b09483848b9b45a51.jpg",
+      title: "Sandal Nữ MWC E146 - Quai Tròn Mảnh Ngang Chéo Cách Điệu",
+      price: "250.000đ",
+      isNew: true,
+      discount: 10,
+    },
+  ];
+
+  return (
     <>
       <Header />
-      <div className="homeWrapper">
-        {/* slide */}
-        <div className="home_background" id="slide">
-          <div
-            className="home_background-item mt-2"
-            style={{
-              backgroundImage:
-                "url('https://template.canva.com/EAGQcDd9WBA/1/0/1600w-XVVBw3rXV6M.jpg')",
-            }}
-          ></div>
-          <div
-            className="home_background-item mt-3"
-            style={{
-              backgroundImage:
-                "url('https://template.canva.com/EAGSffnYLDY/1/0/1600w-N7CmXFik4kY.jpg')",
-            }}
-          ></div>
-          <div
-            className="home_background-item"
-            style={{
-              backgroundImage:
-                "url('https://template.canva.com/EAFWISeesDo/2/0/1600w-1QmT0v_Fh4k.jpg')",
-            }}
-          ></div>
-
-          <button className="btn-slide prev" id="prev">
-            <FaChevronLeft />{" "}
-          </button>
-          <button className="btn-slide next" id="next">
-            {" "}
-            <FaChevronRight />{" "}
-          </button>
-        </div>
-
-        {/* Sản phẩm mới */}
-        <div className="home_sale container-fluid">
-          {/* Tiêu đề */}
-          <a href="#">
-            <h2
-              className="home_sale-title mb-5 text-center text-dark fw-bold mt-5"
-              style={{
-                fontSize: "1.5rem",
-                color: "#e63946",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-
-              }}
-            >
-              Sản phẩm bán chạy
-            </h2>
-          </a>
-
-          <div className="row gx-4 gy-4 align-items-stretch">
-            {/* Ảnh lớn bên trái */}
-            <div className="col-md-6">
-              <a href="/category">
-                <img
-                  className="img-fluid rounded shadow-sm w-100 h-100 object-fit-cover"
-                  src="https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=1550&FileInput=/Resources/Silde/2024/12/25/IMG_5218.JPG"
-                  alt="Sản phẩm bán chạy"
-                  style={{ objectFit: "cover", borderRadius: "12px" }}
-                />
-              </a>
-            </div>
-
-            {/* 4 sản phẩm bên phải */}
-            <div className="col-md-6">
-              <div className="row gx-4 gy-4">
-                {[0, 1, 2, 3].map((i) => (
-                  <div className="col-6" key={i}>
-                    <ProductCard {...productx[i]} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <ItemList title="GIÀY NỮ" items={caoGotNu} />
-        <ItemList title="GIÀY NAM" items={giayLuoi} />
-        <ItemList title="ĐỒNG GIÁ" items={GiayNam} />
-      </div>
+      <HeroSlider />
+      <PromoBanner />
+      <FeaturedCategories />
+      {/* Sale Items */}
+      <ItemList
+        title="ĐỒNG GIÁ HẤP DẪN"
+        items={GiayNam}
+        viewAllLink="/category?sale=true"
+      />
+      {/* Women's Collection */}
+      <ItemList
+        title="GIÀY NỮ"
+        items={caoGotNu}
+        viewAllLink="/category?for=women"
+      />
+      {/* Men's Collection */}
+      <ItemList
+        title="GIÀY NAM"
+        items={giayLuoi}
+        viewAllLink="/category?for=men"
+      />
+      {/* Store Services */}
+      <StoreServices />
       <HotLine />
       <Footer />
     </>

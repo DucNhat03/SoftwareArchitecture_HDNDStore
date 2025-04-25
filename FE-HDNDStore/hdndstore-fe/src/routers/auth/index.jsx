@@ -37,11 +37,9 @@ const AppRoutes = () => {
         <Route path="/profile/*" element={<ProfilePage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/category" element={<Category />} />
-        <Route path="/cart" element={<Cart />} /> {/* Thêm route cho Cart */}
+        <Route path="/cart" element={<Cart />} /> 
         <Route path="/chi-tiet-san-pham" element={<ProductDetail />} /> { }
         <Route path="/dat-hang-thanh-cong" element={<OrderSuccess />} /> { }
-
-        {/* ✅ Thêm route cho Quên Mật Khẩu */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Profile với Nested Routes */}
@@ -60,7 +58,6 @@ const AppRoutes = () => {
         <Route path="/admin/voucher" element={<Voucher />} />
         <Route path="/admin/report" element={<Report />} />
 
-        {/* 404 - Không tìm thấy trang */}
         <Route path="*" element={<h2 className="text-center mt-5">404 - Không tìm thấy trang</h2>} />
       </Routes>
       </GoogleOAuthProvider>

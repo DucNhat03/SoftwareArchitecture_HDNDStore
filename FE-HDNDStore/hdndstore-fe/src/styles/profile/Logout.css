@@ -1,28 +1,88 @@
-/* Container chính */
-.logout-container {
-    display: flex;
-    margin: 0 auto;
+/* styles/profile/Logout.css */
+.logout-section {
+  font-family: 'Roboto', sans-serif;
+}
+
+.logout-icon-wrapper {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ff4b2b, #ff416c);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-icon {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.logout-illustration {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.logout-illustration:hover {
+  transform: translateY(-5px);
+}
+
+.logout-button {
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.session-info {
+  border-left: 3px solid #007bff;
+}
+
+/* Success animation */
+.success-checkmark {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  background-color: #4caf50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+  animation: pulse 1.5s infinite;
+}
+
+.success-icon {
+  color: white;
+  font-size: 2.5rem;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
   }
-  
-  /* Card đăng xuất */
-  .logout-card {
-    max-width: 400px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: none;
-    text-align: center;
-    margin: -10vh auto;
+  70% {
+    box-shadow: 0 0 0 15px rgba(76, 175, 80, 0);
   }
-  
-  /* Hình ảnh minh họa */
-  .logout-image {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
   }
-  
-  /* Biểu tượng đăng xuất */
-  .logout-icon {
-    font-size: 20px;
-  }
+}
+
+.logout-confirmation-modal .modal-content {
+  border-radius: 10px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.logout-confirmation-modal .modal-header {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.logout-confirmation-modal .modal-footer {
+  border-top: 1px solid #f0f0f0;
+}

@@ -1,50 +1,80 @@
-/* Container chính */
-.vouchers-container {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: none;
-    position: relative;
-    top: -12vh;
+/* styles/profile/Vouchers.css */
+.vouchers-section {
+  font-family: 'Roboto', sans-serif;
+}
+
+.voucher-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.voucher-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-ribbon {
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+}
+
+.voucher-code-container {
+  position: relative;
+}
+
+.voucher-code {
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.discount-amount {
+  font-weight: bold;
+}
+
+.copy-btn {
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.expiration-progress {
+  margin-top: auto;
+}
+
+.expired-voucher {
+  opacity: 0.7;
+  filter: grayscale(0.5);
+}
+
+.expired-voucher .voucher-ribbon {
+  background: linear-gradient(135deg, #aaaaaa, #cccccc);
+}
+
+.toast-custom {
+  min-width: 300px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .vouchers-section h4 {
+    font-size: 1.25rem;
   }
   
-  /* Danh sách voucher */
-  .voucher-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  .discount-amount {
+    font-size: 1rem;
   }
-  
-  .voucher-item:hover {
-    background-color: #f8f9fa;
-  }
-  
-  /* Biểu tượng voucher */
-  .voucher-icon {
-    font-size: 22px;
-    color: #ff9800;
-    margin-right: 10px;
-  }
-  
-  /* Nội dung voucher */
-  .voucher-content {
-    flex-grow: 1;
-  }
-  
-  /* Đánh dấu voucher đã sử dụng */
-  .used {
-    opacity: 0.6;
-    text-decoration: line-through;
-  }
-  
-  /* Nút sao chép mã */
-  .copy-btn {
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: 10px;
-  }
-  
+}
