@@ -412,21 +412,21 @@ const HeroSlider = () => {
 
   const slides = [
     {
-      image: "https://template.canva.com/EAGbDiUQ-wQ/1/0/1600w-qnv0_ENRCWE.jpg",
+      image: "https://i.imgur.com/MVgDMuf.png",
       title: "Bộ Sưu Tập Mới Nhất",
       subtitle: "Khám phá các mẫu giày thời thượng cho mùa mới",
       btnText: "Khám phá ngay",
       btnVariant: "primary",
     },
     {
-      image: "https://template.canva.com/EAGVteuluIA/2/0/1600w-vGT2ZMW4kH4.jpg",
+      image: "https://i.imgur.com/Ivv3llR.png",
       title: "Ưu Đãi Mùa Hè",
       subtitle: "Giảm giá đến 50% cho tất cả sản phẩm mùa hè",
       btnText: "Mua ngay",
       btnVariant: "danger",
     },
     {
-      image: "https://template.canva.com/EAGTIenP2yg/1/0/1600w-W9zKAT7okuw.jpg",
+      image: "https://i.imgur.com/myZbGGC.png",
       title: "Phong Cách Đẳng Cấp",
       subtitle: "Nâng tầm phong cách với bộ sưu tập giày cao cấp",
       btnText: "Xem bộ sưu tập",
