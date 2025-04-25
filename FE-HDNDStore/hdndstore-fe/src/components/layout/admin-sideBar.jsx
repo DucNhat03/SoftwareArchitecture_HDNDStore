@@ -80,9 +80,10 @@ const SideBar = () => {
       [menu]: !prev[menu],
     }));
   };
-
+  // { text: "Bảng điều khiển", icon: <Dashboard />, path: "/" },
+  // { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
   const menuItems = [
-    { text: "Bảng điều khiển", icon: <Dashboard />, path: "/" },
+   
     { text: "Quản lý khách hàng", icon: <People />, path: "/admin/users" },
     {
       text: "Quản lý sản phẩm",
@@ -110,7 +111,7 @@ const SideBar = () => {
       icon: <CardGiftcardIcon />,
       path: "/admin/voucher",
     },
-    { text: "Cài đặt hệ thống", icon: <Settings />, path: "/" },
+
   ];
 
   return (
