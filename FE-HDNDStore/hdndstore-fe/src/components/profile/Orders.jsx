@@ -17,7 +17,6 @@ import {
 } from "react-bootstrap";
 import "../../styles/profile/Orders.css";
 import {
-  FaTruck,
   FaBox,
   FaCalendarAlt,
   FaUser,
@@ -285,10 +284,11 @@ const Orders = () => {
   };
 
   // Hàm lọc đơn hàng theo trạng thái
-  const filteredOrders =
-    activeTab === "all"
-      ? orders
-      : orders.filter((order) => order.status === statusMap[activeTab]);
+
+  const sortedOrders =
+    (activeTab === "all" ? orders : orders.filter((o) => o.status === statusMap[activeTab]))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
 
   // Hàm xử lý thay đổi tab
   const handleTabChange = (key) => {
@@ -369,9 +369,9 @@ const Orders = () => {
                 <Spinner animation="border" variant="primary" />
                 <p className="mt-3">Đang tải đơn hàng...</p>
               </div>
-            ) : filteredOrders.length > 0 ? (
+            ) : sortedOrders.length > 0 ? (
               <Row className="mt-3 order-container">
-                {filteredOrders.map((order) => (
+                  {sortedOrders.map((order) => (
                   <Card
                     key={order._id}
                     className="order-card mb-4 shadow-sm border-0"
@@ -634,7 +634,7 @@ const Orders = () => {
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
+          <Modal.Title className="custom-modal-title">Chỉnh sửa địa chỉ nhận hàng</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {error && <div className="alert alert-danger">{error}</div>}
