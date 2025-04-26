@@ -8,6 +8,13 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Hotline from "../layout/Hotline";
 import { Container, Row, Col, Table, Button, Form, Card, Badge, InputGroup } from 'react-bootstrap';
+import {
+    cities,
+    districts,
+    wards,
+} from "../../utils/data.js";
+
+
 
 const CartTable = ({ setDis }) => {
     const [cart, setCart] = useState([]);
@@ -279,6 +286,7 @@ const ShippingInfo = ({ carts = [], dis }) => {
 
             if (response.ok && data) {
                 setReceiverInfo({
+                    email: data.email,
                     fullName: data.fullName,
                     phone: data.phone,
                     address: {
@@ -485,9 +493,37 @@ const ShippingInfo = ({ carts = [], dis }) => {
                 throw new Error(errorMessage);
             }
 
-            toast.success("Đặt hàng thành công!", {
+            // Đặt hàng thành công, tạo hóa đơn PDF
+            const orderDetails = await response.json(); // Giả sử response trả về chi tiết đơn hàng
+          
+            // Gọi API tạo hóa đơn PDF
+            const invoiceResponse = await fetch("http://localhost:5002/api/generate-invoice", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderDetails }), // Truyền orderDetails vào backend để tạo hóa đơn
+            });
+
+            if (!invoiceResponse.ok) {
+                throw new Error("Lỗi khi tạo hóa đơn PDF");
+            }
+
+            const invoiceData = await invoiceResponse.json(); // Giả sử trả về URL file PDF hoặc thông tin hóa đơn
+
+            // Gửi email với hóa đơn PDF
+            const emailResponse = await fetch("http://localhost:5002/api/send-invoice-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: receiverInfo.email, invoiceUrl: invoiceData.pdfUrl }), // Truyền email và URL file PDF
+            });
+
+            if (!emailResponse.ok) {
+                throw new Error("Lỗi khi gửi email");
+            }
+
+            toast.success("Đặt hàng thành công và hóa đơn đã được gửi qua email!", {
                 position: "top-right",
             });
+          
             
             // Chờ 2 giây rồi chuyển trang
             setTimeout(() => {
@@ -591,49 +627,63 @@ const ShippingInfo = ({ carts = [], dis }) => {
                                     </Form.Group>
                                 </Col>
                                 <Col md={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tỉnh/Thành phố:</Form.Label>
-                                        <Form.Select 
-                                            name="city" 
-                                            value={receiverInfo?.address?.city || ""}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">Chọn tỉnh</option>
-                                            <option value="Hà Nội">Hà Nội</option>
-                                            <option value="TP HCM">TP Hồ Chí Minh</option>
-                                            <option value="Đà Nẵng">Đà Nẵng</option>
-                                        </Form.Select>
-                                    </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Tỉnh/Thành phố:</Form.Label>
+                                            <Form.Select
+                                                name="city"
+                                                value={receiverInfo?.address?.city || ""}
+                                                onChange={handleInputChange}
+                                            >
+                                                <option value="">-- Chọn tỉnh --</option>
+                                                {cities.map((city) => (
+                                                    <option key={city} value={city}>
+                                                        {city}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
                                 </Col>
                                 <Col md={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Quận/Huyện:</Form.Label>
-                                        <Form.Select 
-                                            name="district" 
-                                            value={receiverInfo?.address?.district || ""}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">Chọn quận/huyện</option>
-                                            <option value="Quận 1">Quận 1</option>
-                                            <option value="Quận 2">Quận 2</option>
-                                            <option value="Quận 3">Quận 3</option>
-                                        </Form.Select>
-                                    </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Quận/Huyện:</Form.Label>
+                                            <Form.Select
+                                                name="district"
+                                                value={receiverInfo?.address?.district || ""}
+                                                onChange={handleInputChange}
+                                                disabled={!receiverInfo?.address?.city} // Chưa chọn tỉnh thì disable dropdown này
+                                            >
+                                                <option value="">-- Chọn quận/huyện --</option>
+                                                {districts[receiverInfo?.address?.city]?.map((district) => (
+                                                    <option key={district} value={district}>
+                                                        {district}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
                                 </Col>
                                 <Col md={4}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Xã/Phường:</Form.Label>
-                                        <Form.Select 
-                                            name="ward" 
-                                            value={receiverInfo?.address?.ward || ""}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">Chọn xã/phường</option>
-                                            <option value="Phường A">Phường A</option>
-                                            <option value="Phường B">Phường B</option>
-                                            <option value="Phường C">Phường C</option>
-                                        </Form.Select>
-                                    </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Xã/Phường:</Form.Label>
+                                            <Form.Select
+                                                name="ward"
+                                                value={receiverInfo?.address?.ward || ""}
+                                                onChange={handleInputChange}
+                                                disabled={
+                                                    !receiverInfo?.address?.city || !receiverInfo?.address?.district
+                                                }
+                                            >
+                                                <option value="">-- Chọn xã/phường --</option>
+                                                {wards[receiverInfo?.address?.district]?.map((ward) => (
+                                                    <option key={ward} value={ward}>
+                                                        {ward}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+
                                 </Col>
                                 <Col md={12} className="mt-2">
                                     <Button 

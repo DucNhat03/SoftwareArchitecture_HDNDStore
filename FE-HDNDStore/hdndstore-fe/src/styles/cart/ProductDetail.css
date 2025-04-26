@@ -915,8 +915,8 @@ select:disabled {
 
 
 .modal-contentgiohang {
-    right: 0;
-    top: -145px;
+    right: -180px;
+    top: 190px;
     position: fixed;
     background-color: #fff;
     margin: 10% auto;
