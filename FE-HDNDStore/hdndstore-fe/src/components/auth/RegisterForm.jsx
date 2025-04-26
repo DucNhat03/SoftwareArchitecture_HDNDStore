@@ -78,6 +78,7 @@ const RegisterForm = ({ switchMode }) => {
           placeholder="Email"
           required
           onChange={handleChange}
+          className="email-input py-2 px-3"
         />
       </InputGroup>
 
@@ -91,6 +92,7 @@ const RegisterForm = ({ switchMode }) => {
           value={formData.phone}
           onChange={handleChange}
           required
+          className="email-input py-2 px-3"
         />
       </InputGroup>
 
@@ -104,6 +106,7 @@ const RegisterForm = ({ switchMode }) => {
           value={formData.password}
           onChange={handleChange}
           required
+          className="email-input py-2 px-3"
         />
         <Button
           variant="outline-secondary"
@@ -124,6 +127,7 @@ const RegisterForm = ({ switchMode }) => {
           value={formData.confirmPassword}
           onChange={handleChange}
           required
+          className="email-input py-2 px-3"
         />
         <Button
           variant="outline-secondary"
@@ -135,7 +139,7 @@ const RegisterForm = ({ switchMode }) => {
       </InputGroup>
 
       {/* Nút đăng ký */}
-      <Button variant="success" className="w-100 register-btn" type="submit">
+      <Button variant={"primary"} className="w-100 register-btn p-3"  type="submit">
         Đăng ký
       </Button>
 

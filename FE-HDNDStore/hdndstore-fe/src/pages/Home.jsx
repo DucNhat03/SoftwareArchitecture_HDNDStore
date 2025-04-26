@@ -330,38 +330,6 @@ const FeaturedCategories = () => {
   
 };
 
-const PromoBanner = () => (
-  <section className="promo-banner" style={{ marginTop: "-4%" }}>
-    <Container>
-      <Row className="align-items-center">
-        <Col md={6} className="mb-4 mb-md-0">
-          <div className="promo-content">
-            <Badge bg="danger" className="mb-3">
-              <FaTags className="me-1" /> Hot Sale
-            </Badge>
-            <h2 className="mb-3">Giảm Giá Lên Đến 50%</h2>
-            <p className="mb-4">
-              Khám phá bộ sưu tập giày dép mới nhất với nhiều mẫu mã đa dạng và
-              phong cách. Cơ hội tuyệt vời để sở hữu những sản phẩm chất lượng
-              với giá ưu đãi.
-            </p>
-            <Button variant="primary" size="lg">
-              Mua ngay
-            </Button>
-          </div>
-        </Col>
-        <Col md={6}>
-          <img
-            src="https://img.mwc.com.vn/giay-thoi-trang?w=1150&h=1550&FileInput=/Resources/Silde/2024/12/25/IMG_5218.JPG"
-            className="img-fluid rounded"
-            alt="Promotion"
-          />
-        </Col>
-      </Row>
-    </Container>
-  </section>
-);
-
 const StoreServices = () => {
   const services = [
     {
@@ -661,7 +629,6 @@ const Home = () => {
     <>
       <Header />
       <HeroSlider />
-      <PromoBanner />
       <FeaturedCategories />
       {/* Sale Items */}
       <ItemList

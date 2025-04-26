@@ -14,7 +14,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 {/* Admin */}
 // import Account from "../../pages/admin/screens/account.jsx";
 import User from "../../pages/admin/screens/user.jsx";
-import Order from "../../pages/admin/screens/orders.jsx";
+import Dashboard from "../../pages/admin/screens/orders.jsx";
 import OrderPending from "../../pages/admin/screens/orderpending.jsx";
 import OrderShipping from "../../pages/admin/screens/ordershipping.jsx";
 import OrderDelivered from "../../pages/admin/screens/orderdelivered.jsx";
@@ -48,7 +48,7 @@ const AppRoutes = () => {
         {/* Admin */}
         {/* <Route path="/admin/account" element={<Account />} /> */}
         <Route path="/admin/users" element={<User />} />
-        {/* <Route path="/admin/order" element={<Order />} /> */}
+        <Route path="/admin/dashboard" element={<Dashboard />} /> 
         <Route path="/admin/orders/pending" element={<OrderPending/>} />
         <Route path="/admin/orders/shipping" element={<OrderShipping/>} />
         <Route path="/admin/orders/delivered" element={<OrderDelivered/>} />

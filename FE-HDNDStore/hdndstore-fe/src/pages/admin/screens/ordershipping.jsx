@@ -24,6 +24,18 @@ import {
   FormControlLabel,
   Radio,
   DialogContentText,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  Divider,
+  InputAdornment,
+  Breadcrumbs,
+  Link,
+  Tooltip,
+  Badge,
+  Backdrop,
+  CircularProgress
 } from "@mui/material";
 import {
   ArrowBack,
@@ -31,11 +43,19 @@ import {
   Event,
   Visibility,
   CheckCircle,
+  Dashboard,
+  Receipt,
+  LocalShipping,
+  Search,
+  Close as CloseIcon,
+  CalendarToday,
+  Person,
+  LocationOn
 } from "@mui/icons-material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { toast } from "react-toastify";
+import { createTheme, ThemeProvider, alpha } from "@mui/material/styles";
+
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
 import axios from "axios";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
@@ -43,18 +63,79 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { generateInvoicePDF } from "../../../utils/generateInvoice";
 import SideBar from "../../../components/layout/admin-sideBar";
+
 const ITEMS_PER_PAGE = 6;
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#504c4c" },
+    primary: { main: "#2A3F54" },
     secondary: { main: "#FF9800" },
     success: { main: "#4CAF50" },
     error: { main: "#F44336" },
+    info: { main: "#03A9F4" },
+    warning: { main: "#FFC107" },
+    background: {
+      default: "#f5f7fa"
+    }
   },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h5: {
+      fontWeight: 600
+    },
+    h6: {
+      fontWeight: 600
+    }
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "12px 16px"
+        },
+        head: {
+          fontWeight: 600,
+          whiteSpace: "nowrap"
+        }
+      }
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: alpha('#2A3F54', 0.04)
+          }
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: 8
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+        }
+      }
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500
+        }
+      }
+    }
+  }
 });
 
 export default function OrderShipping() {
+  // State declarations
   const [Orders, setOrders] = useState([]);
   const [status] = useState("Đang giao");
   const [Users, setUsers] = useState([]);
@@ -64,20 +145,18 @@ export default function OrderShipping() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("Đang giao");
+  const [selectedStatus, setSelectedStatus] = useState("Đã giao");
   const [cancelReason, setCancelReason] = useState("");
   const [openDatePicker, setOpenDatePicker] = useState(false);
-
   const [selectedDate, setSelectedDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch orders on component mount
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/orders/status/${status}`)
-      .then((response) => {
-        setOrders(response.data.orders);
-        console.log("Danh sách hóa đơn:", response.data);
-      })
-      .catch((error) => console.error("Lỗi khi lấy danh sách hóa đơn", error));
-    // Cập nhật thời gian mỗi giây
+    fetchOrders();
+    
+    // Update current time every second
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -85,18 +164,42 @@ export default function OrderShipping() {
     return () => clearInterval(timer);
   }, []);
 
+  // Fetch users on component mount
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/users/all")
-      .then((response) => {
-        console.log("Danh sách khách hàng:", response.data);
-        setUsers(response.data);
-      })
-      .catch((error) =>
-        console.error("Lỗi khi lấy danh sách khách hàng:", error)
-      );
+    fetchUsers();
   }, []);
-  const [currentPage, setCurrentPage] = useState(0);
+
+  // Reset currentPage when searchTerm or selectedDate changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm, selectedDate]);
+
+  // Fetch orders from API
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:5000/orders/status/${status}`);
+      setOrders(response.data.orders);
+      console.log("Danh sách đơn hàng:", response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách đơn hàng", error);
+      toast.error("Không thể tải danh sách đơn hàng");
+      setLoading(false);
+    }
+  };
+
+  // Fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/users/all");
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách khách hàng:", error);
+    }
+  };
+
+  // Add customer info to orders
   const ordersWithUsers = Orders.map((order) => {
     const user = Users.find((user) => user._id === order.receiver);
     return {
@@ -107,78 +210,72 @@ export default function OrderShipping() {
     };
   });
 
+  // Format address
   const formatAddress = (order) => {
     const addr = order.shippingAddress.address;
     return `${addr.street}, ${addr.ward}, ${addr.district}, ${addr.city}`;
   };
 
-  // Lọc đơn hàng theo từ khóa tìm kiếm
+  // Filter orders by searchTerm and selectedDate
   const filteredOrders = ordersWithUsers.filter((order) => {
     const matchesSearch =
-      order.statusPayment.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.idHoaDon.toLowerCase().includes(searchTerm) ||
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+      order.statusPayment?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.idHoaDon?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.shippingAddress?.fullName.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDate =
       !selectedDate ||
       dayjs(order.orderDate).format("YYYY-MM-DD") ===
-        dayjs(selectedDate).format("YYYY-MM-DD") ||
-      !selectedDate ||
-      dayjs(order.ngayXacNhan).format("YYYY-MM-DD") ===
         dayjs(selectedDate).format("YYYY-MM-DD");
 
     return matchesSearch && matchesDate;
   });
 
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [searchTerm]);
-
-  // Xác định danh sách hóa đơn cần hiển thị
+  // Calculate pagination
   const startIndex = currentPage * ITEMS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
-  const handleViewOrder = (Order) => {
-    setSelectedOrderDetails(Order);
+
+  // Handle view order details
+  const handleViewOrder = (order) => {
+    setSelectedOrderDetails(order);
     setViewOpen(true);
   };
+
+  // Handle open confirmation dialog
   const handleOpenDialog = (order) => {
     setSelectedOrder(order);
     setOpenDialog(true);
-    setSelectedStatus("Đang giao"); // Mặc định chọn Xác nhận
-    setCancelReason(""); // Reset lý do hủy
+    setSelectedStatus("Đã giao"); // Default to "Delivered" status
+    setCancelReason(""); // Reset cancel reason
   };
 
+  // Handle close dialog
   const handleClose = () => {
     setOpenDialog(false);
     setSelectedOrder(null);
     setCancelReason("");
   };
+
+  // Handle update order status
   const handleUpdateStatus = async (order, newStatus, reason) => {
+    setLoading(true);
     try {
-      let trangThaiThanhToan = order.statusPayment;
-      console.log("Trạng thái thanh toán", order.statusPayment);
-      if (
-        order.statusPayment === "Chưa thanh toán" &&
-        newStatus === "Đã giao"
-      ) {
-        trangThaiThanhToan = "Đã thanh toán";
-      }
-      console.log("Trạng thái thanh toán", trangThaiThanhToan);
       await axios.put(`http://localhost:5000/orders/update/${order.idHoaDon}`, {
         status: newStatus,
         lyDoHuy: newStatus === "Đã hủy" ? reason : "",
-        ngayNhanHang: newStatus === "Đã giao" ? new Date().toISOString() : null,
-        ngayHuy: newStatus === "Đã hủy" ? new Date().toISOString() : null,
-        statusPayment: trangThaiThanhToan,
+        ngayGiaoHang: newStatus === "Đã giao" ? new Date().toISOString() : null,
       });
+      
       if (newStatus === "Đã hủy") {
         toast.error(`Đã hủy đơn hàng ${order.idHoaDon}`);
       } else {
-        toast.success(`Đã xác nhận đơn hàng ${order.idHoaDon}`);
+        toast.success(`Đã cập nhật trạng thái đơn hàng ${order.idHoaDon} thành ${newStatus}`);
       }
+      
+      // Refresh orders list
       const response = await axios.get(
         `http://localhost:5000/orders/status/${status}`
       );
@@ -186,300 +283,557 @@ export default function OrderShipping() {
       handleClose();
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái đơn hàng", error);
+      toast.error("Không thể cập nhật trạng thái đơn hàng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate total orders and filtered count
+  const totalOrders = Orders.length;
+  const filteredCount = filteredOrders.length;
+
+  // Render payment status chip
+  const renderPaymentStatusChip = (paymentStatus) => {
+    if (paymentStatus === "Đã thanh toán") {
+      return (
+        <Chip 
+          label="Đã thanh toán" 
+          color="success" 
+          size="small" 
+          variant="outlined"
+          sx={{ fontWeight: 500 }}
+        />
+      );
+    } else {
+      return (
+        <Chip 
+          label="Chưa thanh toán" 
+          color="warning" 
+          size="small" 
+          variant="outlined"
+          sx={{ fontWeight: 500 }}
+        />
+      );
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <Box
-        sx={{ display: "flex", backgroundColor: "#e9ecec", minHeight: "100vh" }}
-      >
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+      />
+      
+      <Backdrop open={loading} sx={{ zIndex: 1300, color: '#fff' }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      
+      <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f5f7fa" }}>
         <CssBaseline />
-
         <SideBar />
 
-        <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <AppBar
             position="static"
-            sx={{ backgroundColor: "#2A3F54", color: "#fff" }}
+            sx={{ 
+              backgroundColor: "#fff", 
+              color: "text.primary",
+              borderRadius: 2,
+              boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+              mb: 3
+            }}
+            elevation={0}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h5">
-                <b>ĐƠN HÀNG ĐANG GIAO</b>
-              </Typography>
-              <Typography variant="body1" style={{ color: "#fff" }}>
-                {currentTime.toLocaleDateString()} -{" "}
-                {currentTime.toLocaleTimeString()}
-              </Typography>
+              <Box>
+                <Typography variant="h5" color="primary.main">
+                  <b>ĐƠN HÀNG ĐANG GIAO</b>
+                </Typography>
+                <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 0.5 }}>
+                  <Link 
+                    underline="hover" 
+                    color="inherit" 
+                    href="/admin/dashboard"
+                    sx={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    <Dashboard sx={{ mr: 0.5 }} fontSize="small" />
+                    Dashboard
+                  </Link>
+                  <Link 
+                    underline="hover" 
+                    color="inherit" 
+                    href="/admin/orders"
+                    sx={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    <Receipt sx={{ mr: 0.5 }} fontSize="small" />
+                    Quản lý đơn hàng
+                  </Link>
+                  <Typography color="text.primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <LocalShipping sx={{ mr: 0.5 }} fontSize="small" />
+                    Đơn hàng đang giao
+                  </Typography>
+                </Breadcrumbs>
+              </Box>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'flex-end' 
+              }}>
+                <Typography variant="body1" fontWeight="medium">
+                  {currentTime.toLocaleDateString('vi-VN')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {currentTime.toLocaleTimeString('vi-VN')}
+                </Typography>
+              </Box>
             </Toolbar>
           </AppBar>
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", mt: 2, mb: 2 }}
-          >
-            <TextField
-              variant="outlined"
-              placeholder="🔍 Tìm kiếm đơn hàng ..."
-              size="small"
-              sx={{
-                backgroundColor: "#fff",
-                borderRadius: 2,
-                width: "300px",
-                boxShadow: 1,
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#ccc",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#888",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#504c4c",
-                  },
-                },
-              }}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </Box>
-          <TableContainer
-            component={Paper}
-            sx={{
-              borderRadius: 2,
-              boxShadow: 3,
-              mt: 3,
-              backgroundColor: "#f0f0f0",
-            }}
-          >
-            <Table>
-              <TableHead sx={{ backgroundColor: "#2A3F54" }}>
-                <TableRow>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    ID
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Khách hàng
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Số lượng sản phẩm
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Ngày đặt hàng
+          
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6" color="primary">
+                    Tổng số: {filteredCount} đơn hàng
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Quản lý đơn hàng đang trong quá trình giao đến khách hàng
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                    <TextField
+                      variant="outlined"
+                      placeholder="Tìm kiếm đơn hàng..."
+                      size="small"
+                      fullWidth
+                      sx={{
+                        maxWidth: 350,
+                        backgroundColor: "#fff",
+                        borderRadius: 2,
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                        }
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Search color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <IconButton
-                        color="primary"
-                        onClick={() => setOpenDatePicker(true)}
-                        sx={{ ml: 1 }}
-                      >
-                        <Event /> {/* 📅 Icon Calendar */}
-                      </IconButton>
                       <DatePicker
-                        open={openDatePicker}
-                        onClose={() => setOpenDatePicker(false)}
+                        label="Lọc theo ngày"
                         value={selectedDate}
                         onChange={(newValue) => {
                           setSelectedDate(newValue);
-                          setOpenDatePicker(false);
                         }}
                         slotProps={{
-                          textField: { style: { display: "none" } },
-                        }} // Ẩn ô nhập liệu
+                          textField: { 
+                            size: "small",
+                            sx: {
+                              width: 150,
+                              backgroundColor: "#fff",
+                              borderRadius: 2,
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                              }
+                            }
+                          }
+                        }}
                       />
                     </LocalizationProvider>
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Ngày xác nhận
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <IconButton
-                        color="primary"
-                        onClick={() => setOpenDatePicker(true)}
-                        sx={{ ml: 1 }}
+                    
+                    {selectedDate && (
+                      <Button 
+                        size="small"
+                        variant="outlined"
+                        onClick={() => setSelectedDate(null)}
+                        sx={{ borderRadius: 2 }}
                       >
-                        <Event /> {/* 📅 Icon Calendar */}
-                      </IconButton>
-                      <DatePicker
-                        open={openDatePicker}
-                        onClose={() => setOpenDatePicker(false)}
-                        value={selectedDate}
-                        onChange={(newValue) => {
-                          setSelectedDate(newValue);
-                          setOpenDatePicker(false);
-                        }}
-                        slotProps={{
-                          textField: { style: { display: "none" } },
-                        }} // Ẩn ô nhập liệu
-                      />
-                    </LocalizationProvider>
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Trạng thái thanh toán
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Trạng thái đơn hàng
-                  </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedOrders.map((Order) => (
-                  <TableRow
-                    key={Order.idHoaDon}
-                    hover
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleViewOrder(Order)}
-                  >
-                    <TableCell>{Order.idHoaDon}</TableCell>
-                    <TableCell>{Order.shippingAddress.fullName}</TableCell>
-                    <TableCell>
-                      {Order.cartItems.reduce(
-                        (total, item) => total + item.variants.length,
-                        0
-                      )}
-                    </TableCell>
+                        Xóa bộ lọc
+                      </Button>
+                    )}
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
-                    <TableCell>
-                      {new Date(Order.orderDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(Order.ngayXacNhan).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{Order.statusPayment}</TableCell>
-                    <TableCell>{Order.status}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        color="info"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewOrder(Order);
-                        }}
-                      >
-                        <Visibility />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenDialog(Order);
-                        }}
-                      >
-                        <CheckCircle />
-                      </IconButton>
-                    </TableCell>
+          <Card>
+            <TableContainer>
+              <Table>
+                <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.08) }}>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Khách hàng</TableCell>
+                    <TableCell>Sản phẩm</TableCell>
+                    <TableCell>Ngày đặt</TableCell>
+                    <TableCell>Ngày xác nhận</TableCell>
+                    <TableCell>Thanh toán</TableCell>
+                    <TableCell>Trạng thái</TableCell>
+                    <TableCell align="center">Thao tác</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            {/* Pagination Buttons */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                margin: "10px 0",
-              }}
-            >
-              <IconButton
-                disabled={currentPage === 0}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                sx={{ mx: 1 }}
-              >
-                <ArrowBack /> {/* Icon Trang Trước */}
-              </IconButton>
-
-              <IconButton
-                disabled={startIndex + ITEMS_PER_PAGE >= filteredOrders.length}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                sx={{ mx: 1 }}
-              >
-                <ArrowForward /> {/* Icon Trang Sau */}
-              </IconButton>
-            </div>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {paginatedOrders.length > 0 ? (
+                    paginatedOrders.map((order) => (
+                      <TableRow
+                        key={order.idHoaDon}
+                        hover
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => handleViewOrder(order)}
+                      >
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            #{order.idHoaDon}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Person color="action" sx={{ mr: 1, fontSize: 20 }} />
+                            <Box>
+                              <Typography variant="body2" fontWeight="medium">
+                                {order.shippingAddress.fullName}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {order.shippingAddress.phone}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            badgeContent={
+                              order.cartItems.reduce(
+                                (total, item) => total + item.variants.length,
+                                0
+                              )
+                            } 
+                            color="info" 
+                            sx={{ '& .MuiBadge-badge': { fontWeight: 500 } }}
+                          >
+                            <Typography variant="body2">sản phẩm</Typography>
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <CalendarToday sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
+                            <Typography variant="body2">
+                              {new Date(order.orderDate).toLocaleDateString('vi-VN')}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <CalendarToday sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
+                            <Typography variant="body2">
+                              {new Date(order.ngayXacNhan).toLocaleDateString('vi-VN')}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {renderPaymentStatusChip(order.statusPayment)}
+                        </TableCell>
+                        <TableCell>
+                          <Chip 
+                            icon={<LocalShipping fontSize="small" />}
+                            label={order.status}
+                            color="info"
+                            size="small"
+                            sx={{ fontWeight: 500 }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Tooltip title="Xem chi tiết">
+                              <IconButton
+                                color="info"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewOrder(order);
+                                }}
+                                size="small"
+                                sx={{ 
+                                  bgcolor: alpha('#03A9F4', 0.08),
+                                  '&:hover': { bgcolor: alpha('#03A9F4', 0.15) }
+                                }}
+                              >
+                                <Visibility fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            
+                            <Tooltip title="Xác nhận hoàn thành">
+                              <IconButton
+                                color="success"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenDialog(order);
+                                }}
+                                size="small"
+                                sx={{ 
+                                  ml: 1,
+                                  bgcolor: alpha('#4CAF50', 0.08),
+                                  '&:hover': { bgcolor: alpha('#4CAF50', 0.15) }
+                                }}
+                              >
+                                <CheckCircle fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={8} align="center">
+                        <Box sx={{ py: 3 }}>
+                          <Typography variant="body1" color="text.secondary">
+                            Không tìm thấy đơn hàng nào
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              p: 2,
+              borderTop: '1px solid',
+              borderColor: 'divider' 
+            }}>
+              <Typography variant="body2" color="text.secondary">
+                Hiển thị {filteredCount > 0 ? startIndex + 1 : 0} - {Math.min(startIndex + ITEMS_PER_PAGE, filteredCount)} trên tổng số {filteredCount} đơn hàng
+              </Typography>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton
+                  disabled={currentPage === 0}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  sx={{ mr: 1 }}
+                  size="small"
+                >
+                  <ArrowBack fontSize="small" />
+                </IconButton>
+                
+                <Box sx={{ 
+                  bgcolor: 'primary.main', 
+                  color: 'white', 
+                  borderRadius: 1,
+                  px: 1.5,
+                  py: 0.5,
+                  minWidth: 30,
+                  textAlign: 'center'
+                }}>
+                  {currentPage + 1}
+                </Box>
+                
+                <IconButton
+                  disabled={startIndex + ITEMS_PER_PAGE >= filteredCount}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  sx={{ ml: 1 }}
+                  size="small"
+                >
+                  <ArrowForward fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+          </Card>
         </Box>
       </Box>
 
+      {/* Order Details Dialog */}
       <Dialog
         open={viewOpen}
         onClose={() => setViewOpen(false)}
-        fullWidth
         maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 2 } }}
       >
-        <DialogTitle variant="h6">Thông tin đơn hàng</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ 
+          borderBottom: '1px solid #e0e0e0', 
+          pb: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Typography variant="h6">
+            Chi tiết đơn hàng #{selectedOrderDetails?.idHoaDon}
+          </Typography>
+          <IconButton onClick={() => setViewOpen(false)} size="small">
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        
+        <DialogContent sx={{ pt: 3 }}>
           {selectedOrderDetails && (
-            <Box>
-              <Typography variant="body1">
-                <b>ID đơn hàng:</b> {selectedOrderDetails.idHoaDon}
+            <>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Thông tin khách hàng
+                      </Typography>
+                      
+                      <Box sx={{ mt: 2 }}>
+                        <Box sx={{ display: 'flex', mb: 1.5 }}>
+                          <Person sx={{ color: 'text.secondary', mr: 2 }} />
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">Họ tên</Typography>
+                            <Typography variant="body1">{selectedOrderDetails.shippingAddress.fullName}</Typography>
+                          </Box>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', mb: 1.5 }}>
+                          <Phone sx={{ color: 'text.secondary', mr: 2 }} />
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">Số điện thoại</Typography>
+                            <Typography variant="body1">{selectedOrderDetails.shippingAddress.phone}</Typography>
+                          </Box>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', mb: 1.5 }}>
+                          <LocationOn sx={{ color: 'text.secondary', mr: 2 }} />
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">Địa chỉ giao hàng</Typography>
+                            <Typography variant="body1">{formatAddress(selectedOrderDetails)}</Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Chi tiết thanh toán
+                      </Typography>
+                      
+                      <Box sx={{ mt: 2 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Phương thức thanh toán</Typography>
+                            <Typography variant="body1">
+                              {selectedOrderDetails.paymentMethod}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Trạng thái thanh toán</Typography>
+                            <Typography variant="body1">
+                              {renderPaymentStatusChip(selectedOrderDetails.statusPayment)}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Tổng tiền sản phẩm</Typography>
+                            <Typography variant="body1">
+                              {parseInt(selectedOrderDetails.totalAmount || 0).toLocaleString('vi-VN')}đ
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Phí giao hàng</Typography>
+                            <Typography variant="body1">
+                              {parseInt(selectedOrderDetails.shippingFee || 0).toLocaleString('vi-VN')}đ
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        
+                        <Divider sx={{ my: 2 }} />
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="subtitle1" fontWeight="bold">Tổng thanh toán</Typography>
+                          <Typography variant="subtitle1" fontWeight="bold" color="primary.main">
+                            {parseInt(selectedOrderDetails.finalAmount || 0).toLocaleString('vi-VN')}đ
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Thông tin đơn hàng
+                      </Typography>
+                      
+                      <Box sx={{ mt: 2 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Mã đơn hàng</Typography>
+                            <Typography variant="body1">#{selectedOrderDetails.idHoaDon}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Trạng thái</Typography>
+                            <Chip 
+                              icon={<LocalShipping fontSize="small" />}
+                              label={selectedOrderDetails.status}
+                              color="info"
+                              size="small"
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Ngày đặt hàng</Typography>
+                            <Typography variant="body1">
+                              {new Date(selectedOrderDetails.orderDate).toLocaleDateString('vi-VN')}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">Ngày xác nhận</Typography>
+                            <Typography variant="body1">
+                              {new Date(selectedOrderDetails.ngayXacNhan).toLocaleDateString('vi-VN')}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Ghi chú
+                      </Typography>
+                      <Typography variant="body1" sx={{ mt: 1 }}>
+                        {selectedOrderDetails.note || "Không có ghi chú"}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+              
+              <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+                Danh sách sản phẩm
               </Typography>
-              <Typography variant="body1">
-                <b>Khách hàng:</b>{" "}
-                {selectedOrderDetails.shippingAddress.fullName}
-              </Typography>
-              <Typography variant="body1">
-                <b>Ngày đặt hàng:</b>{" "}
-                {new Date(selectedOrderDetails.orderDate).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body1">
-                <b>Ngày xác nhận:</b>{" "}
-                {new Date(
-                  selectedOrderDetails.ngayXacNhan
-                ).toLocaleDateString()}
-              </Typography>
-              <Typography variant="body1">
-                <b>Địa chỉ giao hàng:</b> {formatAddress(selectedOrderDetails)}
-              </Typography>
-              <Typography variant="body1">
-                <b>Sản phẩm:</b>{" "}
-                {selectedOrderDetails.cartItems.reduce(
-                  (total, item) => total + item.variants.length,
-                  0
-                )}
-              </Typography>
-              <Typography variant="body1">
-                <b>Tổng tiền:</b> {selectedOrderDetails.finalAmount}đ
-              </Typography>
-              <Typography variant="body1">
-                <b>Trạng thái thanh toán:</b>{" "}
-                {selectedOrderDetails.statusPayment}
-              </Typography>
-              <Typography variant="body1">
-                <b>Phương thức thanh toán:</b>{" "}
-                {selectedOrderDetails.paymentMethod}
-              </Typography>
-              <Typography variant="body1">
-                <b>Trạng thái đơn hàng:</b> {selectedOrderDetails.status}
-              </Typography>
-              <Typography variant="body1">
-                <b>Ghi chú:</b> {selectedOrderDetails.note || "Không có"}
-              </Typography>
-
-              {/* Bảng hiển thị danh sách sản phẩm */}
-              <TableContainer
-                component={Paper}
-                sx={{ mt: 2, borderRadius: 2, boxShadow: 3 }}
-              >
+              
+              <TableContainer component={Paper} variant="outlined">
                 <Table>
-                  <TableHead sx={{ backgroundColor: "#2A3F54" }}>
+                  <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.08) }}>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Hình ảnh
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Tên sản phẩm
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Số lượng
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Size
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Màu sắc
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#fff" }}>
-                        Đơn giá
-                      </TableCell>
+                      <TableCell>Hình ảnh</TableCell>
+                      <TableCell>Tên sản phẩm</TableCell>
+                      <TableCell align="center">Số lượng</TableCell>
+                      <TableCell>Size</TableCell>
+                      <TableCell>Màu sắc</TableCell>
+                      <TableCell align="right">Đơn giá</TableCell>
+                      <TableCell align="right">Thành tiền</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -488,104 +842,194 @@ export default function OrderShipping() {
                         <TableRow key={`${index}-${variantIndex}`}>
                           {/* Hình ảnh sản phẩm */}
                           <TableCell>
-                            <img
+                            <Box
+                              component="img"
                               src={
                                 item.imagethum?.[0] ||
                                 item.image?.[0] ||
                                 "https://via.placeholder.com/50"
                               }
                               alt={item.name}
-                              style={{
+                              sx={{
                                 width: 50,
                                 height: 50,
                                 objectFit: "cover",
-                                borderRadius: 5,
+                                borderRadius: 1,
+                                border: "1px solid #e0e0e0"
                               }}
                             />
                           </TableCell>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{variant.stock}</TableCell>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight="medium">
+                              {item.name}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">{variant.stock}</TableCell>
                           <TableCell>{variant.size || "Không có"}</TableCell>
                           <TableCell>{variant.color || "Không có"}</TableCell>
-                          <TableCell>{item.price * variant.stock}đ</TableCell>
+                          <TableCell align="right">
+                            {parseInt(item.price).toLocaleString('vi-VN')}đ
+                          </TableCell>
+                          <TableCell align="right">
+                            <Typography fontWeight="medium">
+                              {parseInt(item.price * variant.stock).toLocaleString('vi-VN')}đ
+                            </Typography>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
+                    
+                    <TableRow>
+                      <TableCell colSpan={5} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">Tổng tiền sản phẩm:</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">
+                          {parseInt(selectedOrderDetails.totalAmount || 0).toLocaleString('vi-VN')}đ
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow>
+                      <TableCell colSpan={5} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">Phí giao hàng:</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle2">
+                          {parseInt(selectedOrderDetails.shippingFee || 0).toLocaleString('vi-VN')}đ
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow>
+                      <TableCell colSpan={5} />
+                      <TableCell align="right">
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          Tổng thanh toán:
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="subtitle1" fontWeight="bold" color="primary.main">
+                          {parseInt(selectedOrderDetails.finalAmount || 0).toLocaleString('vi-VN')}đ
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Box>
+            </>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewOpen(false)} color="primary">
+        
+        <DialogActions sx={{ borderTop: '1px solid #e0e0e0', px: 3, py: 2 }}>
+          <Button 
+            onClick={() => setViewOpen(false)} 
+            variant="outlined"
+            color="inherit"
+            sx={{ borderRadius: 2 }}
+          >
             Đóng
           </Button>
           <Button
             onClick={async () => {
-              await generateInvoicePDF(selectedOrderDetails);
-              toast.success("Xuất hóa đơn thành công!");
-              setViewOpen(false);
+              try {
+                await generateInvoicePDF(selectedOrderDetails);
+                toast.success("Xuất hóa đơn thành công!");
+                setViewOpen(false);
+              } catch (error) {
+                console.error("Lỗi khi xuất hóa đơn:", error);
+                toast.error("Không thể xuất hóa đơn");
+              }
             }}
+            variant="contained"
             color="primary"
+            sx={{ borderRadius: 2 }}
           >
-            Xuất Hóa Đơn PDF
+            Xuất hóa đơn PDF
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openDialog} onClose={handleClose}>
-        <DialogTitle>Xác nhận đơn hàng</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xác nhận hoặc hủy đơn hàng{" "}
-            <strong>{selectedOrder?.idHoaDon}</strong> không?
+      {/* Order Status Update Dialog */}
+      <Dialog 
+        open={openDialog} 
+        onClose={handleClose}
+        PaperProps={{ sx: { borderRadius: 2 } }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: '1px solid #e0e0e0', 
+          pb: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Typography variant="h6">
+            Cập nhật trạng thái đơn hàng
+          </Typography>
+          <IconButton onClick={handleClose} size="small">
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        
+        <DialogContent sx={{ pt: 3 }}>
+          <DialogContentText sx={{ mb: 2 }}>
+            Bạn có chắc muốn cập nhật trạng thái đơn hàng{" "}
+            <strong>#{selectedOrder?.idHoaDon}</strong> không?
           </DialogContentText>
 
-          {/* Chọn Trạng Thái */}
-          <FormControl component="fieldset" sx={{ mt: 2 }}>
+          <FormControl component="fieldset" sx={{ mb: 2 }}>
             <RadioGroup
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
             >
               <FormControlLabel
                 value="Đã giao"
-                control={<Radio />}
-                label="Xác nhận đã giao hàng"
+                control={<Radio color="success" />}
+                label="Xác nhận đã giao hàng thành công"
               />
               <FormControlLabel
                 value="Đã hủy"
-                control={<Radio />}
+                control={<Radio color="error" />}
                 label="Hủy đơn hàng"
               />
             </RadioGroup>
           </FormControl>
 
-          {/* Hiển thị TextField nếu chọn "Đã hủy" */}
           {selectedStatus === "Đã hủy" && (
             <TextField
               label="Lý do hủy đơn"
               variant="outlined"
               fullWidth
-              sx={{ mt: 2 }}
+              multiline
+              rows={2}
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
+              sx={{ mt: 2 }}
             />
           )}
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={handleClose} color="inherit">
-            Đóng
+        <DialogActions sx={{ borderTop: '1px solid #e0e0e0', px: 3, py: 2 }}>
+          <Button 
+            onClick={handleClose} 
+            variant="outlined"
+            color="inherit"
+            sx={{ borderRadius: 2 }}
+          >
+            Hủy
           </Button>
           <Button
             onClick={() =>
               handleUpdateStatus(selectedOrder, selectedStatus, cancelReason)
             }
-            color="primary"
-            disabled={selectedStatus === "Đã hủy" && !cancelReason} // Không cho xác nhận nếu chưa nhập lý do hủy
+            variant="contained"
+            color={selectedStatus === "Đã giao" ? "success" : "error"}
+            disabled={selectedStatus === "Đã hủy" && !cancelReason}
+            sx={{ borderRadius: 2 }}
           >
-            Xác nhận
+            {selectedStatus === "Đã giao" ? "Xác nhận đã giao" : "Xác nhận hủy đơn"}
           </Button>
         </DialogActions>
       </Dialog>
