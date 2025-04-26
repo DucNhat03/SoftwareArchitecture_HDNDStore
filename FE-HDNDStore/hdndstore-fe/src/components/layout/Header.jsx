@@ -21,7 +21,7 @@ const Header = () => {
   const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
 
-  // Cập nhật trạng thái khi resize màn hình
+  // Cập nhật trạng thái khi resize màn hình 1
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 1024);
