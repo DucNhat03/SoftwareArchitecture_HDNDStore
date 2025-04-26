@@ -165,19 +165,30 @@ const ProductList = () => {
   
   // Categories for filter
   const categories = [
-    { id: 1, name: "Giày Cao Gót" },
-    { id: 2, name: "Giày Thể Thao" },
-    { id: 3, name: "Giày Sandal" },
-    { id: 4, name: "Dép" },
-    { id: 5, name: "Giày Lười" },
+    { id: 1, name: "Dép nữ" },
+    { id: 2, name: "Giày cao gót" },
+    { id: 3, name: "Giày thể thao" },
+    { id: 4, name: "Dép nam" },
+    { id: 5, name: "Giày lười" },
     { id: 6, name: "Balo" }
   ];
   
   // Colors for filter
-  const colors = ["#000000", "#FFFFFF", "#FF0000", "#0000FF", "#FFFF00", "#808080"];
+  const colors = {
+    "Bạc": "#C0C0C0",
+    "Nâu": "#8B4513",
+    "Trắng": "#e8e8e8",
+    "Đen": "#000000",
+    "Đỏ": "#FF0000",
+    "Xanh": "#0000FF",
+    "Kem": "#F5F5DC",
+    "Vàng": "#FFFF00",
+    "Hồng": "#FFC0CB",
+    "Xám": "#808080",
+  };
   
   // Sizes for filter
-  const sizes = ["35", "36", "37", "38", "39", "40", "41", "42"];
+  const sizes = ["35", "36", "37", "38", "39", "40", "41", "42", "43"];
   
   // Brands for filter
   const brands = ["MWC", "Nike", "Adidas", "Vans", "Converse"];
@@ -213,25 +224,54 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  const sortProducts = (option) => {
-    let sortedProducts = [...products];
-    if (option === "2") {
-      sortedProducts.sort((a, b) => a.price - b.price);
-    } else if (option === "3") {
-      sortedProducts.sort((a, b) => b.price - a.price);
-    } else if (option === "4") {
-      sortedProducts.sort((a, b) => (b.isNew === a.isNew ? 0 : b.isNew ? 1 : -1));
-    } else if (option === "5") {
-      sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+  const getFilteredAndSortedProducts = () => {
+    // 1. Lọc sản phẩm theo khoảng giá và các filter khác
+    const filtered = products.filter((product) => {
+      const [min, max] = filterOptions.priceRange;
+      const inPriceRange = product.price >= min && product.price <= max;
+
+      const inCategory =
+        filterOptions.categories.length === 0 ||
+        filterOptions.categories.includes(product.subcategories);
+    
+      const inColor =
+        filterOptions.colors.length === 0 ||
+        product.variants.some((v) => filterOptions.colors.includes(v.color));
+    
+
+      const inSize =
+        filterOptions.sizes.length === 0 ||
+        product.variants.some((v) => filterOptions.sizes.includes(v.size));
+
+
+      return inPriceRange && inCategory && inColor && inSize;
+    });
+
+    // 2. Sắp xếp sản phẩm đã lọc
+    let sorted = [...filtered];
+    if (sortOption === "2") {
+      sorted.sort((a, b) => a.price - b.price); // Giá tăng dần
+    } else if (sortOption === "3") {
+      sorted.sort((a, b) => b.price - a.price); // Giá giảm dần
+    } else if (sortOption === "4") {
+      sorted.sort((a, b) => (b.isNew === a.isNew ? 0 : b.isNew ? 1 : -1)); // Mới nhất
+    } else if (sortOption === "5") {
+      sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // Đánh giá cao
     }
-    return sortedProducts;
+
+    return sorted;
   };
+
 
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
+
+
+
   
-  const sortedProducts = sortProducts(sortOption);
+  const sortedProducts = getFilteredAndSortedProducts();
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -333,6 +373,8 @@ const ProductList = () => {
     ).join(' - ');
   };
 
+
+
   return (
     <>
       <Header />
@@ -429,14 +471,15 @@ const ProductList = () => {
                   <div className="filter-section mb-4">
                     <h6 className="filter-title">Danh Mục</h6>
                     {categories.map(category => (
+                     
                       <Form.Check
                         key={category.id}
                         type="checkbox"
                         id={`category-${category.id}`}
                         label={category.name}
                         className="mb-2"
-                        checked={filterOptions.categories.includes(category.id)}
-                        onChange={() => handleFilterChange('categories', category.id)}
+                        checked={filterOptions.categories.includes(category.name)}
+                        onChange={() => handleFilterChange('categories', category.name)}
                       />
                     ))}
                   </div>
@@ -445,15 +488,14 @@ const ProductList = () => {
                   <div className="filter-section mb-4">
                     <h6 className="filter-title">Màu Sắc</h6>
                     <div className="color-filter d-flex flex-wrap gap-2 mt-2">
-                      {colors.map((color, index) => (
+                      {Object.entries(colors).map(([colorName, colorHex], index) => (
                         <div
                           key={index}
-                          className={`color-filter-option ${
-                            filterOptions.colors.includes(color) ? 'selected' : ''
-                          }`}
-                          style={{ backgroundColor: color }}
-                          onClick={() => handleFilterChange('colors', color)}
-                          title={color}
+                          className={`color-filter-option ${filterOptions.colors.includes(colorName) ? 'selected' : ''
+                            }`}
+                          style={{ backgroundColor: colorHex }}
+                          onClick={() => handleFilterChange('colors', colorName)}
+                          title={colorName}
                         />
                       ))}
                     </div>
@@ -478,7 +520,7 @@ const ProductList = () => {
                   </div>
                   
                   {/* Brand Filter */}
-                  <div className="filter-section">
+                  {/* <div className="filter-section">
                     <h6 className="filter-title">Thương Hiệu</h6>
                     {brands.map((brand, index) => (
                       <Form.Check
@@ -491,7 +533,7 @@ const ProductList = () => {
                         onChange={() => handleFilterChange('brands', brand)}
                       />
                     ))}
-                  </div>
+                  </div> */}
                 </Card.Body>
               </Card>
               
@@ -694,19 +736,19 @@ const ProductList = () => {
           <div className="filter-section mb-4">
             <h6 className="filter-title">Màu Sắc</h6>
             <div className="color-filter d-flex flex-wrap gap-2 mt-2">
-              {colors.map((color, index) => (
+              {Object.entries(colors).map(([colorName, colorHex], index) => (
                 <div
                   key={index}
-                  className={`color-filter-option ${
-                    filterOptions.colors.includes(color) ? 'selected' : ''
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => handleFilterChange('colors', color)}
-                  title={color}
+                  className={`color-filter-option ${filterOptions.colors.includes(colorName) ? 'selected' : ''
+                    }`}
+                  style={{ backgroundColor: colorHex }}
+                  onClick={() => handleFilterChange('colors', colorName)}
+                  title={colorName}
                 />
               ))}
             </div>
           </div>
+
           
           {/* Size Filter */}
           <div className="filter-section mb-4">

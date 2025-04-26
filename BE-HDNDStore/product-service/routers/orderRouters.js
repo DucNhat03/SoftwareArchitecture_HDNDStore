@@ -6,6 +6,15 @@ const User = require("../model/User");
 const Product = require("../model/Product");
 const app = express();
 
+//Mail 
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+const nodemailer = require("nodemailer");
+const { jsPDF } = require("jspdf");
+const autoTable = require("jspdf-autotable").default;  // Lưu ý sử dụng .default
+const RobotoFont = require("../config/roboto");
+
 // Thêm middleware xử lý JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,16 +37,6 @@ const fetchUserById = async (userId) => {
 router.post("/dat-hang", async (req, res) => {
     try {
         let { receiver, cartItems, shippingAddress, discount } = req.body;
-
-        // console.log("Dữ liệu giỏ hàng nhận được:", JSON.stringify(cartItems, null, 2));
-        // console.log("Địa chỉ giao hàng:", shippingAddress);
-        // console.log("req.body dat hang:", req.body);
-
-        // if (totalAmount === undefined) {
-        //     return res.status(400).json({ message: "Thiếu totalAmount trong request!" });
-        // }
-
-        // console.log("totalAmount sau khi trích xuất:", totalAmount);
 
 
         // Kiểm tra ID người nhận hợp lệ
@@ -159,6 +158,8 @@ router.post("/dat-hang", async (req, res) => {
                 const key = item._id;
 
                 if (!acc[key]) {
+                    // Kiểm tra và gán rating nếu rating > 5 thì gán là 5
+                    const validRating = item.rating > 5 ? 5 : item.rating;
                     acc[key] = {
                         _id: item._id,
                         name: item.name,
@@ -168,12 +169,12 @@ router.post("/dat-hang", async (req, res) => {
                         category: item.category,
                         description: item.description,
                         subcategories: Array.isArray(item.subcategories) ? item.subcategories : [],
-                        rating: item.rating,
+                        rating: validRating, // Gán rating đã được kiểm tra
                         imagethum: Array.isArray(item.imagethum) ? item.imagethum : [],
                         variants: []
                     };
                 }
-
+             
                 acc[key].quantity += item.quantity; // Cộng dồn số lượng sản phẩm
 
                 // Kiểm tra biến thể
@@ -401,37 +402,244 @@ router.put("/orders/:orderId/shipping-address", async (req, res) => {
 });
 
 router.put("/orders/payment", async (req, res) => {
-  try {
-    const { orderId, statusPayment, paymentMethod} = req.query;
+    try {
+        const { orderId, statusPayment, paymentMethod } = req.query;
 
-    console.log("orderId nhận được từ params:", orderId);
-    console.log("Trạng thái thanh toán:", statusPayment);
+        console.log("orderId nhận được từ params:", orderId);
+        console.log("Trạng thái thanh toán:", statusPayment);
 
-    // Kiểm tra định dạng ID hợp lệ
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ message: "ID đơn hàng không hợp lệ!" });
+        // Kiểm tra định dạng ID hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({ message: "ID đơn hàng không hợp lệ!" });
+        }
+
+        // Cập nhật đơn hàng
+        const updatedOrder = await Order.findByIdAndUpdate(
+            orderId,
+            {
+                $set: {
+                    statusPayment,
+                    paymentMethod,
+                },
+            }
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+        }
+
+        return res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công!", updatedOrder });
+    } catch (error) {
+        console.error("Lỗi khi cập nhật trạng thái thanh toán:", error.message);
+        return res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
+});
 
-    // Cập nhật đơn hàng
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      {
-        $set: {
-          statusPayment,
-          paymentMethod,
-        },
-      }
-    );
+// Đảm bảo bạn đã có tệp font đúng trong dự án
+const RobotoRegularFont = fs.readFileSync(path.join(__dirname, "fonts/Roboto-Regular.ttf"), "base64");
+const RobotoBoldFont = fs.readFileSync(path.join(__dirname, "fonts/Roboto-Bold.ttf"), "base64");
 
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+
+const generateInvoice = (orderDetails) => {
+    console.log("Thông tin đơn hàng:", orderDetails);
+
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new jsPDF();
+
+            // Đăng ký font Roboto
+            doc.addFileToVFS("Roboto-Regular.ttf", RobotoRegularFont);
+            doc.addFileToVFS("Roboto-Bold.ttf", RobotoBoldFont);
+            doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+            doc.addFont("Roboto-Bold.ttf", "Roboto", "bold");
+            doc.setFont("Roboto");
+
+            let y = 10;
+
+            // Tiêu đề cửa hàng
+            doc.setFontSize(20);
+            doc.setFont("Roboto", "bold");
+            doc.text("CỬA HÀNG GIÀY DÉP HDND", 105, y, { align: "center" });
+            y += 8;
+
+            doc.setFontSize(12);
+            doc.setFont("Roboto", "normal");
+            doc.text("Địa chỉ: 12 Nguyễn Văn Bảo, Quận Gò Vấp, TP.HCM", 105, y, { align: "center" });
+            y += 6;
+            doc.text("SĐT: 0123 456 789 | Email: hdndshop@gmail.com", 105, y, { align: "center" });
+            y += 6;
+            doc.text("----------------------------------------------------------------------------------------------------------------------------------", 105, y, { align: "center" });
+            y += 10;
+
+            // Tiêu đề hóa đơn
+            doc.setFontSize(18);
+            doc.setFont("Roboto", "bold");
+            doc.text(`ĐƠN HÀNG #${orderDetails.order.idHoaDon}`, 105, y, { align: "center" });
+            y += 10;
+
+            // Ngày lập
+            const orderDate = orderDetails.order.orderDate || new Date(); // nếu không có thì lấy ngày hiện tại
+            doc.setFontSize(12);
+            doc.setFont("Roboto", "normal");
+            doc.text(`Ngày lập: ${new Date(orderDate).toLocaleDateString('vi-VN')}`, 20, y);
+            y += 10;
+
+            const shippingAddress = orderDetails.order.shippingAddress;
+            doc.setFontSize(12);
+            doc.text(`Tên người nhận: ${shippingAddress.fullName}`, 20, y);
+            y += 8;
+            doc.text(`Số điện thoại: ${shippingAddress.phone}`, 20, y);
+            y += 8;
+            doc.text(`Địa chỉ: ${shippingAddress.address.street}, ${shippingAddress.address.district}, ${shippingAddress.address.city}`, 20, y);
+            y += 10;
+
+            // Bảng sản phẩm
+            const tableColumns = ["Sản phẩm", "Số lượng", "Size", "Màu sắc", "Đơn giá (VND)", "Thành tiền (VND)"];
+            const tableRows = [];
+
+            orderDetails.order.cartItems.forEach((item) => {
+                item.variants.forEach((variant) => {
+                    tableRows.push([
+                        item.name,
+                        variant.stock,
+                        variant.size || "Không có",
+                        variant.color || "Không có",
+                        `${item.price.toLocaleString()}đ`,
+                        `${(item.price * variant.stock).toLocaleString()}đ`,
+                    ]);
+                });
+            });
+
+            autoTable(doc, {
+                startY: y,
+                head: [tableColumns],
+                body: tableRows,
+                theme: "striped",
+                styles: {
+                    font: "Roboto",
+                    fontSize: 10,
+                    cellPadding: 3,
+                    textColor: [33, 33, 33],
+                    lineColor: [221, 221, 221],
+                    lineWidth: 0.1,
+                },
+                headStyles: {
+                    fillColor: [52, 152, 219],
+                    textColor: [255, 255, 255],
+                    fontStyle: "bold",
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fillColor: [245, 245, 245],
+                    textColor: [50, 50, 50],
+                },
+                columnStyles: {
+                    1: { halign: 'center' },
+                    2: { halign: 'center' },
+                    3: { halign: 'center' },
+                    4: { halign: 'right' },
+                    5: { halign: 'right' },
+                },
+                didParseCell: (data) => {
+                    data.cell.styles.font = "Roboto";
+                }
+            });
+
+            const finalY = doc.lastAutoTable.finalY || y + 10;
+
+            const totalAmount = orderDetails.order.totalAmount;
+            const discount = orderDetails.order.discount || 0;
+            const grandTotal = totalAmount - discount;
+
+            doc.setFontSize(12);
+            doc.text(`Tổng tiền: ${totalAmount.toLocaleString()} VND`, 130, finalY + 10);
+            doc.setFontSize(10);
+            doc.text(`(Đã bao gồm 20K phí vận chuyển)`, 130, finalY + 16); // Dòng nhỏ bên dưới
+            doc.setFontSize(12);
+            doc.text(`Giảm giá: ${discount.toLocaleString()} VND`, 130, finalY + 24);
+            doc.text(`Tổng cộng: ${grandTotal.toLocaleString()} VND`, 130, finalY + 32);
+
+            const invoiceDir = path.join(__dirname, 'invoices');
+
+            if (!fs.existsSync(invoiceDir)) {
+                fs.mkdirSync(invoiceDir, { recursive: true });
+            }
+
+            const fileName = `${orderDetails.order.idHoaDon}.pdf`;
+            const filePath = path.join(invoiceDir, fileName);
+
+            const pdfOutput = doc.output();
+            fs.writeFileSync(filePath, pdfOutput);
+
+            resolve({ pdfUrl: filePath });
+        } catch (err) {
+            reject(err);
+        }
+    });
+};
+
+
+
+// API tạo hóa đơn PDF
+router.post("/generate-invoice", async (req, res) => {
+    try {
+        const { orderDetails } = req.body;
+        const invoice = await generateInvoice(orderDetails);
+        res.json(invoice); // Trả về URL của file PDF
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Lỗi khi tạo hóa đơn PDF" });
     }
+});
 
-    return res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công!", updatedOrder });
-  } catch (error) {
-    console.error("Lỗi khi cập nhật trạng thái thanh toán:", error.message);
-    return res.status(500).json({ message: "Lỗi server!", error: error.message });
-  }
+// Cấu hình gửi email với nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',  // Ví dụ: sử dụng Gmail
+    auth: {
+        user: 'hdndstore.cs01@gmail.com',
+        pass: 'ycum eapv cixa yyqg' // Mật khẩu ứng dụng Gmail
+    }
+});
+
+// Gửi email với file PDF đính kèm
+const sendInvoiceEmail = (email, invoiceUrl) => {
+    console.log("Gửi email đến:", email);
+    return new Promise((resolve, reject) => {
+        const mailOptions = {
+            from: 'hdndstore.cs01@gmail.com',
+            to: email,
+            subject: 'Hóa đơn mua hàng',
+            text: `Chào bạn,\n\nCảm ơn bạn đã mua hàng từ cửa hàng của chúng tôi. Dưới đây là hóa đơn của bạn.\nTrân trọng,\nCửa hàng`,
+            attachments: [
+                {
+                    filename: path.basename(invoiceUrl),  // Lấy tên file từ URL
+                    path: path.join(__dirname, 'invoices', path.basename(invoiceUrl)),  // Đường dẫn file trên server
+                    contentType: 'application/pdf'
+                }
+            ]
+        };
+
+        // Gửi email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+};
+
+// API gửi email hóa đơn
+router.post("/send-invoice-email", async (req, res) => {
+    try {
+        const { email, invoiceUrl } = req.body;
+        await sendInvoiceEmail(email, invoiceUrl);
+        res.json({ message: "Email đã được gửi thành công" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Lỗi khi gửi email" });
+    }
 });
 
 
