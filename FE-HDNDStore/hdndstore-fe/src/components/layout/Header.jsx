@@ -17,11 +17,8 @@ const Header = () => {
   const [showSubmenu, setShowSubmenu] = useState(null); // Điều khiển submenu trên mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024); // Xác định thiết bị
   const navigate = useNavigate();
-  const [cart, setCart] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
-  const [cartItems, setCartItems] = useState([]);
 
-  // Cập nhật trạng thái khi resize màn hình 1
+  // Cập nhật trạng thái khi resize màn hình
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 1024);
@@ -38,33 +35,6 @@ const Header = () => {
       navigate("/auth");
     }
   };
-
-
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-      return;
-    }
-
-    const storedCarts = JSON.parse(localStorage.getItem("carts")) || {};
-    const userCart = storedCarts[userId] || [];
-
-    setCart(userCart);
-    setCartItems(userCart);
-  }, []);
-
-  const calculateCartCount = (cartItems) => {
-    let total = 0;
-    for (const item of cartItems) {
-      total += item.quantity;
-    }
-    return total;
-  };
-
-  useEffect(() => {
-    setCartCount(calculateCartCount(cart));
-  }, [cart]);
 
   const handleCartClick = () => {
     const userId = localStorage.getItem("userId");
@@ -218,7 +188,7 @@ const Header = () => {
               style={{ cursor: "pointer" }}
             >
               <FaShoppingCart />
-              <div className="cart_count">{cartCount}</div>
+              <div className="cart_count">1</div>
             </div>
           </div>
 
