@@ -30,4 +30,7 @@ router.put('/import/:id', ProductController.addStock);
 // Route xuất hàng
 router.put('/export', ProductController.updateStock);
 
+// In your ProductRouter.js file
+router.get('/top', ProductController.getTopProducts);
+
 module.exports = router;

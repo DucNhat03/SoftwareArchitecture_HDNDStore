@@ -273,11 +273,49 @@ const getAnalysisResults = (req, res) => {
   });
 };
 
+//  lấy doanh thu
+const getRevenue = async (req, res) => {
+  try {
+    // Lấy tất cả đơn hàng đã giao và đã thanh toán
+    const completedOrders = await Order.find({ 
+      status: "Đã giao",
+      statusPayment: "Đã thanh toán" 
+    });
+
+    // Tính tổng doanh thu
+    const totalRevenue = completedOrders.reduce((total, order) => {
+      return total + order.finalAmount;
+    }, 0);
+
+    // Tính doanh thu theo tháng trong năm hiện tại
+    const currentYear = new Date().getFullYear();
+    const monthlyRevenue = Array(12).fill(0);
+
+    completedOrders.forEach(order => {
+      const orderDate = new Date(order.ngayNhanHang || order.orderDate);
+      if (orderDate.getFullYear() === currentYear) {
+        const month = orderDate.getMonth();
+        monthlyRevenue[month] += order.finalAmount;
+      }
+    });
+
+    res.status(200).json({
+      totalRevenue,
+      monthlyRevenue,
+      orderCount: completedOrders.length
+    });
+  } catch (error) {
+    console.error("Lỗi khi tính doanh thu:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   updateOrder,
   getAllOrders,
   getOrdersOfStatus,
   getDeliveredOrders,
   getReport,
-  getAnalysisResults
+  getAnalysisResults,
+  getRevenue
 };

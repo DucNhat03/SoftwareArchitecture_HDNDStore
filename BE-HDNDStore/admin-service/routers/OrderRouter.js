@@ -19,4 +19,7 @@ router.get('/analysis-results', OrderController.getAnalysisResults);
 // Route lấy danh sách Order theo status
 router.get('/status/:status', OrderController.getOrdersOfStatus);
 
+// In your OrderRouter.js file
+router.get('/revenue', OrderController.getRevenue);
+
 module.exports = router;

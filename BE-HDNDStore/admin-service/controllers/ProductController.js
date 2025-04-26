@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Order = require("../models/Order");
 
 // Tạo sản phẩm mới
 const createProduct = async (req, res) => {
@@ -349,6 +350,54 @@ const updateStock = async (req, res) => {
   }
 };
 
+// Lấy các sản phẩm bán chạy nhất
+const getTopProducts = async (req, res) => {
+  try {
+    // Lấy tất cả đơn hàng đã giao
+    const completedOrders = await Order.find({ status: "Đã giao" });
+    
+    // Tạo map để đếm số lượng bán của từng sản phẩm
+    const productSalesMap = new Map();
+    
+    // Tính tổng số lượng bán của từng sản phẩm
+    completedOrders.forEach(order => {
+      order.cartItems.forEach(item => {
+        const productId = item._id.toString();
+        const productName = item.name;
+        
+        // Tính tổng số lượng từ tất cả variants
+        const totalQuantity = item.variants.reduce((sum, variant) => sum + variant.stock, 0);
+        
+        if (productSalesMap.has(productId)) {
+          const current = productSalesMap.get(productId);
+          productSalesMap.set(productId, {
+            ...current,
+            quantity: current.quantity + totalQuantity
+          });
+        } else {
+          productSalesMap.set(productId, {
+            id: productId,
+            name: productName,
+            quantity: totalQuantity,
+            image: item.image[0] || '',
+            price: item.price
+          });
+        }
+      });
+    });
+    
+    // Chuyển map thành mảng và sắp xếp theo số lượng giảm dần
+    const topProducts = Array.from(productSalesMap.values())
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 10); // Lấy 10 sản phẩm bán chạy nhất
+    
+    res.status(200).json(topProducts);
+  } catch (error) {
+    console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -359,4 +408,5 @@ module.exports = {
   updateStock,
   getWomenProducts,
   getMenProducts,
+  getTopProducts
 };
