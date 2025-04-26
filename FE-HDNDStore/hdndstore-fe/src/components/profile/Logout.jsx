@@ -1,25 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Button, Card, Form, Modal, Alert } from "react-bootstrap";
 import { FaSignOutAlt, FaUndo, FaExclamationTriangle, FaCheck, FaUserLock } from "react-icons/fa";
 import "../../styles/profile/Logout.css";
 import { useNavigate } from "react-router-dom"; 
+import api from "../../services/api"; // Đường dẫn đến file api.js
 
 const Logout = () => {
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [email, setEmail] = useState("");
+
+
+  useEffect(() => {
+        const fetchUserData = async () => {
+          try {
+            const token = localStorage.getItem("token");
+    
+            if (!token) {
+              console.error("Chưa có token, vui lòng đăng nhập!");
+              return;
+            }
+    
+            const response = await api.get("/auth/profile", {
+              headers: { Authorization: `Bearer ${token}` }, 
+            });
+            setEmail(response.data.email);
+    
+            console.log("Avatar URL:", response.data.avatar);
+          } catch (error) {
+            console.error(
+              "Lỗi khi lấy thông tin user:",
+              error.response?.data || error
+            );
+          }
+        };
+    
+        fetchUserData();
+      }, []);
   
-  // Handle showing the confirmation modal
   const initiateLogout = () => {
     setShowConfirmModal(true);
   };
 
-  // Xử lý đăng xuất (xóa token, điều hướng)
   const handleLogout = () => {
     setIsLoggingOut(true);
     
-    // Simulate a short delay for better UX
     setTimeout(() => {
       try {
         localStorage.removeItem("token"); 
@@ -27,7 +54,6 @@ const Logout = () => {
         localStorage.removeItem("role");
         localStorage.removeItem("promo_closed");
         
-        // Xóa tất cả các key có tiền tố "promo_closed_"
         Object.keys(localStorage).forEach((key) => {
           if (key.startsWith("promo_closed_")) {
             localStorage.removeItem(key);
@@ -36,7 +62,6 @@ const Logout = () => {
         
         setFeedback("success");
         
-        // Redirect after successful logout with a short delay
         setTimeout(() => {
           navigate("/auth");
         }, 1500);
@@ -124,12 +149,12 @@ const Logout = () => {
             </Alert>
           ) : (
             <>
-              <p>Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?</p>
+              <p>Bạn có chắc chắn đăng xuất khỏi tài khoản không?</p>
               
               <div className="session-info p-3 rounded bg-light mb-3">
                 <div className="d-flex justify-content-between mb-2">
                   <span className="text-muted">Email:</span>
-                  <span className="fw-bold">{localStorage.getItem("userEmail") || "user@example.com"}</span>
+                  <span className="fw-bold">{email || "user@example.com"}</span>
                 </div>
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Phiên đăng nhập:</span>

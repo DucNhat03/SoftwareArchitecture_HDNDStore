@@ -390,29 +390,6 @@ body {
   background-color: #f8f9fa;
 }
 
-/* Promo Banner */
-.promo-banner {
-  background-color: #f8f9fa;
-  position: relative;
-}
-
-.promo-content {
-  padding: 2rem;
-}
-
-.promo-content h2 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.promo-content p {
-  font-size: 1.1rem;
-  color: #555;
-  margin-bottom: 1.5rem;
-}
-
 /* Store Services */
 .store-services {
   border-top: 1px solid #eee;
@@ -533,9 +510,6 @@ body {
     height: 200px;
   }
   
-  .promo-content h2 {
-    font-size: 2rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -576,13 +550,6 @@ body {
     font-size: 1.5rem;
   }
   
-  .promo-content {
-    padding: 1rem 0;
-  }
-  
-  .promo-content h2 {
-    font-size: 1.8rem;
-  }
   
   .service-item {
     padding: 1rem;

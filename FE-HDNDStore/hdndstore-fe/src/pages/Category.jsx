@@ -379,17 +379,15 @@ const ProductList = () => {
     <>
       <Header />
       
-      <Container fluid className="category-page py-4" style={{ marginTop: '-55%' }}>
-        {/* Breadcrumb */}
-        <Container className="mb-3 mt-4">
+      <Container fluid className="category-page py-4" style={{ marginTop: '-1%' }}>
+        <Container className="px-4">
           <Breadcrumb>
             <Breadcrumb.Item href="/">Trang chủ</Breadcrumb.Item>
-            <Breadcrumb.Item active>Sản phẩm</Breadcrumb.Item>
+            <Breadcrumb.Item active>Danh mục sản phẩm</Breadcrumb.Item>
           </Breadcrumb>
         </Container>
-        
         <Container>
-          <Row className="mb-4">
+          <Row className="mb-0" style={{ marginTop: '-63%' }}>
             {/* Page Title */}
             <Col>
               <div className="d-flex justify-content-between align-items-center">
@@ -432,7 +430,7 @@ const ProductList = () => {
           
           <Row>
             {/* Sidebar Filters (Desktop) */}
-            <Col md={3} className="d-none d-md-block">
+            <Col md={3} className="d-none d-md-block mt-3">
               <Card className="filter-sidebar shadow-sm border-0 mb-4">
                 <Card.Header className="bg-white py-3 border-0">
                   <div className="d-flex justify-content-between align-items-center">
@@ -518,22 +516,7 @@ const ProductList = () => {
                       ))}
                     </div>
                   </div>
-                  
-                  {/* Brand Filter */}
-                  {/* <div className="filter-section">
-                    <h6 className="filter-title">Thương Hiệu</h6>
-                    {brands.map((brand, index) => (
-                      <Form.Check
-                        key={index}
-                        type="checkbox"
-                        id={`brand-${index}`}
-                        label={brand}
-                        className="mb-2"
-                        checked={filterOptions.brands.includes(brand)}
-                        onChange={() => handleFilterChange('brands', brand)}
-                      />
-                    ))}
-                  </div> */}
+        
                 </Card.Body>
               </Card>
               
