@@ -18,10 +18,8 @@ const ForgotPassword = ({ switchMode }) => {
     try {
       await sendOtp(email);
       setStep(2);
-      // setMessage("Mã OTP đã được gửi đến email!");
       toastService.success("Mã OTP đã được gửi đến email!");
     } catch (error) {
-      // setMessage(error.error || showError(error.error || "Lỗi gửi OTP!"));
       toastService.error(error.error || showError(error.error || "Lỗi gửi OTP!"));
     }
   };
@@ -32,10 +30,8 @@ const ForgotPassword = ({ switchMode }) => {
     try {
       await verifyOtp(email, otp);
       setStep(3);
-      // setMessage("OTP hợp lệ, vui lòng nhập mật khẩu mới!");
       toastService.success("OTP hợp lệ, vui lòng nhập mật khẩu mới!");
     } catch (error) {
-      // setMessage(error.error || showError(error.error || "Lỗi xác minh OTP!"));
       toastService.error(error.error || showError(error.error || "Lỗi xác minh OTP!"));
     }
   };
@@ -45,11 +41,9 @@ const ForgotPassword = ({ switchMode }) => {
     e.preventDefault();
     try {
       await resetPassword(email, newPassword);
-      // setMessage("Mật khẩu đã được đặt lại thành công!");
       toastService.success("Mật khẩu đã được đặt lại thành công!");
-      setTimeout(() => switchMode("login"), 1500); // Tro ve trang dang nhap
+      setTimeout(() => switchMode("login"), 1500); 
     } catch (error) {
-      // setMessage(error.error || showError(error.error || "Lỗi đặt lại mật khẩu!"));
       toastService.error(error.error || showError(error.error || "Lỗi đặt lại mật khẩu!"));
     }
   };
@@ -62,13 +56,9 @@ const ForgotPassword = ({ switchMode }) => {
 
   return (
     <Form className="text-center">
-      <h4 style={{ marginTop: 40 }}>LẤY LẠI MẬT KHẨU</h4>
 
       {step === 1 && (
         <>
-          <p className="mb-3" style={{ fontSize: 13 }}>
-            Vui lòng nhập email đã đăng ký tài khoản để lấy lại mật khẩu.
-          </p>
           <InputGroup className="mb-3">
             <InputGroup.Text>
               <FaEnvelope />
@@ -79,12 +69,14 @@ const ForgotPassword = ({ switchMode }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="email-input py-2 px-3"
             />
           </InputGroup>
           <Button
             variant="warning"
-            className="w-100 reset-btn"
+            className="w-100 reset-btn p-3"
             onClick={handleSendOtp}
+
           >
             Lấy lại mật khẩu
           </Button>
@@ -100,6 +92,8 @@ const ForgotPassword = ({ switchMode }) => {
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
+            className="email-input py-2 px-3"
+
           />
           <Button
             variant="warning"
@@ -124,6 +118,7 @@ const ForgotPassword = ({ switchMode }) => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              className="email-input py-2 px-3"
             />
           </InputGroup>
           <Button

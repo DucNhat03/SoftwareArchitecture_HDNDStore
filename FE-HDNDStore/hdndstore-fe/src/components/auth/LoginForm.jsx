@@ -12,34 +12,29 @@ const LoginForm = ({ switchMode }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Xử lý thay đổi input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Xử lý submit form đăng nhập
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post("/auth/login", formData);
       const { token, user } = response.data;
 
-      // Lưu token và role vào localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);
       localStorage.setItem("userId", JSON.stringify(user._id));
 
-      // Hiển thị thông báo đăng nhập thành công
       toastService.success("Đăng nhập thành công!");
 
-      // ✅ Điều hướng sau 2 giây để đảm bảo toast hiển thị trước
       setTimeout(() => {
         if (user.role === "admin") {
           navigate("/admin/users");
         } else {
           navigate("/home");
         }
-      }, 2000); // Chờ 2 giây trước khi chuyển trang để người dùng thấy toast
+      }, 2000); 
 
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
@@ -63,6 +58,7 @@ const LoginForm = ({ switchMode }) => {
           placeholder="Email"
           required
           onChange={handleChange}
+          className="email-input py-2 px-3"
         />
       </InputGroup>
 
@@ -78,6 +74,7 @@ const LoginForm = ({ switchMode }) => {
           required
           value={formData.password}
           onChange={handleChange}
+          className="email-input py-2 px-3"
         />
         <Button
           variant="outline-secondary"
@@ -101,7 +98,7 @@ const LoginForm = ({ switchMode }) => {
       </div>
 
       {/* Nút đăng nhập */}
-      <Button variant="primary" className="w-100 login-btn" type="submit">
+      <Button variant="primary" className="w-100 login-btn p-3" type="submit">
         Đăng nhập
       </Button>
 
