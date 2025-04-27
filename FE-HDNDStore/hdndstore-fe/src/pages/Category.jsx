@@ -166,29 +166,23 @@ const ProductList = () => {
   // Categories for filter
   const categories = [
     { id: 1, name: "Dép nữ" },
-    { id: 2, name: "Giày cao gót" },
+    { id: 2, name: "Dép nam" },
     { id: 3, name: "Giày thể thao" },
-    { id: 4, name: "Dép nam" },
+    { id: 4, name: "Sandal nữ" },
+    { id: 6, name: "Sandal nam" },
     { id: 5, name: "Giày lười" },
-    { id: 6, name: "Balo" }
   ];
   
   // Colors for filter
   const colors = {
-    "Bạc": "#C0C0C0",
-    "Nâu": "#8B4513",
     "Trắng": "#e8e8e8",
     "Đen": "#000000",
-    "Đỏ": "#FF0000",
     "Xanh": "#0000FF",
-    "Kem": "#F5F5DC",
     "Vàng": "#FFFF00",
-    "Hồng": "#FFC0CB",
-    "Xám": "#808080",
   };
   
   // Sizes for filter
-  const sizes = ["35", "36", "37", "38", "39", "40", "41", "42", "43"];
+  const sizes = ["39", "40", "41", "42", "43"];
   
   // Brands for filter
   const brands = ["MWC", "Nike", "Adidas", "Vans", "Converse"];
@@ -533,7 +527,7 @@ const ProductList = () => {
                   </div>
                   <div className="p-3">
                     <h6 className="mb-2">Sản Phẩm Nổi Bật</h6>
-                    <p className="small mb-2">Giày Thể Thao Nữ MWC A205 - Giày Thể Thao Đế Cao</p>
+                    <p className="small mb-2">Giày Thể Thao Nữ HDND A205 - Giày Thể Thao Đế Cao</p>
                     <div className="fw-bold text-danger">295.000₫</div>
                     <Button 
                       variant="outline-primary" 
