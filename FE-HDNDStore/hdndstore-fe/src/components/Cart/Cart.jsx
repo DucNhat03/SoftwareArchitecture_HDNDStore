@@ -474,7 +474,7 @@ const ShippingInfo = ({ carts = [], dis }) => {
                     }
                 }
             };
-
+            console.log("orderData", orderData);
             // Gửi yêu cầu đặt hàng
             const response = await fetch("http://localhost:5002/api/dat-hang", {
                 method: "POST",

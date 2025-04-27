@@ -470,8 +470,9 @@ export default function OrderDelivered() {
                             color="info" 
                             sx={{ '& .MuiBadge-badge': { fontWeight: 500 } }}
                           >
-                            <Typography variant="body2">sản phẩm</Typography>
+                           
                           </Badge>
+                          <Typography variant="body2">sản phẩm</Typography>
                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
