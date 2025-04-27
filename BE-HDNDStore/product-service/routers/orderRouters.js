@@ -603,18 +603,68 @@ const transporter = nodemailer.createTransport({
 
 // Gửi email với file PDF đính kèm
 const sendInvoiceEmail = (email, invoiceUrl) => {
-    console.log("Gửi email đến:", email);
+    console.log(`Gửi email đến: ${email}`);
+
     return new Promise((resolve, reject) => {
+        // Tạo đối tượng mailOptions với nội dung và cấu hình email
         const mailOptions = {
-            from: 'hdndstore.cs01@gmail.com',
-            to: email,
-            subject: 'Hóa đơn mua hàng',
-            text: `Chào bạn,\n\nCảm ơn bạn đã mua hàng từ cửa hàng của chúng tôi. Dưới đây là hóa đơn của bạn.\nTrân trọng,\nCửa hàng`,
+            from: 'hdndstore.cs01@gmail.com',  // Địa chỉ email người gửi
+            to: email,  // Địa chỉ email người nhận
+            subject: 'Hóa Đơn Mua Hàng - HDND Store',  // Tiêu đề email
+            text: `
+Kính gửi quý khách,
+
+Cảm ơn bạn đã tin tưởng mua sắm tại HDND Store. Dưới đây là hóa đơn chi tiết cho đơn hàng của bạn. Vui lòng kiểm tra tệp đính kèm.
+
+Nếu có bất kỳ câu hỏi nào, xin vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ khách hàng.
+
+Trân trọng,
+HDND Store
+            `,  // Nội dung email bằng text
+            html: `
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hóa Đơn Mua Hàng - HDND Store</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body style="margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;">
+    <div style="max-width: 650px; margin: 0 auto;">
+        <!-- Header Section -->
+        <div style="background-color: #ff6600; padding: 24px; color: #ffffff;">
+            <h1 style="font-size: 24px; font-weight: 700; text-align: center;">
+                Hóa Đơn Mua Hàng - HDND Store
+            </h1>
+        </div>
+        
+        <!-- Invoice Content Section -->
+        <div style="padding: 24px; background-color: #ffffff;">
+            <p>Kính gửi quý khách,</p>
+            <p>Cảm ơn bạn đã tin tưởng mua sắm tại <strong>HDND Store</strong>. Dưới đây là hóa đơn chi tiết cho đơn hàng của bạn. Vui lòng kiểm tra tệp đính kèm.</p>
+            <p>Nếu có bất kỳ câu hỏi nào, xin vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ khách hàng.</p>
+            <br/>
+            <p>Trân trọng,<br/>HDND Store</p>
+        </div>
+        
+        <!-- Footer Section -->
+        <div style="background-color: #f6f6f6; padding: 24px; text-align: center;">
+            <p>Liên hệ với chúng tôi nếu cần hỗ trợ:</p>
+            <p><a href="mailto:hdndstore.cs01@gmail.com" style="color: #ff6600; text-decoration: none;">hdndstore.cs01@gmail.com</a></p>
+            <p>Hoặc truy cập website: <a href="http://localhost:5173/home" style="color: #ff6600; text-decoration: none;">HDND Store</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
+            `,  // Nội dung email bằng HTML
             attachments: [
                 {
                     filename: path.basename(invoiceUrl),  // Lấy tên file từ URL
                     path: path.join(__dirname, 'invoices', path.basename(invoiceUrl)),  // Đường dẫn file trên server
-                    contentType: 'application/pdf'
+                    contentType: 'application/pdf'  // Định dạng tệp đính kèm
                 }
             ]
         };
@@ -622,13 +672,16 @@ const sendInvoiceEmail = (email, invoiceUrl) => {
         // Gửi email
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                reject(error);
+                console.error("Lỗi khi gửi email:", error);
+                reject(error);  // Nếu có lỗi thì trả về lỗi
             } else {
-                resolve(info);
+                console.log('Email gửi thành công:', info.response);
+                resolve(info);  // Nếu gửi thành công, trả về thông tin email
             }
         });
     });
 };
+
 
 // API gửi email hóa đơn
 router.post("/send-invoice-email", async (req, res) => {
