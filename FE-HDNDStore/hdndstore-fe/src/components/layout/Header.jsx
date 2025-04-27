@@ -88,27 +88,20 @@ const Header = () => {
       name: "ĐỒNG GIÁ",
       link: "/category",
       submenu: [
-        "Giày đồng giá 79K",
-        "Giày đồng giá 99K",
-        "Giày đồng giá 119K",
-        "Giày đồng giá 149K",
-        "Giày đồng giá 199K",
+        "Giày đồng giá 200K",
+        "Giày đồng giá 500K",
+        "Giày đồng giá 900K",
       ],
     },
     {
       name: "GIÀY NỮ",
       link: "/category",
       submenu: [
-        "Giày cao gót nữ",
+        "Giày cao gót",
         "Giày thể thao nữ",
         "Sandal nữ",
-        "Dép xỏ ngón nữ",
-        "Giày búp bê nữ",
-        "Giày boots nữ",
-        "Giày oxford nữ",
-        "Giày đế bệt nữ",
-        "Giày đế xuồng",
-        "Giày thể thao chạy bộ",
+        "Giày lười",
+        "Dép nữ"
       ],
     },
     {
@@ -116,15 +109,10 @@ const Header = () => {
       link: "/category",
       submenu: [
         "Giày thể thao nam",
-        "Giày sneaker nam",
-        "Giày loafer nam",
-        "Giày tây nam",
-        "Giày slip-on nam",
-        "Giày boots nam",
-        "Giày oxford nam",
-        "Giày dép nam thời trang",
-        "Giày chạy bộ nam",
-        "Giày thể thao casual",
+        "Dép nam",
+        "Giày Boot nam",
+        "Giày lười",
+        "Giày sandal nam"
       ],
     },
     {
@@ -144,10 +132,7 @@ const Header = () => {
         "Tất giày nữ",
         "Tất giày nam",
         "Dây giày",
-        "Giày lót",
-        "Khăn quàng cổ",
-        "Giày chống trượt",
-        "Túi bảo vệ giày",
+        "Lót giày"
       ],
     },
   ];

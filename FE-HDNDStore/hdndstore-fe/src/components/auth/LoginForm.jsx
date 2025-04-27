@@ -30,7 +30,7 @@ const LoginForm = ({ switchMode }) => {
 
       setTimeout(() => {
         if (user.role === "admin") {
-          navigate("/admin/users");
+          navigate("/admin/dashboard");
         } else {
           navigate("/home");
         }

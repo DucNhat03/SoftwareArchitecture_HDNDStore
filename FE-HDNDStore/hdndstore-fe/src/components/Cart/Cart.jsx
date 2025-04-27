@@ -95,7 +95,7 @@ const CartTable = ({ setDis }) => {
     // Cart
     return (
         <>
-            <Card className="mb-4 shadow-sm">
+            <Card className="mb-6 shadow-sm">
                 <Card.Header className="bg-dark text-white">
                     <h5 className="mt-2 mb-2 py-2">Giỏ hàng của bạn</h5>
                 </Card.Header>
@@ -540,14 +540,14 @@ const ShippingInfo = ({ carts = [], dis }) => {
     return (
         <>
             <Card className="shadow-sm mb-4">
-                <Card.Header className="bg-white">
+                <Card.Header className="bg-dark text-white">
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center">
                             <i className="bi bi-truck fs-4 me-2 text-primary"></i>
                             <h5 className="mb-0 py-2">THÔNG TIN VẬN CHUYỂN</h5>
                         </div>
                         <Button 
-                            variant={isEditing ? "outline-secondary" : "outline-primary"} 
+                            variant={isEditing ? "outline-secondary" : "outline-secondary"} 
                             size="sm"
                             onClick={() => setIsEditing(!isEditing)}
                         >
@@ -738,7 +738,7 @@ const Cart = () => {
                     </ol>
                 </nav>
                 
-                <h2 className="mb-4 fw-bold">Giỏ hàng</h2>
+                <h2 className="mb-4 fw-bold py-2">Giỏ hàng</h2>
                 
                 <CartTable setDis={setDis} />
                 <ShippingInfo cart={cart} dis={dis} />

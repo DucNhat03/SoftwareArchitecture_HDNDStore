@@ -467,10 +467,8 @@ const HeroSlider = () => {
 };
 
 const Home = () => {
-  const [caoGotNu, setcaoGotNu] = useState([]);
-  const [giayLuoi, setGiayLuoi] = useState([]);
-  const [Balo, setBalo] = useState([]);
-  const [SandalNam, setSandalNam] = useState([]);
+  const [GiayNu, setGiayNu] = useState([]);
+  const [GiayDongGia, setGiayDongGia] = useState([]);
   const [GiayNam, setGiayNam] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -483,52 +481,36 @@ const Home = () => {
         // Add logging to see request status
         console.log("Fetching products...");
 
-        const [caoGotNuRes, giayLuoiRes, baloRes, sandalNamRes, giayNamRes] =
+        const [giayNuRes, giayNamRes, giayDongGiaRes] =
           await Promise.all([
             axios.get(
-              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20cao%20g%C3%B3t"
+              "http://localhost:5002/products/all/Giày%20nữ"
             ),
             axios.get(
-              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20l%C6%B0%E1%BB%9Di"
+              "http://localhost:5002/products/all/Giày%20nam"
             ),
             axios.get(
-              "http://localhost:5002/products/all/category?subcategories=Balo"
-            ),
-            axios.get(
-              "http://localhost:5002/products/all/category?subcategories=Sandal%20Nam"
-            ),
-            axios.get(
-              "http://localhost:5002/products/all/category?subcategories=Gi%C3%A0y%20th%E1%BB%83%20thao"
+              "http://localhost:5002/products/all/price/200000"
             ),
           ]);
 
         // Log the first item from each response to inspect data structure
         console.log("First item from each category:", {
-          caoGotNu: caoGotNuRes.data[0],
-          giayLuoi: giayLuoiRes.data[0],
-          balo: baloRes.data[0],
-          sandalNam: sandalNamRes.data[0],
+          giayNu: giayNuRes.data[0],
+          giayDongGia: giayDongGiaRes.data[0],
           giayNam: giayNamRes.data[0],
         });
 
         // Only set state if data exists
-        if (caoGotNuRes.data && Array.isArray(caoGotNuRes.data)) {
-          console.log("Setting cao got nu data:", caoGotNuRes.data.slice(0, 8));
-          setcaoGotNu(caoGotNuRes.data.slice(0, 8));
+        if (giayNuRes.data && Array.isArray(giayNuRes.data)) {
+          console.log("Setting cao got nu data:", giayNuRes.data.slice(0, 8));
+          setGiayNu(giayNuRes.data.slice(0, 8));
         } else {
           console.warn("No cao got nu data or wrong format");
         }
 
-        if (giayLuoiRes.data && Array.isArray(giayLuoiRes.data)) {
-          setGiayLuoi(giayLuoiRes.data.slice(0, 8));
-        }
-
-        if (baloRes.data && Array.isArray(baloRes.data)) {
-          setBalo(baloRes.data);
-        }
-
-        if (sandalNamRes.data && Array.isArray(sandalNamRes.data)) {
-          setSandalNam(sandalNamRes.data);
+        if (giayDongGiaRes.data && Array.isArray(giayDongGiaRes.data)) {
+          setGiayDongGia(giayDongGiaRes.data.slice(0, 8));
         }
 
         if (giayNamRes.data && Array.isArray(giayNamRes.data)) {
@@ -537,11 +519,11 @@ const Home = () => {
 
         // Add fallbacks if any category has no products
         if (
-          (!caoGotNuRes.data || !caoGotNuRes.data.length) &&
-          caoGotNu.length === 0
+          (!giayNuRes.data || !giayNuRes.data.length) &&
+          GiayNu.length === 0
         ) {
           console.log("Using fallback for cao got nu");
-          setcaoGotNu([
+          setGiayNu([
             {
               id: 1,
               name: "Giày Cao Gót MWC Sample",
@@ -572,7 +554,7 @@ const Home = () => {
         }
 
         // Set fallback data for testing UI when API fails
-        if (caoGotNu.length === 0) {
+        if (GiayNu.length === 0) {
           const fallbackProducts = [
             {
               id: 1,
@@ -585,7 +567,7 @@ const Home = () => {
             },
             // Add more fallback products...
           ];
-          setcaoGotNu(fallbackProducts);
+          setGiayNu(fallbackProducts);
         }
       } finally {
         setLoading(false);
@@ -595,36 +577,6 @@ const Home = () => {
     fetchProducts();
   }, []);
 
-  // Featured products for bestseller section
-  const featuredProducts = [
-    {
-      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/11/20/z6049942134068_18729697cfba6413c3908ecf5dfb6cba.jpg",
-      title: "Dép Nữ MWC 8346 - Đính Nơ Phối Khóa Chữ Xinh Xắn",
-      price: "250.000đ",
-      isNew: true,
-    },
-    {
-      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/04/z6092365614579_f62dc01f434003a9427af6c017ce3d3d.jpg",
-      title: "Giày Thể Thao Nữ MWC A205 - Đế Cao Siêu Hack Dáng",
-      price: "295.000đ",
-      isNew: false,
-      discount: 15,
-    },
-    {
-      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/06/z6095835436711_180c834e94a1915d9451b05482771b7f.jpg",
-      title: "Giày Sandal Nữ MWC E144 - 2 Quai Ngang Phối Lót Dán",
-      price: "250.000đ",
-      isNew: false,
-    },
-    {
-      img: "https://img.mwc.com.vn/giay-thoi-trang?w=640&h=640&FileInput=/Resources/Product/2024/12/11/z6119144407944_24a4cb6ac285456b09483848b9b45a51.jpg",
-      title: "Sandal Nữ MWC E146 - Quai Tròn Mảnh Ngang Chéo Cách Điệu",
-      price: "250.000đ",
-      isNew: true,
-      discount: 10,
-    },
-  ];
-
   return (
     <>
       <Header />
@@ -633,19 +585,19 @@ const Home = () => {
       {/* Sale Items */}
       <ItemList
         title="ĐỒNG GIÁ HẤP DẪN"
-        items={GiayNam}
+        items={GiayDongGia}
         viewAllLink="/category?sale=true"
       />
       {/* Women's Collection */}
       <ItemList
         title="GIÀY NỮ"
-        items={caoGotNu}
+        items={GiayNu}
         viewAllLink="/category?for=women"
       />
       {/* Men's Collection */}
       <ItemList
         title="GIÀY NAM"
-        items={giayLuoi}
+        items={GiayNam}
         viewAllLink="/category?for=men"
       />
       {/* Store Services */}
