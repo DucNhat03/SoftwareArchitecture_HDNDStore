@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://localhost:5001";
 const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || "http://localhost:5002";
 const PAYMENT_SERVICE_URL = process.env.PAYMENT_SERVICE_URL || "http://localhost:5003";
-const ADMIN_SERVICE_URL = process.env.ADMIN_SERVICE_URL || "http://localhost:5004";
+const ADMIN_SERVICE_URL = process.env.ADMIN_SERVICE_URL || "http://localhost:5000";
 
 // Helper function for service proxying
 const createServiceProxy = (serviceUrl) => {
@@ -124,5 +124,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal Server Error", message: "An unexpected error occurred." });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5004;
 app.listen(PORT, () => console.log(`API Gateway running on port ${PORT}`));

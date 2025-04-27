@@ -38,7 +38,6 @@ router.post("/dat-hang", async (req, res) => {
     try {
         let { receiver, cartItems, shippingAddress, discount } = req.body;
 
-
         // Kiểm tra ID người nhận hợp lệ
         if (!receiver || !mongoose.Types.ObjectId.isValid(receiver)) {
             return res.status(400).json({ message: "ID người nhận không hợp lệ!" });
@@ -46,10 +45,10 @@ router.post("/dat-hang", async (req, res) => {
         receiver = new mongoose.Types.ObjectId(receiver);
 
         // Kiểm tra người nhận có tồn tại không
-        const userExists = await fetchUserById(String(receiver));
-        if (!userExists) {
-            return res.status(404).json({ message: "Người nhận không tồn tại!" });
-        }
+        // const userExists = await fetchUserById(String(receiver));
+        // if (!userExists) {
+        //     return res.status(404).json({ message: "Người nhận không tồn tại!" });
+        // }
 
         // Kiểm tra giỏ hàng trống
         if (!cartItems || cartItems.length === 0) {

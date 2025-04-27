@@ -224,17 +224,14 @@ export default function ProductMen() {
     });
   };
 
-  const handleRemoveImage = async (index, type, imgUrl) => {
+  const handleRemoveImage = async (index, type) => {
     try {
-      // Xóa ảnh trên Cloudinary + database
-      await axios.post("http://localhost:5000/api/delete-image", { imgUrl });
 
       // Xóa ảnh khỏi state
       setSelectedProduct((prev) => ({
         ...prev,
         [type]: prev[type].filter((_, i) => i !== index),
       }));
-
       toast.success("Xóa ảnh thành công!");
     } catch (error) {
       console.error("Lỗi khi xóa ảnh:", error);
@@ -454,7 +451,7 @@ export default function ProductMen() {
         pauseOnHover
       />
       
-      <Backdrop open={loading} sx={{ zIndex: 1300, color: '#fff' }}>
+      <Backdrop open={loading} sx={{ zIndex: 9999, color: '#fff' }}>
         <CircularProgress color="inherit" />
       </Backdrop>
       
@@ -1055,7 +1052,7 @@ export default function ProductMen() {
                             bgcolor: 'rgba(255,255,255,0.9)',
                             '&:hover': { bgcolor: 'rgba(255,255,255,1)' }
                           }}
-                          onClick={() => handleRemoveImage(index, "image", img)}
+                          onClick={() => handleRemoveImage(index, "image")}
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>
@@ -1182,7 +1179,7 @@ export default function ProductMen() {
                             '&:hover': { bgcolor: 'rgba(255,255,255,1)' },
                             padding: '2px'
                           }}
-                          onClick={() => handleRemoveImage(index, "imagethum", img)}
+                          onClick={() => handleRemoveImage(index, "imagethum")}
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>

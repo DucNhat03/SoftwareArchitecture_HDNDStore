@@ -89,7 +89,6 @@ h1 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     position: relative;
     min-height: 300px;
     max-width: 100%;
@@ -586,6 +585,8 @@ h1 {
 }
 
 .btn-tim-san-pham {
+    justify-content: center;
+    display: flex;
     text-decoration: none;
     border: 1px solid #f00;
     padding: 10px 55px;
@@ -915,8 +916,8 @@ select:disabled {
 
 
 .modal-contentgiohang {
-    right: -180px;
-    top: 190px;
+    right: 0;
+    top: -152px;
     position: fixed;
     background-color: #fff;
     margin: 10% auto;
