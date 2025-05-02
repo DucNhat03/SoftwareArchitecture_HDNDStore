@@ -20,31 +20,35 @@ const readTemplate = (filename) => {
   }
 };
 
-const sendOtpEmail = async (email, name, otp) => {
+const sendOtpEmail = async (email, name, otp, isPasswordReset = true) => {
     try {
       // Đọc template và biên dịch với dữ liệu động
       const emailTemplate = readTemplate("otp_email.hbs");
       const compiledTemplate = handlebars.compile(emailTemplate);
-      const htmlContent = compiledTemplate({ name, otp });
+      const htmlContent = compiledTemplate({ name, otp, isPasswordReset });
   
       const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
       });
   
+      const subject = isPasswordReset 
+        ? "Mã OTP xác nhận từ HDND Store" 
+        : "Xác nhận đăng ký tài khoản HDND Store";
+      
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: "Mã OTP xác nhận từ HDND Store",
-        html: htmlContent, // Gửi HTML thay vì text
+        subject: subject,
+        html: htmlContent, 
       };
   
       await transporter.sendMail(mailOptions);
-      console.log("✅ Email OTP đã gửi thành công!");
+      console.log(`✅ Email ${isPasswordReset ? 'OTP' : 'Xác thực'} đã gửi thành công!`);
     } catch (error) {
       console.error("❌ Lỗi gửi email:", error);
-      throw new Error("Không thể gửi email OTP.");
+      throw new Error("Không thể gửi email.");
     }
   };
   
-    export default sendOtpEmail;
+export default sendOtpEmail;

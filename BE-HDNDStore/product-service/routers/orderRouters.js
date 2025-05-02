@@ -12,7 +12,7 @@ const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const { jsPDF } = require("jspdf");
-const autoTable = require("jspdf-autotable").default;  // Lưu ý sử dụng .default
+const autoTable = require("jspdf-autotable").default; 
 const RobotoFont = require("../config/roboto");
 
 // Thêm middleware xử lý JSON

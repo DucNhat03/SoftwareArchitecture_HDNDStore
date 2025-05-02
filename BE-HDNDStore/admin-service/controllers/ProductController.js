@@ -1,5 +1,43 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const axios = require('axios');
+
+// Redis service URL for cache invalidation
+const REDIS_SERVICE_URL = "http://localhost:5006/api/redis";
+
+// Function to invalidate product-related caches
+const invalidateProductCaches = async (product) => {
+  try {
+    if (!product) return;
+    
+    // Invalidate specific product cache
+    const productId = product._id.toString();
+    await axios.delete(`${REDIS_SERVICE_URL}/product:${productId}`);
+    
+    // Invalidate category caches
+    if (product.category) {
+      await axios.delete(`${REDIS_SERVICE_URL}/products:category:${product.category}`);
+    }
+    
+    // Invalidate subcategory caches
+    if (product.subcategories) {
+      await axios.delete(`${REDIS_SERVICE_URL}/products:subcategory:${product.subcategories}`);
+    }
+    
+    // Invalidate price caches
+    if (product.price) {
+      await axios.delete(`${REDIS_SERVICE_URL}/products:price:${product.price}`);
+    }
+    
+    // Always invalidate all products cache
+    await axios.delete(`${REDIS_SERVICE_URL}/products:all`);
+    
+    console.log(`Đã xóa cache liên quan đến sản phẩm ${productId}`);
+  } catch (error) {
+    console.error('Lỗi khi xóa cache sản phẩm:', error.message);
+    // Không throw lỗi để không ảnh hưởng đến luồng chính
+  }
+};
 
 // Tạo sản phẩm mới
 const createProduct = async (req, res) => {
@@ -23,7 +61,7 @@ const createProduct = async (req, res) => {
     }
     const lastProduct = await Product.findOne().sort({ id: -1 });
     const newId = lastProduct ? lastProduct.id + 1 : 1; // Không cần `Number()`
-    // Tạo sản phẩm mớistock, size, color, image, rating
+    // Tạo sản phẩm mới
     const newProduct = new Product({
       id: newId.toString(),
       name,
@@ -60,6 +98,9 @@ const createProduct = async (req, res) => {
     });
 
     await newProduct.save();
+    
+    // Xóa cache liên quan khi thêm sản phẩm mới
+    await invalidateProductCaches(newProduct);
 
     res
       .status(201)
@@ -101,6 +142,8 @@ const updateProduct = async (req, res) => {
     }
 
     // Tìm và cập nhật sản phẩm
+    const oldProduct = await Product.findOne({ id });
+    
     const updatedProduct = await Product.findOneAndUpdate(
       { id },
       {
@@ -120,6 +163,12 @@ const updateProduct = async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
     }
+    
+    // Xóa cả cache của thông tin cũ và mới
+    if (oldProduct) {
+      await invalidateProductCaches(oldProduct);
+    }
+    await invalidateProductCaches(updatedProduct);
 
     res
       .status(200)
@@ -238,21 +287,28 @@ const getMenProducts = async (req, res) => {
     res.status(500).json({ error: "Lỗi máy chủ, vui lòng thử lại sau." });
   }
 };
+
 // Xóa sản phẩm
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Lấy thông tin sản phẩm trước khi xóa để invalidate cache
+    const productToDelete = await Product.findOne({ id });
+    
     // Tìm và xóa sản phẩm
     const deletedProduct = await Product.findOneAndDelete({ id });
 
     if (!deletedProduct) {
       return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
     }
+    
+    // Xóa cache sau khi xóa sản phẩm
+    if (productToDelete) {
+      await invalidateProductCaches(productToDelete);
+    }
 
-    res
-      .status(200)
-      .json({ message: "Xóa sản phẩm thành công!", product: deletedProduct });
+    res.status(200).json({ message: "Sản phẩm đã được xóa thành công!" });
   } catch (error) {
     console.error("Lỗi khi xóa sản phẩm:", error);
     res.status(500).json({ error: "Lỗi máy chủ, vui lòng thử lại." });
@@ -307,6 +363,9 @@ const addStock = async (req, res) => {
     product.status = status;
     await product.save();
 
+    // Xóa cache sau khi cập nhật số lượng
+    await invalidateProductCaches(product);
+
     res.status(200).json({ message: "Nhập hàng thành công!", product });
   } catch (error) {
     res.status(500).json({ error: "Lỗi máy chủ, vui lòng thử lại." });
@@ -317,35 +376,53 @@ const addStock = async (req, res) => {
 // Xuất hàng
 const updateStock = async (req, res) => {
   try {
-    const { productId, size, color, quantity } = req.body;
+    const { id } = req.params;
+    const { variants } = req.body;
 
-    const product = await Product.findOne({ id: productId });
+    if (!id) {
+      return res.status(400).json({ message: "Thiếu ID sản phẩm." });
+    }
 
+    if (!variants || !Array.isArray(variants)) {
+      return res.status(400).json({ message: "Dữ liệu variants không hợp lệ." });
+    }
+
+    // Tìm sản phẩm
+    const product = await Product.findOne({ id });
     if (!product) {
       return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
     }
 
-    // Tìm biến thể phù hợp với size và color
-    const variant = product.variants.find(
-      (v) => v.size === size && v.color === color
+    // Cập nhật variant
+    variants.forEach((newVariant) => {
+      const variantIndex = product.variants.findIndex(
+        (v) => v.size === newVariant.size && v.color === newVariant.color
+      );
+
+      if (variantIndex !== -1) {
+        product.variants[variantIndex].stock = newVariant.stock;
+      }
+    });
+
+    // Cập nhật trạng thái sản phẩm dựa vào tổng số lượng
+    const totalStock = product.variants.reduce(
+      (sum, variant) => sum + variant.stock,
+      0
     );
+    product.status = totalStock > 0 ? "Còn hàng" : "Hết hàng";
 
-    if (!variant) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy biến thể phù hợp." });
-    }
-
-    if (variant.stock < quantity) {
-      return res.status(400).json({ message: "Số lượng không đủ." });
-    }
-
-    // Trừ số lượng tồn kho
-    variant.stock -= quantity;
+    // Lưu sản phẩm
     await product.save();
+    
+    // Xóa cache sau khi cập nhật số lượng
+    await invalidateProductCaches(product);
 
-    res.status(200).json({ message: "Cập nhật số lượng thành công!", product });
+    res.status(200).json({
+      message: "Cập nhật số lượng thành công!",
+      product,
+    });
   } catch (error) {
+    console.error("Lỗi khi cập nhật số lượng:", error);
     res.status(500).json({ error: "Lỗi máy chủ, vui lòng thử lại." });
   }
 };
@@ -398,6 +475,33 @@ const getTopProducts = async (req, res) => {
   }
 };
 
+// Thêm hoặc cập nhật hàm làm sạch toàn bộ cache
+const clearAllProductCache = async (req, res) => {
+  try {
+    // Lấy tất cả key liên quan đến sản phẩm
+    const response = await axios.get(REDIS_SERVICE_URL);
+    const keys = response.data.keys || [];
+    
+    const productKeys = keys.filter(key => 
+      key.startsWith('product:') || key.startsWith('products:')
+    );
+    
+    // Xóa từng key
+    let deletedCount = 0;
+    for (const key of productKeys) {
+      await axios.delete(`${REDIS_SERVICE_URL}/${key}`);
+      deletedCount++;
+    }
+    
+    res.status(200).json({
+      message: `Đã xóa ${deletedCount} cache sản phẩm thành công!`
+    });
+  } catch (error) {
+    console.error("Lỗi khi xóa cache sản phẩm:", error);
+    res.status(500).json({ error: "Lỗi khi xóa cache sản phẩm." });
+  }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -408,5 +512,6 @@ module.exports = {
   updateStock,
   getWomenProducts,
   getMenProducts,
-  getTopProducts
+  getTopProducts,
+  clearAllProductCache
 };

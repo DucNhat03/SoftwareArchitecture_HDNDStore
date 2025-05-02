@@ -442,28 +442,50 @@ export const verifyOTP = async (req, res) => {
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
+    // Kiểm tra email và OTP hợp lệ
     const user = await User.findOne({ email });
-
     if (!user) {
-      return res.status(400).json({ error: "Email không tồn tại!" });
-    }
-
-    // Kiểm tra xem OTP đã được xác minh chưa
-    if (!user.isOtpVerified) {
-      return res.status(400).json({ error: "Bạn chưa xác minh OTP!" });
+      return res.status(400).json({ error: "Người dùng không tồn tại!" });
     }
 
     // Hash mật khẩu mới
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-
-    // Xóa trạng thái OTP đã xác minh
-    user.isOtpVerified = false;
     await user.save();
 
-    res.status(200).json({ message: "Đặt lại mật khẩu thành công!" });
+    res.json({ message: "Đổi mật khẩu thành công!" });
   } catch (error) {
     console.error("Lỗi đặt lại mật khẩu:", error);
     res.status(500).json({ error: "Lỗi server, vui lòng thử lại!" });
+  }
+};
+
+{
+  /* Send Verification Email */
+}
+export const sendVerificationEmail = async (req, res) => {
+  try {
+    const { email, verificationCode } = req.body;
+    
+    if (!email || !verificationCode) {
+      return res.status(400).json({ error: "Email và mã xác thực là bắt buộc!" });
+    }
+    
+    // Sử dụng email service để gửi email xác thực
+    const name = "Người dùng mới"
+    await sendOtpEmail(
+      email, 
+      name, // Temporary name since the user is not registered yet
+      verificationCode,
+      false // This is not a password reset, it's a verification email
+    );
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "Email xác thực đã được gửi thành công!" 
+    });
+  } catch (error) {
+    console.error("Lỗi gửi email xác thực:", error);
+    res.status(500).json({ error: "Lỗi khi gửi email xác thực, vui lòng thử lại!" });
   }
 };

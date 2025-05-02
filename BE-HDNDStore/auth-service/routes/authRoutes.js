@@ -9,7 +9,8 @@ import {
   updateAvatar,
   sendOTP,
   verifyOTP,
-  resetPassword
+  resetPassword,
+  sendVerificationEmail
 } from "../controllers/authController.js";
 
 import authMiddleware, {
@@ -28,6 +29,9 @@ router.post("/google", googleLogin);
 router.post("/forgot-password/otp", sendOTP); // Gửi OTP đến email
 router.post("/forgot-password/verify-otp", verifyOTP); // Xác thực OTP
 router.post("/forgot-password/reset-password", resetPassword); // Đặt lại mật khẩu
+
+// Email verification
+router.post("/send-verification-email", sendVerificationEmail);
 
 /* Private Routes (Yêu cầu đăng nhập) */
 router.get("/profile", authMiddleware, getUserProfile);

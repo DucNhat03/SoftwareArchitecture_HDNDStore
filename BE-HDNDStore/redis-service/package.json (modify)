@@ -1,0 +1,15 @@
+{
+  "name": "redis-service",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "redis": "^3.0.2"
+  },
+  "devDependencies": {
+    "jest": "^27.0.0",
+    "redis-mock": "^1.0.0"
+  }
+}

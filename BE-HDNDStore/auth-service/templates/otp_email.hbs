@@ -1,33 +1,60 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>HDND Store - Xác nhận OTP</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-
-<body style="margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;">
-    <div style="max-width: 650px; margin: 0 auto;">
-        <div style="background-color: #ff6600; padding: 24px; color: #ffffff;">
-            <h1 style="font-size: 24px; font-weight: 700; text-align: center;">
-                Xác nhận OTP - HDND Store
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; line-height: 1.6; background-color: #f4f4f4; color: #333333;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 20px; margin-bottom: 20px;">
+        <!-- Header -->
+        <div style="background-color: #304269; padding: 25px 30px; text-align: center;">
+            <img src="https://i.imgur.com/XkIoJDl.png" alt="HDND Store Logo" style="max-height: 50px; margin-bottom: 15px;">
+            <h1 style="color: #ffffff; font-size: 24px; font-weight: 600; margin: 0; letter-spacing: 0.5px;">
+                Xác thực tài khoản
             </h1>
         </div>
-        <div style="padding: 24px; background-color: #ffffff;">
-            <p>Xin chào {{name}},</p>
-            <p>Bạn đã yêu cầu đặt lại mật khẩu trên HDND Store. Vui lòng nhập mã OTP sau:</p>
-            <h2 style="text-align: center; font-size: 24px; color: #ff6600; font-weight: bold;">
-                {{otp}} {{!-- OTP code --}}
-            </h2>
-            <p>Mã OTP có hiệu lực trong <b>5 phút</b>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email.</p>
+        
+        <!-- Content -->
+        <div style="padding: 35px 30px; background-color: #ffffff;">
+            <p style="margin-top: 0; font-size: 16px;">Xin chào <span style="font-weight: 600;">{{name}}</span>,</p>
+            
+            {{#if isPasswordReset}}
+            <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản HDND Store của bạn. Vui lòng sử dụng mã xác thực dưới đây để hoàn tất quá trình:</p>
+            {{else}}
+            <p>Cảm ơn bạn đã đăng ký tài khoản tại HDND Store. Để hoàn tất quá trình đăng ký, vui lòng sử dụng mã xác thực dưới đây:</p>
+            {{/if}}
+            
+            <div style="background-color: #f9f9f9; border: 1px dashed #dddddd; border-radius: 6px; padding: 20px; margin: 25px 0; text-align: center;">
+                <h2 style="font-size: 32px; color: #304269; font-weight: 700; letter-spacing: 5px; margin: 0;">
+                    {{otp}}
+                </h2>
+            </div>
+            
+            <div style="background-color: #f0f3f8; border-left: 4px solid #304269; padding: 10px 15px; font-size: 14px; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#304269" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Mã xác thực có hiệu lực trong <strong>5 phút</strong>. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</span>
+            </div>
+            
+            <div style="margin-top: 25px; text-align: center;">
+                <a href="http://localhost:5173/home" style="display: inline-block; background-color: #304269; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 30px; border-radius: 4px; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px;">Truy cập HDND Store</a>
+            </div>
         </div>
-        <div style="background-color: #f6f6f6; padding: 24px; text-align: center;">
-            <p>Liên hệ với chúng tôi nếu cần hỗ trợ:</p>
-            <p><a href="hdndstore.cs01@gmail.com" style="color: #ff6600; text-decoration: none;">hdndstore.cs01@gmail.com</a></p>
-            <p>Hoặc truy cập website: <a href="http://localhost:5173/home" style="color: #ff6600; text-decoration: none;">HDND Store</a></p>
+        
+        <!-- Footer -->
+        <div style="padding: 25px; background-color: #f8f8f8; border-top: 1px solid #eeeeee; text-align: center;">
+            <p style="margin-top: 0; font-size: 14px; color: #666666;">Cần hỗ trợ? Liên hệ với chúng tôi</p>
+            <div style="margin: 15px 0;">
+                <a href="mailto:hdndstore.cs01@gmail.com" style="color: #304269; text-decoration: none; font-weight: 500;">hdndstore.cs01@gmail.com</a>
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eeeeee; color: #999999; font-size: 13px;">
+                <p style="margin: 0 0 10px 0;">© 2025 HDND Store. Tất cả các quyền được bảo lưu.</p>
+                <p style="margin: 0;">Email này được gửi tự động, vui lòng không trả lời.</p>
+            </div>
         </div>
     </div>
 </body>
-
 </html>
