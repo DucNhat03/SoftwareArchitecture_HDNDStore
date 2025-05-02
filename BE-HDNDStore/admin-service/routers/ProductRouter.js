@@ -33,4 +33,7 @@ router.put('/export', ProductController.updateStock);
 // In your ProductRouter.js file
 router.get('/top', ProductController.getTopProducts);
 
+// Route xóa toàn bộ cache sản phẩm
+router.post('/clear-cache', ProductController.clearAllProductCache);
+
 module.exports = router;
