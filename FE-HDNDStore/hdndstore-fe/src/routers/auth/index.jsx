@@ -7,6 +7,8 @@ import Cart from "../../components/Cart/Cart"; // Import Cart.jsx
 import ProductDetail from "../../components/ProductDetail/ProductDetail";
 import OrderSuccess from "../../components/OrderSuccess/OrderSuccess";
 import ForgotPassword from "../../components/auth/ForgotPassword"; 
+import TestFeatures from "../../pages/TestFeatures"; // Import TestFeatures page
+import ApiDebug from "../../pages/ApiDebug"; // Import ApiDebug page
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -41,6 +43,8 @@ const AppRoutes = () => {
         <Route path="/chi-tiet-san-pham" element={<ProductDetail />} /> { }
         <Route path="/dat-hang-thanh-cong" element={<OrderSuccess />} /> { }
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/test-features" element={<TestFeatures />} /> {/* Thêm route cho TestFeatures */}
+        <Route path="/api-debug" element={<ApiDebug />} /> {/* Thêm route cho ApiDebug */}
 
         {/* Profile với Nested Routes */}
         <Route path="/profile/*" element={<ProfilePage />} />
