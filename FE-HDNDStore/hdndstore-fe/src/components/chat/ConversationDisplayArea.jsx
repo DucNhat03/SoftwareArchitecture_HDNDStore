@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import Markdown from 'react-markdown';
 import userIcon from '../../assets/user.png';
 import chatbotIcon from '../../assets/chaticon.png';
-import api from '../../services/api'; // Make sure this import path is correct
+import api from '../../services/api';
+import PropTypes from 'prop-types';
 
-const ConversationDisplayArea = ({ data, streamdiv, answer }) => {
+const ConversationDisplayArea = ({ data, greeting }) => {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState(null);
   
@@ -40,14 +41,20 @@ const ConversationDisplayArea = ({ data, streamdiv, answer }) => {
   }, []);
 
   // Get first name for greeting
-  const firstName = fullName ? fullName.split(' ').pop() : 'there';
+  const firstName = fullName ? fullName.split(' ').pop() : 'bạn';
 
   return (
     <div className="d-flex flex-column gap-3">
-      {data?.length <= 0 ? (
+      {greeting && (
         <div className="text-center my-3">
-          <p className="fs-5 fw-semibold mb-1">Hi {firstName},</p>
-          <p className="text-secondary">How can I help you today?</p>
+          <p className="fs-5 fw-semibold mb-1">HDND Store xin chào {firstName}!</p>
+          <p className="text-secondary">{greeting}</p>
+        </div>
+      )}
+      {data?.length <= 0 && !greeting ? (
+        <div className="text-center my-3">
+          <p className="fs-5 fw-semibold mb-1">Xin chào {firstName}!</p>
+          <p className="text-secondary">HDND Store có thể giúp gì cho bạn hôm nay?</p>
         </div>
       ) : (
         <div className="d-none"></div>
@@ -60,8 +67,8 @@ const ConversationDisplayArea = ({ data, streamdiv, answer }) => {
             alt={element.role === "user" ? "User" : "Bot"}
             className="rounded-circle p-1 flex-shrink-0"
             style={{
-              width: "28px", 
-              height: "28px", 
+              width: "32px", 
+              height: "32px", 
               backgroundColor: element.role === "user" ? "#e9f5ff" : "#f0f0f0",
               objectFit: "cover"
             }}
@@ -77,25 +84,23 @@ const ConversationDisplayArea = ({ data, streamdiv, answer }) => {
         </div>
       ))}
 
-      {streamdiv && (
-        <div className="d-flex align-items-start gap-2">
-          <img 
-            src={chatbotIcon} 
-            alt="Bot"
-            className="rounded-circle p-1 flex-shrink-0"
-            style={{width: "28px", height: "28px", backgroundColor: "#f0f0f0"}}
-          />
-          {answer && (
-            <div className="p-3 rounded-4 rounded-bottom-start-0 bg-white border" style={{maxWidth: "85%"}}>
-              <Markdown>{answer}</Markdown>
-            </div>
-          )}
-        </div>
-      )}
-
       <span id="checkpoint"></span>
     </div>
   );
+};
+
+ConversationDisplayArea.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      role: PropTypes.string.isRequired,
+      parts: PropTypes.arrayOf(
+        PropTypes.shape({
+          text: PropTypes.string.isRequired
+        })
+      ).isRequired
+    })
+  ),
+  greeting: PropTypes.string
 };
 
 export default ConversationDisplayArea;

@@ -1,15 +1,16 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
-/** Submission using the Enter key or button. */
-const MessageInput = ({ inputRef, waiting, handleClick }) => {
+/** Chat message input with send button */
+const MessageInput = ({ inputRef, waiting, handleClick, placeholder = "Nhập tin nhắn..." }) => {
   return (
     <div className="input-group">
       <input
-        className="form-control rounded-pill me-2"
+        className="form-control rounded-start"
         type="text"
         name="chat"
-        placeholder={waiting ? "Waiting for response..." : "Type a message..."}
+        placeholder={waiting ? "Đang xử lý..." : placeholder}
         ref={inputRef}
         disabled={waiting}
         onKeyDown={(e) => {
@@ -17,7 +18,7 @@ const MessageInput = ({ inputRef, waiting, handleClick }) => {
         }}
       />
       <button 
-        className="btn btn-primary rounded-circle" 
+        className="btn btn-primary" 
         onClick={handleClick}
         disabled={waiting}
       >
@@ -25,6 +26,13 @@ const MessageInput = ({ inputRef, waiting, handleClick }) => {
       </button>
     </div>
   );
+};
+
+MessageInput.propTypes = {
+  inputRef: PropTypes.object.isRequired,
+  waiting: PropTypes.bool.isRequired,
+  handleClick: PropTypes.func.isRequired,
+  placeholder: PropTypes.string
 };
 
 export default MessageInput;
