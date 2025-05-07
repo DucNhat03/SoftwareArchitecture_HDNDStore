@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # API Gateway Service
   api-gateway:
     build:
       context: ./api-gateway
@@ -14,6 +15,8 @@ services:
       - PRODUCT_SERVICE_URL=http://product-service:5002
       - PAYMENT_SERVICE_URL=http://payment-service:5003
       - ADMIN_SERVICE_URL=http://admin-service:5000
+      - CHAT_SERVICE_URL=http://chat-service:5005
+      - REDIS_SERVICE_URL=http://redis-service:6380
     volumes:
       - ./api-gateway:/app
       - /app/node_modules
@@ -22,6 +25,8 @@ services:
       - product-service
       - payment-service
       - admin-service
+      - chat-service
+      - redis-service
     networks:
       - hdnd-network
     restart: always
@@ -31,6 +36,7 @@ services:
       timeout: 10s
       retries: 3
     
+  # Authentication Service
   auth-service:
     build:
       context: ./auth-service
@@ -40,9 +46,14 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5001
+      - MONGODB_URI=mongodb://mongodb:27017/hdnd_auth
+      - JWT_SECRET=your_jwt_secret_here
+      - JWT_EXPIRE=24h
     volumes:
       - ./auth-service:/app
       - /app/node_modules
+    depends_on:
+      - mongodb
     networks:
       - hdnd-network
     restart: always
@@ -52,6 +63,7 @@ services:
       timeout: 10s
       retries: 3
     
+  # Product Service
   product-service:
     build:
       context: ./product-service
@@ -61,9 +73,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5002
+      - MONGODB_URI=mongodb://mongodb:27017/hdnd_products
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ./product-service:/app
       - /app/node_modules
+    depends_on:
+      - mongodb
+      - redis
     networks:
       - hdnd-network
     restart: always
@@ -73,27 +91,37 @@ services:
       timeout: 10s
       retries: 3
     
+  # Payment Service
   payment-service:
     build:
       context: ./payment-service
     container_name: hdnd-payment-service
     ports:
       - "5003:5003"
+      - "4040:4040"  # Ngrok web interface
     environment:
       - NODE_ENV=production
       - PORT=5003
+      - MONGODB_URI=mongodb://mongodb:27017/hdnd_payments
+      - PAYMENT_SECRET_KEY=K951B6PE1waDMi640xX08PD3vg6EkVlz
+      - NGROK_AUTHTOKEN=2T8fQw9v3a6MnMzWmTeRP4WQ97q_5TyiMEBqHAcZeiD57k6Dv
     volumes:
       - ./payment-service:/app
       - /app/node_modules
+    depends_on:
+      - mongodb
     networks:
       - hdnd-network
     restart: always
+    security_opt:
+      - seccomp:unconfined  # Ngrok can require additional capabilities
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5003/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
+  # Admin Service
   admin-service:
     build:
       context: ./admin-service
@@ -103,9 +131,14 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/hdnd_admin
+      - AUTH_SERVICE_URL=http://auth-service:5001
     volumes:
       - ./admin-service:/app
       - /app/node_modules
+    depends_on:
+      - mongodb
+      - auth-service
     networks:
       - hdnd-network
     restart: always
@@ -115,6 +148,110 @@ services:
       timeout: 10s
       retries: 3
 
+  # Chat Service
+  chat-service:
+    build:
+      context: ./chat-service
+    container_name: hdnd-chat-service
+    ports:
+      - "5005:5005"
+    environment:
+      - NODE_ENV=production
+      - PORT=5005
+      - GOOGLE_API_KEY=AIzaSyC4sYfm1vFWeCHPoFdlAgReeIrIijLq4Sk 
+      - PRODUCT_SERVICE_URL=http://product-service:5002
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./chat-service:/app
+      - /app/node_modules
+    depends_on:
+      - product-service
+      - redis
+    networks:
+      - hdnd-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Service (Custom implementation)
+  redis-service:
+    build:
+      context: ./redis-service
+    container_name: hdnd-redis-service
+    ports:
+      - "6380:6380"
+    environment:
+      - NODE_ENV=production
+      - PORT=6380
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./redis-service:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    networks:
+      - hdnd-network
+    restart: always
+
+  # Redis (Database)
+  redis:
+    image: redis:alpine
+    container_name: hdnd-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - hdnd-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: hdnd-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - hdnd-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+  # Frontend Application
+  frontend:
+    build:
+      context: ../FE-HDNDStore/hdndstore-fe
+      dockerfile: Dockerfile
+    container_name: hdnd-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - hdnd-network
+    restart: always
+
+# Define networks
 networks:
   hdnd-network:
     driver: bridge
+
+# Define volumes
+volumes:
+  mongo-data:
+  redis-data:

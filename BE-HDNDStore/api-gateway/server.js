@@ -102,7 +102,7 @@ app.use("/api/users", createServiceProxy(`${AUTH_SERVICE_URL}/api/users`));
 
 // Product Service routes
 app.use("/api/products", createServiceProxy(`${PRODUCT_SERVICE_URL}/products`));
-app.use("/api/orders", createServiceProxy(`${PRODUCT_SERVICE_URL}/api`));
+app.use("/api/orders", createServiceProxy(`${PRODUCT_SERVICE_URL}/api/orders`));
 
 // Payment Service routes
 app.use("/api/payment", createServiceProxy(`${PAYMENT_SERVICE_URL}`));

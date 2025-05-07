@@ -12,15 +12,48 @@ app.listen(PORT, () => {
   console.log("Chatbot Server Running on PORT:", PORT);
 });
 
+// Add health check endpoint
+app.get("/health", (req, res) => {
+  const apiStatus = model ? "initialized" : "failed";
+  res.status(200).json({ 
+    status: "Chat Service is running", 
+    geminiApi: apiStatus,
+    googleApiKey: process.env.GOOGLE_API_KEY ? "configured" : "missing"
+  });
+});
+
 // Initialize Gemini API with error handling
 let genAI, model;
 try {
+  if (!process.env.GOOGLE_API_KEY) {
+    console.error("GOOGLE_API_KEY environment variable is not set");
+    throw new Error("Missing API key");
+  }
+  
   genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
   model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  console.log("Gemini API initialized successfully");
+  console.log("Gemini API initialized successfully with key:", process.env.GOOGLE_API_KEY.substring(0, 4) + "...");
 } catch (error) {
   console.error("Failed to initialize Gemini API:", error.message);
 }
+
+// Test the API connection immediately
+(async function testGeminiAPI() {
+  try {
+    if (!model) {
+      console.log("Model not initialized, skipping API test");
+      return;
+    }
+    
+    console.log("Testing Gemini API connection...");
+    const result = await model.generateContent("Say hello");
+    const response = await result.response;
+    const text = response.text();
+    console.log("Gemini API test successful, response:", text.substring(0, 20) + "...");
+  } catch (error) {
+    console.error("Gemini API test failed:", error.message);
+  }
+})();
 
 // Configuration
 const CONFIG = {
@@ -449,6 +482,48 @@ function createIdentityResponse() {
 }
 
 /**
+ * Generate simple fallback responses without using Gemini API
+ * Used when API is not working or not available
+ * @param {string} query - User query
+ * @returns {string} - Simple fallback response
+ */
+function generateFallbackResponse(query) {
+  const normalizedQuery = query.toLowerCase().trim();
+  
+  // Simple pattern matching for common questions
+  if (isAskingAboutIdentity(normalizedQuery)) {
+    return "Tôi là trợ lý ảo HDND Store, luôn sẵn sàng giúp bạn tìm giày dép phù hợp!";
+  }
+  
+  if (normalizedQuery.includes('giá') || normalizedQuery.includes('bao nhiêu')) {
+    return "Giá giày tại HDND Store dao động từ 300.000đ đến 2.000.000đ tùy mẫu. Bạn quan tâm mẫu giày nào?";
+  }
+  
+  if (normalizedQuery.includes('địa chỉ') || normalizedQuery.includes('cửa hàng') || normalizedQuery.includes('shop')) {
+    return "HDND Store có cửa hàng tại 123 Nguyễn Trãi, Quận 1, TP.HCM. Mở cửa từ 8h30-21h30 hàng ngày.";
+  }
+  
+  if (normalizedQuery.includes('ship') || normalizedQuery.includes('giao hàng') || normalizedQuery.includes('vận chuyển')) {
+    return "HDND Store giao hàng toàn quốc, phí 30.000đ và miễn phí cho đơn từ 500.000đ. Thời gian 2-3 ngày với nội thành.";
+  }
+  
+  if (normalizedQuery.includes('sale') || normalizedQuery.includes('giảm giá') || normalizedQuery.includes('khuyến mãi')) {
+    return "HDND Store đang có chương trình giảm 10-30% cho nhiều mẫu giày mới. Bạn có thể xem thêm ở mục Khuyến mãi nhé!";
+  }
+  
+  // Default responses
+  const defaultResponses = [
+    "HDND Store có nhiều mẫu giày đẹp và chất lượng. Bạn đang tìm loại giày nào?",
+    "Bạn có thể cho biết thêm bạn cần tìm giày nam hay nữ, và phong cách bạn thích?",
+    "HDND Store sẽ giúp bạn tìm mẫu giày phù hợp. Bạn thích phong cách thể thao, casual hay formal?",
+    "Chúng tôi có nhiều mẫu giày mới về. Bạn muốn tìm loại giày nào?",
+    "Bạn đang tìm giày cho dịp đặc biệt hay sử dụng hàng ngày?"
+  ];
+  
+  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+}
+
+/**
  * Process and respond to user chat request
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
@@ -478,6 +553,17 @@ app.post("/chat", async (req, res) => {
   }
 
   try {
+    // Check if Gemini API is initialized
+    if (!model) {
+      console.error("Gemini model not initialized - API key might be missing");
+      const suggestions = await getProductSuggestions(3);
+      const fallbackResponse = generateFallbackResponse(msg);
+      return res.json({
+        text: fallbackResponse,
+        products: suggestions.products
+      });
+    }
+    
     // Detect user intent
     const intent = detectUserIntent(msg);
     console.log(`Detected intent for "${msg}": ${intent}`);
@@ -581,16 +667,18 @@ app.post("/chat", async (req, res) => {
               }
             } catch (fallbackError) {
               console.error("Fallback prompt also failed:", fallbackError.message);
+              const simpleResponse = generateFallbackResponse(msg);
               res.write(`data: ${JSON.stringify({
                 event: 'text',
-                text: "HDND có nhiều mẫu giày đẹp. Bạn cần tìm loại nào ạ?"
+                text: simpleResponse
               })}\n\n`);
             }
           } else {
-            // For other Gemini errors, send a generic response
+            // For other Gemini errors, use the fallback response generator
+            const simpleResponse = generateFallbackResponse(msg);
             res.write(`data: ${JSON.stringify({
               event: 'text',
-              text: "Xin lỗi, hệ thống trả lời đang gặp vấn đề. Bạn cần tìm giày gì nào?"
+              text: simpleResponse
             })}\n\n`);
           }
         }
@@ -655,15 +743,17 @@ app.post("/chat", async (req, res) => {
               });
             } catch (fallbackError) {
               console.error("Fallback prompt also failed:", fallbackError.message);
+              const simpleResponse = generateFallbackResponse(msg);
               res.json({
-                text: "HDND có nhiều mẫu giày đẹp. Bạn cần tìm loại nào ạ?",
+                text: simpleResponse,
                 products: productInfo.products
               });
             }
           } else {
-            // For other Gemini errors, send a generic response
+            // For other Gemini errors, use the fallback response generator
+            const simpleResponse = generateFallbackResponse(msg);
             res.json({
-              text: "Xin lỗi, hệ thống trả lời đang gặp vấn đề. Bạn cần tìm giày gì nào?",
+              text: simpleResponse,
               products: productInfo.products
             });
           }
@@ -703,15 +793,6 @@ app.post("/chat", async (req, res) => {
       });
     }
   }
-});
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    message: "Chatbot service is running",
-    timestamp: new Date().toISOString()
-  });
 });
 
 // Export app for testing

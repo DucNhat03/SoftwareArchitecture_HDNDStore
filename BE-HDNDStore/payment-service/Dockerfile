@@ -2,15 +2,24 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json files and install dependencies
+# Cài đặt các công cụ cần thiết cho ngrok
+RUN apk add --no-cache python3 make g++ curl wget
+
+# Sao chép package.json và cài đặt dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy application source code
+# Sao chép mã nguồn
 COPY . .
 
-# Expose the port that the app runs on
-EXPOSE 5003
+# Cấp quyền thực thi cho script khởi động
+RUN chmod +x start.sh
 
-# Start the application
-CMD ["node", "server.js"] 
+# Expose port
+EXPOSE 5003 4040
+
+# Thiết lập ngrok authtoken như biến môi trường
+ENV NGROK_AUTHTOKEN=2T8fQw9v3a6MnMzWmTeRP4WQ97q_5TyiMEBqHAcZeiD57k6Dv
+
+# Khởi động ứng dụng sử dụng script start.sh
+CMD ["./start.sh"] 
