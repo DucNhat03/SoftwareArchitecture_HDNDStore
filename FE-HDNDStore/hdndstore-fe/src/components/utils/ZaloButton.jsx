@@ -1,25 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { FaComment } from "react-icons/fa"; 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../styles/ZaloButton.css"; // Still keep minimal custom styling
+import "../../styles/ZaloButton.css";
 import axios from "axios";
 import { flushSync } from "react-dom";
 import ConversationDisplayArea from "../chat/ConversationDisplayArea";
 import MessageInput from "../chat/MessageInput";
+import ProductCard from "../chat/ProductCard";
+import logo from "../../assets/img-shop/logo.png";
 
 const ZaloButton = () => {
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef();
   const host = "http://localhost:5005";
-  const url = host + "/chat";
-  const streamUrl = host + "/stream";
+  const chatUrl = host + "/chat";
   const [data, setData] = useState([]);
-  const [answer, setAnswer] = useState("");
-  const [streamdiv, showStreamdiv] = useState(false);
-  const [toggled, setToggled] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const is_stream = toggled;
+  const [greeting, setGreeting] = useState(null);
+  const [currentProducts, setCurrentProducts] = useState([]);
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -31,6 +30,20 @@ const ZaloButton = () => {
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
+
+  // Initial greeting when opening chat
+  useEffect(() => {
+    if (isChatOpen && data.length === 0) {
+      axios.post(chatUrl, { history: [], chat: "", stream: false })
+        .then(res => {
+          setGreeting(res.data.text);
+          setCurrentProducts(res.data.products || []);
+        })
+        .catch(() => {
+          setGreeting("HDND Store xin chào! Hiện tại không lấy được dữ liệu sản phẩm. Bạn có thể hỏi tôi thông tin khác.");
+        });
+    }
+  }, [isChatOpen]);
 
   /** Function to toggle chat visibility */
   const toggleChat = () => {
@@ -53,31 +66,30 @@ const ZaloButton = () => {
     if (validationCheck(inputRef.current.value)) {
       console.log("Empty or invalid entry");
     } else {
-      if (!is_stream) {
-        handleNonStreamingChat();
-      } else {
-        handleStreamingChat();
-      }
+      handleChatRequest();
     }
   };
 
-  /** Handle non-streaming chat. */
-  const handleNonStreamingChat = async () => {
+  /** Handle chat request */
+  const handleChatRequest = async () => {
+    const userMessage = inputRef.current.value;
     const chatData = {
-      chat: inputRef.current.value,
+      chat: userMessage,
       history: data,
+      stream: false
     };
 
     /** Add current user message to history. */
     const ndata = [
       ...data,
-      { role: "user", parts: [{ text: inputRef.current.value }] },
+      { role: "user", parts: [{ text: userMessage }] },
     ];
 
     flushSync(() => {
       setData(ndata);
+      setCurrentProducts([]);
       inputRef.current.value = "";
-      inputRef.current.placeholder = "Waiting for model's response";
+      inputRef.current.placeholder = "Đang xử lý...";
       setWaiting(true);
     });
 
@@ -91,100 +103,26 @@ const ZaloButton = () => {
       },
     };
 
-    /** Function to perform POST request. */
-    const fetchData = async () => {
-      var modelResponse = "";
-      try {
-        const response = await axios.post(url, chatData, headerConfig);
-        modelResponse = response.data.text;
-      } catch (error) {
-        modelResponse = "Error occurred";
-      } finally {
-        const updatedData = [
-          ...ndata,
-          { role: "model", parts: [{ text: modelResponse }] },
-        ];
-        flushSync(() => {
-          setData(updatedData);
-          inputRef.current.placeholder = "Enter a message.";
-          setWaiting(false);
-        });
-        executeScroll();
-      }
-    };
-
-    fetchData();
-  };
-
-  /** Handle streaming chat. */
-  const handleStreamingChat = async () => {
-    // Same as before
-    const chatData = {
-      chat: inputRef.current.value,
-      history: data,
-    };
-
-    const ndata = [
-      ...data,
-      { role: "user", parts: [{ text: inputRef.current.value }] },
-    ];
-
-    flushSync(() => {
-      setData(ndata);
-      inputRef.current.value = "";
-      inputRef.current.placeholder = "Waiting for model's response";
-      setWaiting(true);
-    });
-
-    executeScroll();
-    setAnswer("");
-    showStreamdiv(true);
-
-    const headerConfig = {
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-        "Access-Control-Allow-Origin": "*",
-      },
-    };
-
     try {
-      const response = await fetch(streamUrl, {
-        method: "POST",
-        headers: headerConfig.headers,
-        body: JSON.stringify(chatData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let streamedAnswer = "";
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        streamedAnswer += chunk;
-        setAnswer(streamedAnswer);
-      }
-
+      const response = await axios.post(chatUrl, chatData, headerConfig);
+      const modelResponse = response.data.text;
+      setCurrentProducts(response.data.products || []);
+      
       const updatedData = [
         ...ndata,
-        { role: "model", parts: [{ text: streamedAnswer }] },
+        { role: "model", parts: [{ text: modelResponse }] },
       ];
-
+      
       flushSync(() => {
         setData(updatedData);
-        showStreamdiv(false);
-        inputRef.current.placeholder = "Enter a message.";
+        inputRef.current.placeholder = "Nhập tin nhắn...";
         setWaiting(false);
       });
-    } catch (error) {
-      console.error("Error during streaming:", error);
-      const errorMessage = "Error occurred during streaming";
+      
+    } catch (apiError) {
+      console.error("Error fetching response:", apiError);
+      const errorMessage = "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.";
+      
       const updatedData = [
         ...ndata,
         { role: "model", parts: [{ text: errorMessage }] },
@@ -192,8 +130,7 @@ const ZaloButton = () => {
       
       flushSync(() => {
         setData(updatedData);
-        showStreamdiv(false);
-        inputRef.current.placeholder = "Enter a message.";
+        inputRef.current.placeholder = "Nhập tin nhắn...";
         setWaiting(false);
       });
     }
@@ -205,44 +142,45 @@ const ZaloButton = () => {
     <div className={`zalo-chatbox-container ${isVisible ? "visible" : ""}`}>
       {isChatOpen ? (
         <div className="card shadow chat-window">
-          <div className="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+          <div className="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <div className="avatar-container me-2">
-                <div className="avatar bg-white bg-opacity-25 text-white d-flex align-items-center justify-content-center">DN</div>
+                <img 
+                  src={logo} 
+                  alt="HDND Store" 
+                  className="rounded-circle"
+                  style={{ width: '36px', height: '36px', objectFit: 'cover' }}
+                />
               </div>
               <div>
-                <div className="fw-bold">{'< ducnhatdev />'}</div>
-                <div className="small opacity-75">Online</div>
+                <div className="fw-bold">HDND Store</div>
+                <div className="small opacity-75">Hỗ trợ trực tuyến</div>
               </div>
             </div>
-            <div className="d-flex align-items-center">
-              <div className="form-check form-switch me-2">
-                <input 
-                  className="form-check-input" 
-                  type="checkbox" 
-                  role="switch" 
-                  id="streamToggle" 
-                  checked={toggled}
-                  onChange={() => setToggled(!toggled)}
-                />
-                <label className="form-check-label visually-hidden" htmlFor="streamToggle">
-                  {toggled ? "Streaming on" : "Streaming off"}
-                </label>
-              </div>
-              <button 
-                className="btn-close btn-close-white" 
-                onClick={toggleChat} 
-                aria-label="Close chat"
-              ></button>
-            </div>
+            <button 
+              className="btn-close btn-close-white" 
+              onClick={toggleChat} 
+              aria-label="Đóng chat"
+            ></button>
           </div>
           
-          <div className="card-body p-3 overflow-auto bg-light" style={{maxHeight: '350px'}}>
+          <div className="card-body p-3 overflow-auto bg-light" style={{maxHeight: '400px'}}>
             <ConversationDisplayArea
               data={data}
-              streamdiv={streamdiv}
-              answer={answer}
+              greeting={greeting}
             />
+            
+            {currentProducts && currentProducts.length > 0 && (
+              <div className="products-container mt-3">
+                <div className="row g-2">
+                  {currentProducts.map((product, index) => (
+                    <div key={index} className="col-6">
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="card-footer p-2 bg-white border-top">
@@ -250,6 +188,7 @@ const ZaloButton = () => {
               inputRef={inputRef}
               waiting={waiting}
               handleClick={handleClick}
+              placeholder="Nhập tin nhắn..."
             />
           </div>
         </div>
@@ -257,7 +196,7 @@ const ZaloButton = () => {
         <button 
           className="btn btn-primary rounded-circle position-fixed chat-toggle-btn shadow"
           onClick={toggleChat}
-          title="Chat now"
+          title="Hỗ trợ mua hàng"
         >
           <FaComment />
         </button>
