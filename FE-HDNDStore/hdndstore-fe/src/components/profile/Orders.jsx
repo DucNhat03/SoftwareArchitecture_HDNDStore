@@ -34,6 +34,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import API_ENDPOINTS from '../../services/config';
 
 const Orders = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -81,10 +82,9 @@ const Orders = () => {
   ];
 
   const handlePayment = async (total, orderId) => {
-    console.log("Thực hiện thanh toán cho đơn hàng:", orderId);
     console.log("Tổng tiền:", total);
     try {
-      const response = await axios.post("http://localhost:5003/payment", {
+      const response = await axios.post(`${API_ENDPOINTS.PAYMENT}/payment`, {
         amount: total,
         orderId: orderId,
       });
@@ -112,7 +112,7 @@ const Orders = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5002/api/orders/user/${userId}`
+        `${API_ENDPOINTS.ORDERS}/user/${userId}`
       );
       setOrders(response.data.orders);
     } catch (error) {
@@ -173,7 +173,7 @@ const Orders = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5002/api/orders/${selectedOrderId}/shipping-address`,
+        `${API_ENDPOINTS.ORDERS}/${selectedOrderId}/shipping-address`,
         {
           method: "PUT",
           headers: {
@@ -228,7 +228,7 @@ const Orders = () => {
     try {
       // Kiểm tra trạng thái đơn hàng trước khi gửi yêu cầu hủy
       const orderResponse = await fetch(
-        `http://localhost:5002/api/orders/${selectedOrderId}`
+        `${API_ENDPOINTS.ORDERS}/${selectedOrderId}`
       );
       const orderData = await orderResponse.json();
 
@@ -244,7 +244,7 @@ const Orders = () => {
 
       // Nếu trạng thái hợp lệ, gửi yêu cầu hủy
       const response = await fetch(
-        `http://localhost:5002/api/orders/${selectedOrderId}/cancel`,
+        `${API_ENDPOINTS.ORDERS}/${selectedOrderId}/cancel`,
         {
           method: "PUT",
           headers: {

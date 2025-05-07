@@ -4,8 +4,9 @@ const app = express();
 const axios = require("axios");
 const crypto = require("crypto");
 const cors = require("cors");
-const ngrok = require("ngrok");
+const fs = require('fs');
 const config = require("./config");
+const path = require('path');
 
 app.use(cors());
 app.use(express.json());
@@ -14,23 +15,51 @@ app.use(express.static("./public"));
 
 let ipnUrl = "";
 
-const startNgrok = async (port) => {
-  try {
-    const url = await ngrok.connect({
-      addr: port,
-      proto: "http",
-      authtoken: '2T8fQw9v3a6MnMzWmTeRP4WQ97q_5TyiMEBqHAcZeiD57k6Dv',
-    });
-    ipnUrl = `${url}/callback`; // 👉 Gán ipnUrl sau khi có URL từ ngrok
-    console.log("✔ Ngrok started at:", url);
-    console.log("✔ ipnUrl:", ipnUrl);
-  } catch (err) {
-    console.error("Ngrok failed to start:", err.message);
-    process.exit(1);
+// Cố gắng đọc URL từ file ngrok_url.txt (được tạo từ start.sh)
+const getIpnUrl = () => {
+  const possiblePaths = [
+    '/tmp/ngrok_url.txt',  // Trong Docker container
+    './ngrok_url.txt',     // Trong thư mục hiện tại (môi trường dev)
+    path.join(__dirname, 'ngrok_url.txt')  // Đường dẫn tuyệt đối
+  ];
+  
+  for (const filePath of possiblePaths) {
+    try {
+      if (fs.existsSync(filePath)) {
+        const url = fs.readFileSync(filePath, 'utf8').trim();
+        console.log(`✅ Đọc được URL callback từ file ${filePath}:`, url);
+        return url;
+      }
+    } catch (err) {
+      console.error(`❌ Lỗi khi đọc file ${filePath}:`, err.message);
+    }
+  }
+  
+  // Fallback URL nếu không đọc được từ file
+  if (process.env.NODE_ENV === 'production') {
+    console.log("⚠️ Sử dụng URL fallback cho Docker");
+    return `http://payment-service:${process.env.PORT || 5003}/callback`;
+  } else {
+    console.log("⚠️ Sử dụng URL fallback cho local");
+    return `http://localhost:${process.env.PORT || 5003}/callback`;
   }
 };
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  // Đảm bảo ipnUrl được thiết lập
+  if (!ipnUrl) {
+    ipnUrl = getIpnUrl();
+  }
+  res.status(200).json({ status: "Payment Service is running", ipnUrl });
+});
+
 app.post("/payment", async (req, res) => {
+  // Đảm bảo ipnUrl được thiết lập
+  if (!ipnUrl) {
+    ipnUrl = getIpnUrl();
+  }
+
   const {
     accessKey,
     secretKey,
@@ -78,45 +107,52 @@ app.post("/payment", async (req, res) => {
   };
 
   try {
+    console.log("💰 Gửi yêu cầu thanh toán tới MoMo");
+    console.log("💳 Số tiền:", amount);
+    console.log("🔗 ipnUrl:", ipnUrl);
+    
     const result = await axios.post("https://test-payment.momo.vn/v2/gateway/api/create", requestBody, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    
+    console.log("✅ Nhận được phản hồi từ MoMo:", result.data.payUrl ? "Success" : "Failed");
     return res.status(200).json(result.data);
   } catch (error) {
+    console.error("❌ Payment request error:", error.message);
     return res.status(500).json({ statusCode: 500, message: error.message });
   }
 });
 
 app.post("/callback", async (req, res) => {
   try {
-    console.log("callback:", req.body);
+    console.log("📞 callback received:", req.body);
 
     const { orderId, resultCode, message, transId, extraData, orderInfo } = req.body;
 
-    console.log("orderId (momo):", orderId);
-    console.log("orderId (hệ thống):", extraData);
-    console.log("transId:", transId);
-    console.log("message:", message);
+    console.log("🆔 orderId (momo):", orderId);
+    console.log("🆔 orderId (hệ thống):", extraData);
+    console.log("🔄 transId:", transId);
+    console.log("💬 message:", message);
 
     if (resultCode === 0) {
       // Truyền qua params trong URL
-      await axios.put(`http://localhost:5002/api/orders/payment`, null, {
+      await axios.put(`http://product-service:5002/api/orders/payment`, null, {
         params: {
           orderId: orderInfo,
           statusPayment: "Đã thanh toán",
           paymentMethod: "Ví điện tử",
         },
       });
-      console.log("Đã cập nhật trạng thái thanh toán!");
-    }else {
-      console.log("Giao dịch thất bại:", message);
+      console.log("✅ Đã cập nhật trạng thái thanh toán!");
+    } else {
+      console.log("❌ Giao dịch thất bại:", message);
     }
 
     return res.sendStatus(204);
   } catch (error) {
-    console.error("Callback error:", error.message);
+    console.error("❌ Callback error:", error.message);
     return res.sendStatus(500);
   }
 });
@@ -148,11 +184,28 @@ app.post("/check-status-transaction", async (req, res) => {
   }
 });
 
-const PORT = 5003;
+const PORT = process.env.PORT || 5003;
 
-// 👉 Start ngrok trước khi mở server
-startNgrok(PORT).then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is running at port ${PORT}`);
+// Thiết lập URL callback khi khởi động
+ipnUrl = getIpnUrl();
+
+// Khởi động server
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server is running at port ${PORT}`);
+  console.log(`🔗 Using callback URL: ${ipnUrl}`);
+});
+
+// Xử lý tắt server
+process.on('SIGTERM', () => {
+  console.log('🛑 SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('🏁 HTTP server closed');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('🛑 SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('🏁 HTTP server closed');
   });
 });
